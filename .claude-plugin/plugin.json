@@ -1,0 +1,12 @@
+{
+  "name": "synter",
+  "description": "The AI Agent Operator for Ads. Manage campaigns, analyze performance, research competitors, and generate creatives across Google Ads, Meta, LinkedIn, Reddit, Microsoft Ads, and more — all from Claude Code.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Synter",
+    "url": "https://syntermedia.ai"
+  },
+  "homepage": "https://syntermedia.ai",
+  "repository": "https://github.com/jshorwitz/synter-mcp-server",
+  "license": "MIT"
+}

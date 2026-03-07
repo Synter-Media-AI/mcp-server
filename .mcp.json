@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "synter": {
+      "command": "npx",
+      "args": ["-y", "@synter/mcp-server"],
+      "env": {
+        "SYNTER_API_KEY": "",
+        "SYNTER_WORKSPACE_ID": ""
+      }
+    }
+  }
+}
