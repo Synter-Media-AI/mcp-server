@@ -4,8 +4,7 @@
       "command": "npx",
       "args": ["-y", "@synter/mcp-server"],
       "env": {
-        "SYNTER_API_KEY": "",
-        "SYNTER_WORKSPACE_ID": ""
+        "SYNTER_API_KEY": ""
       }
     }
   }

@@ -1,7 +1,6 @@
 ---
 name: ad-operator
 description: Synter Ad Operator — an autonomous AI agent for managing advertising campaigns across platforms. Handles campaign creation, optimization, competitor research, creative generation, and performance analysis.
-model: claude-sonnet-4-6
 ---
 
 # Synter Ad Operator
