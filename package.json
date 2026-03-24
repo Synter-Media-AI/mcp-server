@@ -1,17 +1,17 @@
 {
   "name": "@synterai/mcp-server",
   "version": "1.0.7",
-  "mcpName": "io.github.jshorwitz/synter-ads",
+  "mcpName": "io.github.synter-media-ai/synter-ads",
   "description": "Model Context Protocol (MCP) server for AI agents to manage ad campaigns across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, and more. Create campaigns, adjust budgets, generate creatives, and pull performance data through natural conversation.",
   "author": "Synter Media <hello@syntermedia.ai>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jshorwitz/synter-mcp-server.git"
+    "url": "https://github.com/Synter-Media-AI/mcp-server.git"
   },
   "homepage": "https://syntermedia.ai/manual",
   "bugs": {
-    "url": "https://github.com/jshorwitz/synter-mcp-server/issues"
+    "url": "https://github.com/Synter-Media-AI/mcp-server/issues"
   },
   "keywords": [
     "mcp",

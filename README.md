@@ -334,8 +334,8 @@ See the full tool list at [docs.syntermedia.ai/tools](https://docs.syntermedia.a
 
 ```bash
 # Clone and install
-git clone https://github.com/jshorwitz/synter-mcp-server.git
-cd synter-mcp-server
+git clone https://github.com/Synter-Media-AI/mcp-server.git
+cd mcp-server
 npm install
 
 # Build

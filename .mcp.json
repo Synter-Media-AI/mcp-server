@@ -2,7 +2,7 @@
   "mcpServers": {
     "synter": {
       "command": "npx",
-      "args": ["-y", "@synter/mcp-server"],
+      "args": ["-y", "@synterai/mcp-server"],
       "env": {
         "SYNTER_API_KEY": ""
       }

@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.2",
   "name": "synter",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "display_name": "Synter",
   "description": "Cross-platform advertising MCP server. Manage ad campaigns across Google, Meta, LinkedIn, Reddit, TikTok and more with AI agents.",
   "author": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jshorwitz/synter-mcp-server"
+    "url": "https://github.com/Synter-Media-AI/mcp-server"
   },
   "homepage": "https://syntermedia.ai",
   "license": "MIT",
