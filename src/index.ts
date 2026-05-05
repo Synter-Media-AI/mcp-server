@@ -597,6 +597,62 @@ const tools: Tool[] = [
   },
 
   // ─────────────────────────────────────────────────────────────────────────
+  // AUDIENCE MANAGEMENT
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    name: "manage_audience",
+    description:
+      "Create, upload to, or list first-party audiences in Google Ads via the Data Manager API. " +
+      "Supports Customer Match lists from emails, phone numbers, and company domains (B2B). " +
+      "Use action='create' to build a new audience, 'upload' to append members to an existing one, " +
+      "'list' to see all audiences, 'status' to check an upload job, or 'list-sources' to see " +
+      "linked data sources (GA4, Merchant Center).",
+    annotations: { destructiveHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        action: {
+          type: "string",
+          enum: ["create", "upload", "list", "status", "list-sources"],
+          description:
+            "create = new audience + upload members | upload = append to existing | " +
+            "list = show all audiences | status = check upload job | " +
+            "list-sources = show linked GA4/Merchant Center data sources",
+        },
+        name: {
+          type: "string",
+          description: "Audience name. Required for action=create. Required for action=upload unless audience_id is provided.",
+        },
+        emails: {
+          type: "string",
+          description: "Comma-separated email addresses. Hashed client-side before upload.",
+        },
+        phones: {
+          type: "string",
+          description: "Comma-separated phone numbers in E.164 format (e.g. +15551234567).",
+        },
+        company_domains: {
+          type: "string",
+          description: "Comma-separated company domains for B2B account targeting (e.g. acme.com,widgets.co).",
+        },
+        audience_id: {
+          type: "string",
+          description: "Numeric Google Ads audience ID. Alternative to name for action=upload.",
+        },
+        membership_lifespan: {
+          type: "number",
+          description: "Days to keep members in the audience. Default 540 (max 540).",
+        },
+        job_resource_name: {
+          type: "string",
+          description: "OfflineUserDataJob resource name. Required for action=status.",
+        },
+      },
+      required: ["action"],
+    },
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
   // UTILITY TOOLS
   // ─────────────────────────────────────────────────────────────────────────
   {
@@ -914,6 +970,23 @@ async function handleTool(
         ];
         (a.subreddits as string[] || []).forEach((s) => cliArgs.push("--subreddit", s));
         (a.interests as string[] || []).forEach((i) => cliArgs.push("--interest", i));
+        return cliArgs;
+      },
+    },
+
+    // Audience management
+    manage_audience: {
+      script: "google_ads_data_manager",
+      platform: "google",
+      argMapper: (a) => {
+        const cliArgs: string[] = ["--action", a.action as string];
+        if (a.name) cliArgs.push("--name", a.name as string);
+        if (a.emails) cliArgs.push("--emails", a.emails as string);
+        if (a.phones) cliArgs.push("--phones", a.phones as string);
+        if (a.company_domains) cliArgs.push("--company-domains", a.company_domains as string);
+        if (a.audience_id) cliArgs.push("--audience-id", a.audience_id as string);
+        if (a.membership_lifespan) cliArgs.push("--membership-lifespan", String(a.membership_lifespan));
+        if (a.job_resource_name) cliArgs.push("--job-resource-name", a.job_resource_name as string);
         return cliArgs;
       },
     },
