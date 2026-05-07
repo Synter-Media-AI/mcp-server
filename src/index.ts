@@ -57,7 +57,9 @@ const tools: Tool[] = [
   {
     name: "create_search_campaign",
     description:
-      "Create a Google Ads Search campaign with keywords. Sets up campaign, ad group, keywords, and responsive search ads.",
+      "Create a Google Ads Search campaign with an ad group, responsive search ad, and keywords — all in one atomic request. " +
+      "IMPORTANT: You must supply at least 3 headlines (max 30 chars each) and at least 2 descriptions (max 90 chars each). " +
+      "Fewer than 3 headlines or fewer than 2 descriptions will cause the campaign to be rejected before any API call is made.",
     annotations: { destructiveHint: true },
     inputSchema: {
       type: "object" as const,
@@ -73,17 +75,22 @@ const tools: Tool[] = [
         keywords: {
           type: "array",
           items: { type: "string" },
-          description: "Keywords to target (will be added as phrase match)",
+          minItems: 1,
+          description: "Keywords to target (phrase match). Provide at least 1.",
         },
         headlines: {
           type: "array",
-          items: { type: "string" },
-          description: "Headlines for the responsive search ad (3-15, max 30 chars each)",
+          items: { type: "string", maxLength: 30 },
+          minItems: 3,
+          maxItems: 15,
+          description: "Headlines for the responsive search ad. MINIMUM 3, maximum 15. Each must be 30 characters or fewer.",
         },
         descriptions: {
           type: "array",
-          items: { type: "string" },
-          description: "Descriptions for the responsive search ad (2-4, max 90 chars each)",
+          items: { type: "string", maxLength: 90 },
+          minItems: 2,
+          maxItems: 4,
+          description: "Descriptions for the responsive search ad. MINIMUM 2, maximum 4. Each must be 90 characters or fewer.",
         },
         final_url: {
           type: "string",
