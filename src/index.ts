@@ -904,9 +904,9 @@ function buildSyncAudienceArgs(args: Record<string, unknown>): string[] {
   if (args.hashed_emails) cliArgs.push("--hashed-emails", String(args.hashed_emails));
   if (args.hashed_emails_artifact_id) cliArgs.push("--hashed-emails-artifact-id", String(args.hashed_emails_artifact_id));
   if (args.hashed_phones) cliArgs.push("--hashed-phones", String(args.hashed_phones));
-  // Google's customer-match script does not accept --hashed-phones-artifact-id today; only Meta + others.
-  if (args.hashed_phones_artifact_id && platform !== "google") {
-    cliArgs.push("--hashed-phones-artifact-id", String(args.hashed_phones_artifact_id));
+  if (args.hashed_phones_artifact_id) cliArgs.push("--hashed-phones-artifact-id", String(args.hashed_phones_artifact_id));
+  if (args.phones_artifact_id && (platform === "google" || platform === "meta")) {
+    cliArgs.push("--phones-artifact-id", String(args.phones_artifact_id));
   }
   if (args.mobile_ids) cliArgs.push("--mobile-ids", String(args.mobile_ids));
   if (args.mobile_ids_artifact_id && platform === "meta") {
@@ -1235,7 +1235,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.1.0",
+      version: "1.1.1",
     },
     {
       capabilities: {
