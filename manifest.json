@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.2",
   "name": "synter",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "display_name": "Synter",
   "description": "Cross-platform advertising MCP server. Manage ad campaigns across Google, Meta, LinkedIn, Reddit, TikTok and more with AI agents.",
   "author": {
@@ -57,6 +57,9 @@
     {"name": "generate_video", "description": "AI-generate video ads with Veo, Runway, or Luma"},
     {"name": "upload_image", "description": "Upload images as ad assets"},
     {"name": "list_ad_accounts", "description": "List all connected ad accounts"},
+    {"name": "manage_audience", "description": "Manage Google Ads Customer Match audiences"},
+    {"name": "stage_audience_artifact", "description": "Stage large hashed-PII payloads for bulk audience uploads (free)"},
+    {"name": "sync_audience", "description": "Upload audiences to Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, or X"},
     {"name": "run_tool", "description": "Run any of 140+ Synter tools directly"}
   ]
 }

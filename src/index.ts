@@ -20,6 +20,7 @@ import {
 
 const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
 const SYNTER_API_URL = process.env.SYNTER_API_URL || "https://syntermedia.ai";
+const SYNTER_ARTIFACT_API_URL = process.env.SYNTER_ARTIFACT_API_URL || "https://api.syntermedia.ai";
 
 // =============================================================================
 // Tool Definitions
@@ -607,6 +608,100 @@ const tools: Tool[] = [
   // AUDIENCE MANAGEMENT
   // ─────────────────────────────────────────────────────────────────────────
   {
+    name: "stage_audience_artifact",
+    description:
+      "Stage a hashed-PII payload (newline-delimited identifiers — SHA-256 emails, phones, or raw MAIDs) " +
+      "in Synter's private artifact store and return an opaque artifact_id. Pass that id to " +
+      "sync_audience via *_artifact_id parameters. FREE — no credits charged. Use this instead of " +
+      "pasting hashed identifiers inline when you have more than ~500 entries.",
+    annotations: { readOnlyHint: false },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        body: {
+          type: "string",
+          description:
+            "Newline-delimited identifiers, one per line. SHA-256 hex for emails/phones; raw uppercase UUIDs for MAIDs (IDFA/GAID).",
+        },
+        script_name: {
+          type: "string",
+          description:
+            "Which script will consume this artifact. Defaults to 'meta_ads_create_audience'. " +
+            "Use 'google_ads_create_customer_match' for Google, or other audience-sync script names.",
+        },
+        ttl_seconds: {
+          type: "number",
+          description: "How long the staged payload should live in seconds. Default 3600 (1 hour).",
+        },
+      },
+      required: ["body"],
+    },
+  },
+  {
+    name: "sync_audience",
+    description:
+      "Upload an audience to an ad platform (Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X). " +
+      "Accepts inline hashed identifiers (hashed_emails, hashed_phones), raw mobile_ids (IDFA/GAID), " +
+      "company_domains, a public csv_url, or *_artifact_id references staged via stage_audience_artifact. " +
+      "Costs 10 credits on success.",
+    annotations: { destructiveHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        platform: {
+          type: "string",
+          enum: ["google", "meta", "linkedin", "microsoft", "reddit", "tiktok", "x"],
+          description: "Ad platform to upload to.",
+        },
+        audience_name: {
+          type: "string",
+          description: "Name for the audience as it should appear in the platform's UI.",
+        },
+        account_id: {
+          type: "string",
+          description: "Platform ad account id. Optional — defaults to the user's primary account on that platform.",
+        },
+        hashed_emails: {
+          type: "string",
+          description: "Comma-separated SHA-256 hashed emails (lowercase hex). For small batches; use hashed_emails_artifact_id for >500.",
+        },
+        hashed_emails_artifact_id: {
+          type: "string",
+          description: "Artifact id from stage_audience_artifact for SHA-256 hashed emails.",
+        },
+        hashed_phones: {
+          type: "string",
+          description: "Comma-separated SHA-256 hashed phones (E.164 format pre-hash). For small batches.",
+        },
+        hashed_phones_artifact_id: {
+          type: "string",
+          description: "Artifact id from stage_audience_artifact for SHA-256 hashed phones. Meta + most platforms; not supported by Google's customer match script today.",
+        },
+        mobile_ids: {
+          type: "string",
+          description: "Comma-separated raw mobile advertising IDs (IDFA / GAID, uppercase UUID). Meta and TikTok only. NOT hashed.",
+        },
+        mobile_ids_artifact_id: {
+          type: "string",
+          description: "Artifact id for raw mobile ids. Meta only.",
+        },
+        company_domains: {
+          type: "string",
+          description: "Comma-separated company domains for B2B account targeting (Google + LinkedIn).",
+        },
+        csv_url: {
+          type: "string",
+          description: "Public CSV URL with audience identifiers. Alternative to inline params / artifact ids.",
+        },
+        customer_file_source: {
+          type: "string",
+          description: "Meta only: USER_PROVIDED_ONLY (default), PARTNER_PROVIDED_ONLY, or BOTH_USER_AND_PARTNER_PROVIDED.",
+        },
+      },
+      required: ["platform"],
+    },
+  },
+  {
     name: "manage_audience",
     description:
       "Create, upload to, or list first-party audiences in Google Ads via the Data Manager API. " +
@@ -755,6 +850,77 @@ async function callSynterAPI(
   return data;
 }
 
+async function stageAudienceArtifact(
+  body: string,
+  scriptName: string,
+  ttlSeconds?: number
+): Promise<Record<string, unknown>> {
+  if (!SYNTER_API_KEY) {
+    throw new Error(
+      "SYNTER_API_KEY not set. Get your API key at https://syntermedia.ai/developer"
+    );
+  }
+
+  const payload: Record<string, unknown> = { body, script_name: scriptName };
+  if (ttlSeconds !== undefined) payload.ttl_seconds = ttlSeconds;
+
+  const response = await fetch(
+    `${SYNTER_ARTIFACT_API_URL}/artifacts/audience-sync-input`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Synter-Key": SYNTER_API_KEY,
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const data = await response.json() as Record<string, unknown>;
+
+  if (!response.ok) {
+    const errorMsg = (data.error as string) || (data.message as string) || `Staging error: ${response.status}`;
+    throw new Error(errorMsg);
+  }
+
+  return data;
+}
+
+const SYNC_AUDIENCE_SCRIPT_BY_PLATFORM: Record<string, string> = {
+  google: "google_ads_create_customer_match",
+  meta: "meta_ads_create_audience",
+  linkedin: "linkedin_ads_create_matched_audience",
+  microsoft: "microsoft_ads_create_audience",
+  reddit: "reddit_ads_create_audience",
+  tiktok: "tiktok_ads_create_audience",
+  x: "x_ads_create_audience",
+};
+
+function buildSyncAudienceArgs(args: Record<string, unknown>): string[] {
+  const platform = String(args.platform || "").toLowerCase();
+  const cliArgs: string[] = [];
+  if (args.audience_name) cliArgs.push("--name", String(args.audience_name));
+  if (args.account_id) cliArgs.push("--account-id", String(args.account_id));
+  if (args.hashed_emails) cliArgs.push("--hashed-emails", String(args.hashed_emails));
+  if (args.hashed_emails_artifact_id) cliArgs.push("--hashed-emails-artifact-id", String(args.hashed_emails_artifact_id));
+  if (args.hashed_phones) cliArgs.push("--hashed-phones", String(args.hashed_phones));
+  // Google's customer-match script does not accept --hashed-phones-artifact-id today; only Meta + others.
+  if (args.hashed_phones_artifact_id && platform !== "google") {
+    cliArgs.push("--hashed-phones-artifact-id", String(args.hashed_phones_artifact_id));
+  }
+  if (args.mobile_ids) cliArgs.push("--mobile-ids", String(args.mobile_ids));
+  if (args.mobile_ids_artifact_id && platform === "meta") {
+    cliArgs.push("--mobile-ids-artifact-id", String(args.mobile_ids_artifact_id));
+  }
+  if (args.company_domains) cliArgs.push("--company-domains", String(args.company_domains));
+  if (args.csv_url) cliArgs.push("--csv-url", String(args.csv_url));
+  if (args.customer_file_source && platform === "meta") {
+    cliArgs.push("--customer-file-source", String(args.customer_file_source));
+  }
+  if (platform === "meta") cliArgs.push("--subtype", "CUSTOM");
+  return cliArgs;
+}
+
 // =============================================================================
 // Tool Handlers
 // =============================================================================
@@ -765,6 +931,32 @@ async function handleTool(
   name: string,
   args: ToolArgs
 ): Promise<Record<string, unknown>> {
+  // Tools that bypass the standard /api/v1/tools/run dispatcher.
+  if (name === "stage_audience_artifact") {
+    const body = args.body as string;
+    if (!body || typeof body !== "string") {
+      throw new Error("stage_audience_artifact requires a 'body' string with newline-delimited identifiers.");
+    }
+    const scriptName = (args.script_name as string) || "meta_ads_create_audience";
+    const ttl = typeof args.ttl_seconds === "number" ? (args.ttl_seconds as number) : undefined;
+    return stageAudienceArtifact(body, scriptName, ttl);
+  }
+
+  if (name === "sync_audience") {
+    const platform = String(args.platform || "").toLowerCase();
+    const script = SYNC_AUDIENCE_SCRIPT_BY_PLATFORM[platform];
+    if (!script) {
+      throw new Error(
+        `sync_audience: unsupported platform "${platform}". Supported: ${Object.keys(SYNC_AUDIENCE_SCRIPT_BY_PLATFORM).join(", ")}`
+      );
+    }
+    return callSynterAPI("tools/run", {
+      script_name: script,
+      args: buildSyncAudienceArgs(args),
+      platform,
+    });
+  }
+
   // Map tool names to script names and handle parameters
   const toolMappings: Record<string, { script: string; platform?: string; argMapper?: (args: ToolArgs) => string[] }> = {
     // Campaign management
@@ -1043,7 +1235,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.0.7",
+      version: "1.1.0",
     },
     {
       capabilities: {
