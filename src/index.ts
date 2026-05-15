@@ -633,6 +633,15 @@ const tools: Tool[] = [
           type: "number",
           description: "How long the staged payload should live in seconds. Default 3600 (1 hour).",
         },
+        i_have_consent: {
+          type: "boolean",
+          description:
+            "Confirm the customer has lawful basis (GDPR Art. 6) and required consent under " +
+            "CCPA / Meta Custom Audience Terms / Google Customer Match Policy for every " +
+            "identifier in `body`. Soft-launch: omitting this flag logs a warning until " +
+            "2026-05-21, after which staging is rejected with PII_CONSENT_REQUIRED. Pass " +
+            "true only if your customer has obtained the required consents.",
+        },
       },
       required: ["body"],
     },
@@ -696,6 +705,15 @@ const tools: Tool[] = [
         customer_file_source: {
           type: "string",
           description: "Meta only: USER_PROVIDED_ONLY (default), PARTNER_PROVIDED_ONLY, or BOTH_USER_AND_PARTNER_PROVIDED.",
+        },
+        i_have_consent: {
+          type: "boolean",
+          description:
+            "Confirm the customer has lawful basis (GDPR Art. 6) and required consent under " +
+            "CCPA / Meta Custom Audience Terms / Google Customer Match Policy for every " +
+            "identifier in this audience. Soft-launch: omitting this flag logs a warning " +
+            "until 2026-05-21, after which the upload is rejected with PII_CONSENT_REQUIRED. " +
+            "Pass true only if your customer has obtained the required consents.",
         },
       },
       required: ["platform"],
@@ -853,7 +871,8 @@ async function callSynterAPI(
 async function stageAudienceArtifact(
   body: string,
   scriptName: string,
-  ttlSeconds?: number
+  ttlSeconds?: number,
+  iHaveConsent?: boolean
 ): Promise<Record<string, unknown>> {
   if (!SYNTER_API_KEY) {
     throw new Error(
@@ -861,8 +880,20 @@ async function stageAudienceArtifact(
     );
   }
 
+  if (iHaveConsent === undefined) {
+    // SYN-PII-CONSENT: soft-launch through 2026-05-21. Mirror the backend
+    // warning behavior locally so callers see the same notice without
+    // round-tripping.
+    console.warn(
+      "stage_audience_artifact: i_have_consent not set — please pass `i_have_consent: true` " +
+      "to confirm lawful basis under GDPR/CCPA + Meta + Google Customer Match terms. " +
+      "After 2026-05-21 this will be required."
+    );
+  }
+
   const payload: Record<string, unknown> = { body, script_name: scriptName };
   if (ttlSeconds !== undefined) payload.ttl_seconds = ttlSeconds;
+  if (iHaveConsent !== undefined) payload.i_have_consent = iHaveConsent;
 
   const response = await fetch(
     `${SYNTER_ARTIFACT_API_URL}/artifacts/audience-sync-input`,
@@ -939,7 +970,8 @@ async function handleTool(
     }
     const scriptName = (args.script_name as string) || "meta_ads_create_audience";
     const ttl = typeof args.ttl_seconds === "number" ? (args.ttl_seconds as number) : undefined;
-    return stageAudienceArtifact(body, scriptName, ttl);
+    const iHaveConsent = typeof args.i_have_consent === "boolean" ? (args.i_have_consent as boolean) : undefined;
+    return stageAudienceArtifact(body, scriptName, ttl, iHaveConsent);
   }
 
   if (name === "sync_audience") {
@@ -950,10 +982,20 @@ async function handleTool(
         `sync_audience: unsupported platform "${platform}". Supported: ${Object.keys(SYNC_AUDIENCE_SCRIPT_BY_PLATFORM).join(", ")}`
       );
     }
+    if (args.i_have_consent === undefined) {
+      console.warn(
+        "sync_audience: i_have_consent not set — please pass `i_have_consent: true` " +
+        "to confirm lawful basis under GDPR/CCPA + Meta + Google Customer Match terms. " +
+        "After 2026-05-21 this will be required."
+      );
+    }
     return callSynterAPI("tools/run", {
       script_name: script,
       args: buildSyncAudienceArgs(args),
       platform,
+      // Forwarded so the backend route can enforce; the script-CLI layer
+      // ignores unknown top-level fields.
+      i_have_consent: args.i_have_consent,
     });
   }
 
@@ -1235,7 +1277,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.1.1",
+      version: "1.2.0",
     },
     {
       capabilities: {

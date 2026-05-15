@@ -1,6 +1,6 @@
 {
   "name": "@synterai/mcp-server",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "mcpName": "io.github.synter-media-ai/synter-ads",
   "description": "Model Context Protocol (MCP) server for AI agents to manage ad campaigns across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, and more. Create campaigns, adjust budgets, generate creatives, and pull performance data through natural conversation.",
   "author": "Synter Media <hello@syntermedia.ai>",
