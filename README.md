@@ -380,6 +380,7 @@ You need to connect at least one ad platform:
 - **API Documentation:** [docs.syntermedia.ai](https://docs.syntermedia.ai)
 - **Tool Reference:** [docs.syntermedia.ai/tools](https://docs.syntermedia.ai/tools)
 - **MCP Server Comparison:** [syntermedia.ai/blog/best-ad-platform-mcp-servers](https://syntermedia.ai/blog/best-ad-platform-mcp-servers)
+- **Free Agent Skills (47 open-source):** [github.com/Synter-Media-AI/free-skills](https://github.com/Synter-Media-AI/free-skills) — also on [skills.sh](https://skills.sh/synter-media-ai/free-skills)
 - **Support:** [hello@syntermedia.ai](mailto:hello@syntermedia.ai)
 
 ---
