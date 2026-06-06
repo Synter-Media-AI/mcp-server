@@ -833,6 +833,138 @@ const tools: Tool[] = [
       required: ["script_name"],
     },
   },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ATTRIBUTION & PERFORMANCE ANALYSIS
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    name: "get_top_creatives",
+    description:
+      "Get a cross-platform creative leaderboard: top ads by spend, conversions, clicks, or CTR " +
+      "with thumbnail image URLs, headlines, CPA, and platform-reported ROAS. " +
+      "The result's granularity field is the native hierarchy level actually returned " +
+      "(ad, ad_group, or campaign). Use when you need to know which creatives perform best.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        days: {
+          type: "number",
+          description: "Lookback window in days. Default 30.",
+        },
+        platform: {
+          type: "string",
+          description: "Filter to one platform (e.g. META, GOOGLE, LINKEDIN, REDDIT, TIKTOK). Optional.",
+        },
+        limit: {
+          type: "number",
+          description: "Number of creatives to return. Default 10.",
+        },
+        level: {
+          type: "string",
+          enum: ["ad", "ad_group", "campaign"],
+          description: "Hierarchy level. Omit for auto (finest available).",
+        },
+        sort_by: {
+          type: "string",
+          enum: ["spend", "conversions", "clicks", "ctr", "roas"],
+          description: "Ranking metric. Default spend.",
+        },
+      },
+    },
+  },
+  {
+    name: "analyze_customer_journeys",
+    description:
+      "Analyze multi-touch customer journeys: conversion paths across channels, sankey flow data, " +
+      "channel overlap (solo vs assisted), top paths, and average touches to convert. " +
+      "Use when you need to understand how customers find the advertiser or which channels assist conversions.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        days: {
+          type: "number",
+          description: "Lookback window in days. Default 90.",
+        },
+      },
+    },
+  },
+  {
+    name: "compare_attribution_models",
+    description:
+      "Run multiple attribution models over the same conversion-path data and compare per-channel credit. " +
+      "Models include first_touch, last_touch, linear, time_decay, position_based, markov_chain, and shapley_value. " +
+      "Shows what last-click hides. Use to answer which channels really drive conversions.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        days: {
+          type: "number",
+          description: "Lookback window in days. Default 90.",
+        },
+        models: {
+          type: "array",
+          items: {
+            type: "string",
+            enum: [
+              "first_touch",
+              "last_touch",
+              "linear",
+              "time_decay",
+              "position_based",
+              "markov_chain",
+              "shapley_value",
+            ],
+          },
+          description: "Models to compare. Default is all seven.",
+        },
+      },
+    },
+  },
+  {
+    name: "get_recent_conversions",
+    description:
+      "Get the most recent tracked conversions for the authenticated account: timestamp, action type, value, " +
+      "and attributed source. Source is deterministic when a platform click ID was captured; " +
+      "otherwise falls back to utm_source. Use to get a live pulse on recent results.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        days: {
+          type: "number",
+          description: "Lookback window in days. Default 7, max 90.",
+        },
+        limit: {
+          type: "number",
+          description: "Max conversions to return. Default 20, max 50.",
+        },
+      },
+    },
+  },
+  {
+    name: "get_top_landing_pages",
+    description:
+      "Get top landing pages: Synter-built pages (views, CTA clicks, lead submissions) plus " +
+      "the customer's own site pages tracked by the Synter pixel (views, conversions, conversion rate). " +
+      "Use when you need to know which landing pages perform best or where conversions happen.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        days: {
+          type: "number",
+          description: "Lookback window in days. Default 30, max 365.",
+        },
+        limit: {
+          type: "number",
+          description: "Max pages per source. Default 10, max 25.",
+        },
+      },
+    },
+  },
 ];
 
 // =============================================================================
@@ -862,6 +994,35 @@ async function callSynterAPI(
 
   if (!response.ok) {
     const errorMsg = (data.error as string) || (data.message as string) || `API error: ${response.status}`;
+    throw new Error(errorMsg);
+  }
+
+  return data;
+}
+
+async function callAttributionAPI(
+  tool: string,
+  args: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  if (!SYNTER_API_KEY) {
+    throw new Error(
+      "SYNTER_API_KEY not set. Get your API key at https://syntermedia.ai/developer"
+    );
+  }
+
+  const response = await fetch(`${SYNTER_API_URL}/api/v1/attribution`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${SYNTER_API_KEY}`,
+    },
+    body: JSON.stringify({ tool, args }),
+  });
+
+  const data = await response.json() as Record<string, unknown>;
+
+  if (!response.ok) {
+    const errorMsg = (data.error as string) || (data.message as string) || `Attribution API error: ${response.status}`;
     throw new Error(errorMsg);
   }
 
@@ -997,6 +1158,18 @@ async function handleTool(
       // ignores unknown top-level fields.
       i_have_consent: args.i_have_consent,
     });
+  }
+
+  // Attribution tools — read-only, routed to /api/v1/attribution.
+  const ATTRIBUTION_TOOLS = new Set([
+    "get_top_creatives",
+    "analyze_customer_journeys",
+    "compare_attribution_models",
+    "get_recent_conversions",
+    "get_top_landing_pages",
+  ]);
+  if (ATTRIBUTION_TOOLS.has(name)) {
+    return callAttributionAPI(name, args);
   }
 
   // Map tool names to script names and handle parameters
@@ -1277,7 +1450,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.2.0",
+      version: "1.3.0",
     },
     {
       capabilities: {
