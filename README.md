@@ -122,6 +122,19 @@ Restart your AI client and start chatting:
 
 ---
 
+## Prefer a full plugin? (Claude Code / Claude Desktop)
+
+This package is the raw MCP server. If you use **Claude Code** or **Claude Desktop**, the [**Synter plugin**](https://github.com/Synter-Media-AI/plugin) wraps this same server with ready-made skills (`/synter:launch`, `/synter:audience`, `/synter:optimize`, …), specialized agents, and an approval-before-spend safety hook:
+
+```text
+/plugin marketplace add Synter-Media-AI/plugin
+/plugin install synter@synter
+```
+
+It also ships a headless [Claude Agent SDK](https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk) runner for automation. See the [plugin repo](https://github.com/Synter-Media-AI/plugin) or the [Claude Plugin guide](https://docs.syntermedia.ai/guides/claude-plugin). Use this MCP package directly when you want just the tools, or are wiring another client.
+
+---
+
 ## What Can Your Agent Do?
 
 ### 📊 Campaign Management
@@ -378,6 +391,7 @@ You need to connect at least one ad platform:
 
 - **Synter Manual:** [syntermedia.ai/manual](https://syntermedia.ai/manual)
 - **API Documentation:** [docs.syntermedia.ai](https://docs.syntermedia.ai)
+- **Claude Plugin:** [github.com/Synter-Media-AI/plugin](https://github.com/Synter-Media-AI/plugin) — skills, agents & this MCP for Claude Code / Desktop
 - **Tool Reference:** [docs.syntermedia.ai/tools](https://docs.syntermedia.ai/tools)
 - **MCP Server Comparison:** [syntermedia.ai/blog/best-ad-platform-mcp-servers](https://syntermedia.ai/blog/best-ad-platform-mcp-servers)
 - **Free Agent Skills (47 open-source):** [github.com/Synter-Media-AI/free-skills](https://github.com/Synter-Media-AI/free-skills) — also on [skills.sh](https://skills.sh/synter-media-ai/free-skills)

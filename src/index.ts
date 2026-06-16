@@ -833,6 +833,15 @@ const tools: Tool[] = [
       required: ["script_name"],
     },
   },
+  {
+    name: "list_landing_pages",
+    description: "List all landing pages for the authenticated workspace, including publish status, custom domain, and URLs.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {},
+    },
+  },
 ];
 
 // =============================================================================
@@ -856,6 +865,33 @@ async function callSynterAPI(
       Authorization: `Bearer ${SYNTER_API_KEY}`,
     },
     body: JSON.stringify(body),
+  });
+
+  const data = await response.json() as Record<string, unknown>;
+
+  if (!response.ok) {
+    const errorMsg = (data.error as string) || (data.message as string) || `API error: ${response.status}`;
+    throw new Error(errorMsg);
+  }
+
+  return data;
+}
+
+async function callSynterAPIGet(
+  endpoint: string
+): Promise<Record<string, unknown>> {
+  if (!SYNTER_API_KEY) {
+    throw new Error(
+      "SYNTER_API_KEY not set. Get your API key at https://syntermedia.ai/developer"
+    );
+  }
+
+  const response = await fetch(`${SYNTER_API_URL}/api/v1/${endpoint}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${SYNTER_API_KEY}`,
+    },
   });
 
   const data = await response.json() as Record<string, unknown>;
@@ -997,6 +1033,10 @@ async function handleTool(
       // ignores unknown top-level fields.
       i_have_consent: args.i_have_consent,
     });
+  }
+
+  if (name === "list_landing_pages") {
+    return callSynterAPIGet("landing-pages");
   }
 
   // Map tool names to script names and handle parameters
