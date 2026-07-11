@@ -5,9 +5,9 @@
 
 ### The most complete MCP server for advertising.
 
-Read and write across 19 ad platforms, with built-in confirmations for destructive actions.
+Reporting across 19 ad platforms and full campaign execution on 12 of them, spanning every major buying channel, with built-in confirmations for destructive actions.
 
-Create campaigns. Adjust budgets. Pause underperformers. Generate creatives. Pull performance data. All through natural conversation, across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Amazon, and more.
+Create campaigns. Adjust budgets. Pause underperformers. Generate creatives. Pull performance data. All through natural conversation, across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, and more.
 
 **This is the first [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that gives AI agents a credit card.**
 
@@ -15,12 +15,12 @@ Create campaigns. Adjust budgets. Pause underperformers. Generate creatives. Pul
 
 ## How Synter Compares
 
-The official Google Ads MCP server is read-only by design: per Google's documentation, it is "strictly read-only" and "cannot modify bids, pause campaigns, or create new assets." Most third-party ad MCP servers cover a single platform. We built Synter to do both halves of the job, on every major platform, from one server.
+The official Google Ads MCP server is read-only by design: per Google's documentation, it is "strictly read-only" and "cannot modify bids, pause campaigns, or create new assets." Most third-party ad MCP servers cover a single platform. We built Synter to do both halves of the job, across every major buying channel, from one server.
 
 | | Synter MCP | Official Google Ads MCP | Typical third-party ad MCPs |
 |---|---|---|---|
-| **Access** | Read + write | Read-only (current release) | Often read-only or partial write |
-| **Platforms** | 19 (full list below) | Google Ads only | Usually a single platform |
+| **Access** | Read on all 19 platforms, campaign write on 12 | Read-only (current release) | Often read-only or partial write |
+| **Platforms** | 19 reporting, 12 with full campaign execution (lists below) | Google Ads only | Usually a single platform |
 | **Create campaigns** | ✅ Google Search, Display, PMax, Meta, LinkedIn, Reddit, more via `run_tool` | ❌ | Rarely |
 | **Budgets and pause** | ✅ | ❌ | Varies |
 | **AI creative generation** | ✅ Imagen 4, Veo, Flux, SDXL, Runway, Luma | ❌ | ❌ |
@@ -28,7 +28,9 @@ The official Google Ads MCP server is read-only by design: per Google's document
 | **Safety** | Confirmations for destructive actions | n/a (read-only) | Varies |
 | **Open source** | ✅ MIT | ✅ | Varies |
 
-**The 19 platforms:** Google Ads, Microsoft Ads (Bing), Meta (Facebook and Instagram), LinkedIn Ads, X (Twitter) Ads, Reddit Ads, TikTok Ads, Snapchat Ads, Pinterest Ads, Spotify Ads, Amazon Ads, Amazon DSP, Walmart Connect, Instacart Ads, Target Roundel, Criteo, The Trade Desk, Display & Video 360, and OpenAI Ads (ChatGPT).
+**Reporting coverage (19 platforms):** Google Ads, Microsoft Ads (Bing), Meta (Facebook and Instagram), LinkedIn Ads, X (Twitter) Ads, Reddit Ads, TikTok Ads, Snapchat Ads, Pinterest Ads, Spotify Ads, Amazon Ads, Amazon DSP, Walmart Connect, Instacart Ads, Target Roundel, Criteo, The Trade Desk, Display & Video 360, and OpenAI Ads (ChatGPT).
+
+**Full campaign execution (12 platforms):** Google Ads, Microsoft Ads, Meta, LinkedIn, X, Reddit, TikTok, Snapchat, Pinterest, Spotify, Amazon DSP, and The Trade Desk. The remaining 7 (Amazon Ads, Walmart Connect, Instacart, Target Roundel, Criteo, Display & Video 360, and OpenAI Ads) are reporting-only today.
 
 The `npx` package ships typed tools for the most common operations plus `run_tool` access to the full catalog of 140+ Synter tools. The remote server at `https://mcp.syntermedia.ai/mcp/` exposes the full hosted tool set, including performance pulls for every platform above.
 
@@ -307,7 +309,7 @@ To manage ads on each platform, you'll need to connect your accounts in Synter:
 3. Complete the OAuth flow
 4. Your agent can now manage that platform
 
-**Supported Platforms (19):**
+**Supported Platforms (19; ✅ = reporting + full campaign execution, 📊 = reporting):**
 - Google Ads ✅
 - Meta (Facebook/Instagram) ✅
 - LinkedIn Ads ✅
@@ -318,15 +320,15 @@ To manage ads on each platform, you'll need to connect your accounts in Synter:
 - Snapchat Ads ✅
 - Pinterest Ads ✅
 - Spotify Ads ✅
-- Amazon Ads ✅
 - Amazon DSP ✅
-- Walmart Connect ✅
-- Instacart Ads ✅
-- Target Roundel ✅
-- Criteo ✅
 - The Trade Desk ✅
-- Display & Video 360 ✅
-- OpenAI Ads (ChatGPT) ✅
+- Amazon Ads 📊
+- Walmart Connect 📊
+- Instacart Ads 📊
+- Target Roundel 📊
+- Criteo 📊
+- Display & Video 360 📊
+- OpenAI Ads (ChatGPT) 📊
 
 ---
 
@@ -403,15 +405,15 @@ You need to connect at least one ad platform:
 
 ### Is there an MCP server for Google Ads?
 
-Yes, two kinds. Google ships an official Google Ads MCP server, which is read-only in its current release: it can query reports, metrics, and metadata, but per Google's documentation it "cannot modify bids, pause campaigns, or create new assets." Our MCP server covers Google Ads with both read and write: create Search, Display, and Performance Max campaigns, add keywords and negative keywords, adjust budgets, pause campaigns, manage Customer Match audiences, set up conversion tracking, and pull performance data. The same server covers 18 other ad platforms.
+Yes, two kinds. Google ships an official Google Ads MCP server, which is read-only in its current release: it can query reports, metrics, and metadata, but per Google's documentation it "cannot modify bids, pause campaigns, or create new assets." Our MCP server covers Google Ads with both read and write: create Search, Display, and Performance Max campaigns, add keywords and negative keywords, adjust budgets, pause campaigns, manage Customer Match audiences, set up conversion tracking, and pull performance data. The same server reports across 18 other ad platforms and offers full campaign execution on 11 of them.
 
 ### Can Claude or ChatGPT manage my ad campaigns?
 
-Yes. With the Synter MCP server connected, Claude (Claude Desktop, Claude Code), ChatGPT, Cursor, and any other MCP-compatible client can create campaigns, adjust budgets, pause underperformers, generate creatives, sync audiences, and pull performance data across 19 ad platforms. Claude and other stdio clients connect via `npx @synterai/mcp-server` with a `SYNTER_API_KEY`; ChatGPT and other HTTP clients connect to the remote server at `https://mcp.syntermedia.ai/mcp/` with an `X-Synter-Key` header. Destructive actions have built-in confirmations.
+Yes. With the Synter MCP server connected, Claude (Claude Desktop, Claude Code), ChatGPT, Cursor, and any other MCP-compatible client can create campaigns, adjust budgets, pause underperformers, generate creatives, and sync audiences on 12 ad platforms, and pull performance data across all 19. Claude and other stdio clients connect via `npx @synterai/mcp-server` with a `SYNTER_API_KEY`; ChatGPT and other HTTP clients connect to the remote server at `https://mcp.syntermedia.ai/mcp/` with an `X-Synter-Key` header. Destructive actions have built-in confirmations.
 
 ### What is the difference between the official Google Ads MCP and Synter?
 
-Two things: write access and platform coverage. The official Google Ads MCP is read-only in its current release and covers Google Ads only. Synter reads and writes across 19 platforms, including Google Ads, Meta, LinkedIn, Microsoft, TikTok, Amazon, and The Trade Desk. If you only need Google Ads reporting, the official server is a solid choice. If you want an agent that can act on what it finds, on Google and everywhere else you advertise, that is what we built Synter for.
+Two things: write access and platform coverage. The official Google Ads MCP is read-only in its current release and covers Google Ads only. Synter reports across 19 platforms and offers full campaign execution on 12 of them, including Google Ads, Meta, LinkedIn, Microsoft, TikTok, Amazon DSP, and The Trade Desk. If you only need Google Ads reporting, the official server is a solid choice. If you want an agent that can act on what it finds, on Google and everywhere else you advertise, that is what we built Synter for.
 
 ---
 
