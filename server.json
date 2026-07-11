@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.synter-media-ai/synter-ads",
-  "description": "Cross-platform advertising MCP server. Manage ad campaigns across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok via AI. Create campaigns, adjust budgets, pause underperformers, generate creatives, and pull performance data.",
+  "description": "The most complete MCP server for advertising. Reporting across 19 ad platforms and full campaign execution on 12, spanning every major buying channel. Create campaigns, adjust budgets, pause underperformers, generate creatives, and pull performance data via AI.",
   "status": "active",
   "repository": {
     "url": "https://github.com/Synter-Media-AI/mcp-server",
