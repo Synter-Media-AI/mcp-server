@@ -346,6 +346,10 @@ See the full tool list at [docs.syntermedia.ai/tools](https://docs.syntermedia.a
 > What tools are available for LinkedIn Ads?
 ```
 
+### Safe by Default: `execute` Dry-Runs Unless Told Otherwise
+
+The universal `execute` tool never runs an action on the first call unless you opt in. By default (`dry_run: true`) it validates the action against the whitelist, checks arguments, resolves credentials and credit cost, and stops there — nothing executes, nothing spends. The dry-run response includes the exact next step (`Re-call execute with dry_run=false`), so agents discover the protocol at runtime without any prior knowledge. Pass `dry_run: false` to actually run the action; for anything that spends money, do that only with the account owner's approval.
+
 ---
 
 ## Environment Variables
