@@ -60,6 +60,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
+    "validate:discovery": "node ./scripts/validate-discovery.mjs",
     "prepublishOnly": "npm run build",
     "publish:npm": "npm publish --access public"
   },

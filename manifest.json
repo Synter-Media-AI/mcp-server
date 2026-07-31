@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.2",
   "name": "synter",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "display_name": "Synter",
   "description": "The most complete MCP server for advertising. Reporting across 19 ad platforms and full campaign execution on 12, spanning every major buying channel. Manage ad campaigns with AI agents.",
   "author": {

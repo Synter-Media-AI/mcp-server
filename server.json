@@ -7,13 +7,13 @@
     "url": "https://github.com/Synter-Media-AI/mcp-server",
     "source": "github"
   },
-  "version": "1.2.0",
+  "version": "1.2.1",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@synterai/mcp-server",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "transport": {
         "type": "stdio"
       },

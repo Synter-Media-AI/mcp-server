@@ -34,6 +34,8 @@ The official Google Ads MCP server is read-only by design: per Google's document
 
 The `npx` package ships typed tools for the most common operations plus `run_tool` access to the full catalog of 140+ Synter tools. The remote server at `https://mcp.syntermedia.ai/mcp/` exposes the full hosted tool set, including performance pulls for every platform above.
 
+For registry-style MCP discovery, [`server.json`](./server.json) is the machine-readable source of truth. Keep it aligned with [`package.json`](./package.json), [`manifest.json`](./manifest.json), and the setup examples in this README.
+
 ---
 
 ## ⚠️ Fair Warning
