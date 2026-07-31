@@ -1,0 +1,33 @@
+name: MCP Discovery Validate
+
+on:
+  pull_request:
+    paths:
+      - ".mcp.json"
+      - "README.md"
+      - "package.json"
+      - "server.json"
+      - "manifest.json"
+      - "scripts/validate-discovery.mjs"
+      - ".github/workflows/mcp-discovery-validate.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".mcp.json"
+      - "README.md"
+      - "package.json"
+      - "server.json"
+      - "manifest.json"
+      - "scripts/validate-discovery.mjs"
+      - ".github/workflows/mcp-discovery-validate.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate discovery metadata
+        run: node scripts/validate-discovery.mjs
