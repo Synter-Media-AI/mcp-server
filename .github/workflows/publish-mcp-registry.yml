@@ -1,0 +1,96 @@
+name: Publish to MCP Registry
+
+# Registers this server with registry.modelcontextprotocol.io, which is how
+# clients discover it.
+#
+# Why this exists: the registry had drifted badly out of step with reality. It
+# carried io.github.Synter-Media-AI/synter-ads @ 1.0.8 (mixed-case namespace,
+# matching a stale vendored copy in the synter-media monorepo) plus a legacy
+# io.github.jshorwitz/synter-ads series, while THIS repo — the actual publish
+# source — was at 1.2.1 under the lowercase namespace and had never been
+# registered at all. So what users could discover was two minor versions behind
+# npm, under a name this repo does not use.
+#
+# The lowercase namespace is the operative one: the registry proves npm package
+# ownership by requiring the published package's `mcpName` to equal the server
+# `name`, and @synterai/mcp-server carries io.github.synter-media-ai/synter-ads.
+#
+# Deliberately does NOT publish to npm. That is a separate release decision and
+# would need NPM_TOKEN; this job only registers metadata that already describes a
+# published package.
+
+on:
+  # Normal path: tag a release.
+  push:
+    tags: ["v*"]
+  # Manual path, for backfilling a version that shipped to npm without a tag —
+  # which is exactly the situation 1.2.1 was in.
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # required for github-oidc auth
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Guard first, publish second. A registry version cannot be un-published,
+      # so mismatched metadata must fail before it reaches the registry rather
+      # than after. This is the same validator the PR gate runs.
+      - name: Validate discovery metadata
+        run: node scripts/validate-discovery.mjs
+
+      # When triggered by a tag, the tag must agree with server.json rather than
+      # server.json being rewritten to match the tag. Mutating it in CI would
+      # leave the committed file disagreeing with what was published, which is
+      # how the drift this workflow exists to fix started.
+      - name: Check tag matches server.json version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+          SERVER_VERSION="$(node -p "require('./server.json').version")"
+          if [ "$TAG_VERSION" != "$SERVER_VERSION" ]; then
+            echo "::error::tag v$TAG_VERSION does not match server.json version $SERVER_VERSION."
+            echo "Bump server.json, package.json and manifest.json together, then re-tag."
+            exit 1
+          fi
+          echo "tag and server.json agree on $SERVER_VERSION"
+
+      # Confirms the version being registered actually exists on npm. server.json
+      # points clients at an npm package; registering a version npm does not have
+      # would advertise an install that fails.
+      - name: Check the npm version being advertised exists
+        run: |
+          PKG="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          if ! npm view "$PKG@$VERSION" version >/dev/null 2>&1; then
+            echo "::error::$PKG@$VERSION is not published to npm."
+            echo "Publish the npm package first, then register it here."
+            exit 1
+          fi
+          echo "$PKG@$VERSION is live on npm"
+
+      - name: Install mcp-publisher
+        run: |
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher --version || true
+
+      # OIDC rather than a stored token: the io.github.* namespace is proved by
+      # this workflow running inside the Synter-Media-AI org, so there is no
+      # long-lived registry credential to leak or rotate.
+      - name: Authenticate to MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish server to MCP Registry
+        run: ./mcp-publisher publish
+
+      - name: Confirm what the registry now serves
+        run: |
+          NAME="$(node -p "require('./server.json').name")"
+          echo "Registered as: $NAME"
+          curl -fsS "https://registry.modelcontextprotocol.io/v0/servers?search=synter-ads" \
+            | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);const seen={};for(const e of (j.servers||[])){const n=e.name||e.server?.name;const v=e.version||e.server?.version;(seen[n]=seen[n]||[]).push(v)}for(const [n,vs] of Object.entries(seen))console.log(" ",n,"->",[...new Set(vs)].sort().join(", "))})'
