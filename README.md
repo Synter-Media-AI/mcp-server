@@ -23,7 +23,7 @@ The official Google Ads MCP server is read-only by design: per Google's document
 | **Platforms** | 19 reporting, 14 with full campaign creation (lists below) | Google Ads only | Usually a single platform |
 | **Create campaigns** | ✅ Google Search, Display, PMax, Meta, LinkedIn, Reddit, more via `run_tool` | ❌ | Rarely |
 | **Budgets and pause** | ✅ | ❌ | Varies |
-| **AI creative generation** | ✅ Imagen 4, Veo, Flux, SDXL, Runway, Luma | ❌ | ❌ |
+| **AI creative generation** | ✅ Images, video, copy | ❌ | ❌ |
 | **Audience sync** | ✅ Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X | ❌ | ❌ |
 | **Safety** | Confirmations for destructive actions | n/a (read-only) | Varies |
 | **Open source** | ✅ MIT | ✅ | Varies |
@@ -183,8 +183,8 @@ It also ships a headless [Claude Agent SDK](https://www.npmjs.com/package/@anthr
 
 | Tool | Description |
 |------|-------------|
-| `generate_image` | AI-generate ad images (Imagen 4, Flux, SDXL) |
-| `generate_video` | AI-generate video ads (Veo, Runway, Luma) |
+| `generate_image` | AI-generate ad images |
+| `generate_video` | AI-generate video ads |
 | `upload_image` | Upload images as ad assets |
 
 ### 🔧 Utility
@@ -295,7 +295,7 @@ Before creating your first campaign, you'll need:
 
 > **You:** I need a display ad image for a marketing automation product. Dark theme, professional, 1200x628.
 
-> **Agent:** Generating your image with Imagen 4...
+> **Agent:** Generating your image...
 >
 > Created: "Marketing automation dashboard with data visualization on dark background"
 > Asset saved and ready to use in your next Display campaign.
@@ -350,7 +350,7 @@ See the full tool list at [docs.syntermedia.ai/tools](https://docs.syntermedia.a
 
 ### Safe by Default: `execute` Dry-Runs Unless Told Otherwise
 
-The universal `execute` tool never runs an action on the first call unless you opt in. By default (`dry_run: true`) it validates the action against the whitelist, checks arguments, resolves credentials and credit cost, and stops there — nothing executes, nothing spends. The dry-run response includes the exact next step (`Re-call execute with dry_run=false`), so agents discover the protocol at runtime without any prior knowledge. Pass `dry_run: false` to actually run the action; for anything that spends money, do that only with the account owner's approval.
+The universal `execute` tool never runs an action on the first call unless you opt in. By default (`dry_run: true`) it validates the request and stops there — nothing executes, nothing spends. Pass `dry_run: false` to actually run the action; for anything that spends money, do that only with the account owner's approval.
 
 ---
 
