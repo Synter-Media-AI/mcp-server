@@ -87,4 +87,41 @@ invariant(
   "README.md must document the canonical hosted MCP endpoint https://mcp.syntermedia.ai/mcp/",
 );
 
+// Registry schema limits on server.json. These were checked nowhere until a
+// publish attempt on 2026-08-04 was rejected with
+//   422 body.description: expected length <= 100
+// after every internal-consistency check above had passed. The registry is the
+// wrong place to discover this: a rejected publish burns a CI run, and the
+// operator has to read an HTTP error to learn a field is too long. Worse, a
+// version cannot be un-published, so anything that DOES get through is
+// permanent.
+//
+// Mirrored from static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json
+// (definitions.ServerDetail). Hardcoded rather than fetched so this stays
+// offline-runnable and deterministic; if the registry relaxes a limit, the worst
+// case is that we are stricter than required.
+const SERVER_JSON_MAX_LENGTHS = {
+  name: 200,
+  description: 100,
+  title: 100,
+  version: 255,
+};
+
+for (const [field, max] of Object.entries(SERVER_JSON_MAX_LENGTHS)) {
+  const value = serverJson[field];
+  if (typeof value !== "string") continue; // absent optional fields are fine
+  invariant(
+    value.length <= max,
+    `server.json ${field} is ${value.length} characters; the registry schema caps it at ${max}. ` +
+      `The registry rejects the publish with a 422, so this must be fixed here. Value: ${JSON.stringify(value)}`,
+  );
+}
+
+for (const icon of serverJson.icons ?? []) {
+  invariant(
+    typeof icon.src !== "string" || icon.src.length <= 255,
+    `server.json icon src is ${icon.src.length} characters; the registry schema caps it at 255`,
+  );
+}
+
 console.log("Public Synter MCP discovery metadata is internally consistent.");
