@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.2",
   "name": "synter",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "display_name": "Synter",
   "description": "The most complete MCP server for advertising. Reporting across 19 ad platforms and full campaign execution on 12, spanning every major buying channel. Manage ad campaigns with AI agents.",
   "author": {
@@ -21,7 +21,9 @@
     "entry_point": "dist/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/dist/index.js"],
+      "args": [
+        "${__dirname}/dist/index.js"
+      ],
       "env": {
         "SYNTER_API_KEY": "${user_config.api_key}"
       }
@@ -37,29 +39,101 @@
     }
   },
   "tools": [
-    {"name": "list_campaigns", "description": "List campaigns across all connected ad platforms"},
-    {"name": "create_search_campaign", "description": "Create a Google Ads Search campaign with keywords and responsive search ads"},
-    {"name": "create_display_campaign", "description": "Create a Google Display campaign with responsive display ads"},
-    {"name": "create_pmax_campaign", "description": "Create a Performance Max campaign across all Google surfaces"},
-    {"name": "create_meta_campaign", "description": "Create a Facebook/Instagram campaign"},
-    {"name": "create_linkedin_campaign", "description": "Create a LinkedIn campaign for B2B advertising"},
-    {"name": "create_reddit_campaign", "description": "Create a Reddit campaign for community-based advertising"},
-    {"name": "pause_campaign", "description": "Pause any campaign across platforms"},
-    {"name": "update_campaign_budget", "description": "Change daily budget for a campaign"},
-    {"name": "get_performance", "description": "Get impressions, clicks, spend, conversions, ROAS metrics"},
-    {"name": "get_daily_spend", "description": "Daily spend breakdown by platform"},
-    {"name": "add_keywords", "description": "Add keywords to a campaign or ad group"},
-    {"name": "add_negative_keywords", "description": "Block unwanted search terms"},
-    {"name": "create_conversion", "description": "Set up a conversion action in Google Ads"},
-    {"name": "list_conversions", "description": "List existing conversion actions"},
-    {"name": "diagnose_tracking", "description": "Check if tracking is installed on a website"},
-    {"name": "generate_image", "description": "AI-generate ad images"},
-    {"name": "generate_video", "description": "AI-generate video ads"},
-    {"name": "upload_image", "description": "Upload images as ad assets"},
-    {"name": "list_ad_accounts", "description": "List all connected ad accounts"},
-    {"name": "manage_audience", "description": "Manage Google Ads Customer Match audiences"},
-    {"name": "stage_audience_artifact", "description": "Stage large hashed-PII payloads for bulk audience uploads (free)"},
-    {"name": "sync_audience", "description": "Upload audiences to Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, or X"},
-    {"name": "run_tool", "description": "Run any of 140+ Synter tools directly"}
+    {
+      "name": "list_campaigns",
+      "description": "List campaigns across all connected ad platforms"
+    },
+    {
+      "name": "create_search_campaign",
+      "description": "Create a Google Ads Search campaign with keywords and responsive search ads"
+    },
+    {
+      "name": "create_display_campaign",
+      "description": "Create a Google Display campaign with responsive display ads"
+    },
+    {
+      "name": "create_pmax_campaign",
+      "description": "Create a Performance Max campaign across all Google surfaces"
+    },
+    {
+      "name": "create_meta_campaign",
+      "description": "Create a Facebook/Instagram campaign"
+    },
+    {
+      "name": "create_linkedin_campaign",
+      "description": "Create a LinkedIn campaign for B2B advertising"
+    },
+    {
+      "name": "create_reddit_campaign",
+      "description": "Create a Reddit campaign for community-based advertising"
+    },
+    {
+      "name": "pause_campaign",
+      "description": "Pause any campaign across platforms"
+    },
+    {
+      "name": "update_campaign_budget",
+      "description": "Change daily budget for a campaign"
+    },
+    {
+      "name": "get_performance",
+      "description": "Get impressions, clicks, spend, conversions, ROAS metrics"
+    },
+    {
+      "name": "get_daily_spend",
+      "description": "Daily spend breakdown by platform"
+    },
+    {
+      "name": "add_keywords",
+      "description": "Add keywords to a campaign or ad group"
+    },
+    {
+      "name": "add_negative_keywords",
+      "description": "Block unwanted search terms"
+    },
+    {
+      "name": "create_conversion",
+      "description": "Set up a conversion action in Google Ads"
+    },
+    {
+      "name": "list_conversions",
+      "description": "List existing conversion actions"
+    },
+    {
+      "name": "diagnose_tracking",
+      "description": "Check if tracking is installed on a website"
+    },
+    {
+      "name": "generate_image",
+      "description": "AI-generate ad images"
+    },
+    {
+      "name": "generate_video",
+      "description": "AI-generate video ads"
+    },
+    {
+      "name": "upload_image",
+      "description": "Upload images as ad assets"
+    },
+    {
+      "name": "list_ad_accounts",
+      "description": "List all connected ad accounts"
+    },
+    {
+      "name": "manage_audience",
+      "description": "Manage Google Ads Customer Match audiences"
+    },
+    {
+      "name": "stage_audience_artifact",
+      "description": "Stage large hashed-PII payloads for bulk audience uploads (free)"
+    },
+    {
+      "name": "sync_audience",
+      "description": "Upload audiences to Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, or X"
+    },
+    {
+      "name": "run_tool",
+      "description": "Run any of 140+ Synter tools directly"
+    }
   ]
 }

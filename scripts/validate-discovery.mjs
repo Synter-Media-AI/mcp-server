@@ -124,4 +124,46 @@ for (const icon of serverJson.icons ?? []) {
   );
 }
 
+// The io.github.* namespace must match the GitHub owner EXACTLY, including case.
+//
+// Learned from a 403 on run 30937139623, after the description fix had cleared
+// every other check:
+//
+//   You have permission to publish: io.github.Synter-Media-AI/*
+//   Attempting to publish: io.github.synter-media-ai/synter-ads
+//
+// Namespace authorization is derived from the org that owns the OIDC token and is
+// case-sensitive, so the lowercase reverse-DNS form most examples use is simply
+// wrong for an org whose name carries capitals. Nothing local caught it, so the
+// only way to find out was to burn a publish run.
+//
+// Derived from repository.url rather than hardcoded, so renaming the org cannot
+// leave a stale literal behind.
+{
+  const repoUrl = serverJson.repository?.url ?? "";
+  const match = repoUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+?)(?:\.git)?$/);
+  invariant(
+    match,
+    `server.json repository.url must be a https://github.com/<owner>/<repo> URL; got ${JSON.stringify(repoUrl)}`,
+  );
+  const owner = match[1];
+  const expectedNamespace = `io.github.${owner}`;
+  const actualNamespace = serverJson.name.split("/")[0];
+  invariant(
+    actualNamespace === expectedNamespace,
+    `server.json name namespace is ${actualNamespace} but the GitHub owner in repository.url is ${owner}, ` +
+      `so the registry will only authorize ${expectedNamespace}/*. This is CASE-SENSITIVE — a lowercased ` +
+      `namespace is rejected with 403 even though the schema pattern permits it.`,
+  );
+}
+
+// The registry proves npm ownership by comparing the PUBLISHED package's mcpName
+// against server.json's name, so these two must agree before a publish is even
+// worth attempting. (They can still both be right here and disagree with what is
+// live on npm — see PUBLISHING.md for why npm must ship first.)
+invariant(
+  packageJson.mcpName === serverJson.name,
+  `package.json mcpName ${packageJson.mcpName} must equal server.json name ${serverJson.name}`,
+);
+
 console.log("Public Synter MCP discovery metadata is internally consistent.");
