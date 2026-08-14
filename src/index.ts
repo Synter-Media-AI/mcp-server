@@ -64,7 +64,10 @@ const tools: Tool[] = [
     name: "create_search_campaign",
     description:
       "Create a Google Ads Search campaign with an ad group, responsive search ad, and keywords — all in one atomic request. " +
-      "IMPORTANT: You must supply at least 3 headlines (max 30 chars each) and at least 2 descriptions (max 90 chars each). " +
+      "IMPORTANT — creative floor: supply 11-15 headlines (15 recommended, max 30 chars each) and 4 descriptions (max 90 chars each), " +
+      "echoing your target keywords across at least 5 headlines. The API accepts as few as 3 headlines / 2 descriptions, but ads built " +
+      "near that minimum score 'Poor' on Google Ad Strength, get throttled in the auction, and may be rejected by the platform — " +
+      "treat 11 headlines / 4 descriptions as the real minimum. " +
       "Fewer than 3 headlines or fewer than 2 descriptions will cause the campaign to be rejected before any API call is made.",
     annotations: { destructiveHint: true },
     inputSchema: {
@@ -89,14 +92,14 @@ const tools: Tool[] = [
           items: { type: "string", maxLength: 30 },
           minItems: 3,
           maxItems: 15,
-          description: "Headlines for the responsive search ad. MINIMUM 3, maximum 15. Each must be 30 characters or fewer.",
+          description: "Headlines for the responsive search ad. Provide 11-15 (15 recommended), echoing the target keywords in at least 5. Hard minimum is 3, but fewer than 11 produces a 'Poor' Google Ad Strength rating and auction throttling. Each must be 30 characters or fewer.",
         },
         descriptions: {
           type: "array",
           items: { type: "string", maxLength: 90 },
           minItems: 2,
           maxItems: 4,
-          description: "Descriptions for the responsive search ad. MINIMUM 2, maximum 4. Each must be 90 characters or fewer.",
+          description: "Descriptions for the responsive search ad. Provide all 4. Hard minimum is 2, but fewer than 4 weakens Ad Strength. Each must be 90 characters or fewer.",
         },
         final_url: {
           type: "string",
@@ -181,7 +184,7 @@ const tools: Tool[] = [
         headlines: {
           type: "array",
           items: { type: "string" },
-          description: "Headlines (3-15, max 30 chars each)",
+          description: "Headlines (3-15 accepted; provide 11+, 15 recommended — fewer produces a weak Ad Strength rating; max 30 chars each)",
         },
         long_headline: {
           type: "string",
@@ -190,7 +193,7 @@ const tools: Tool[] = [
         descriptions: {
           type: "array",
           items: { type: "string" },
-          description: "Descriptions (2-5, max 90 chars each)",
+          description: "Descriptions (2-5 accepted; provide 4-5; max 90 chars each)",
         },
         business_name: {
           type: "string",
