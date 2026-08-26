@@ -553,24 +553,37 @@ const tools: Tool[] = [
           type: "number",
           description: "Daily budget in USD",
         },
-        target_company_sizes: {
-          type: "array",
-          items: { type: "string" },
-          enum: ["1-10", "11-50", "51-200", "201-500", "501-1000", "1001-5000", "5001-10000", "10001+"],
-          description: "Target company sizes",
+        group_id: {
+          type: "string",
+          description:
+            "Campaign group ID the campaign belongs to (REQUIRED — LinkedIn campaigns cannot exist outside a group). List existing groups with linkedin_ads_get_campaign_groups.",
         },
-        target_industries: {
+        target_locations: {
           type: "array",
           items: { type: "string" },
-          description: "Target industries (LinkedIn industry codes)",
+          description: "Target locations, e.g. ['US','UK','CA']",
         },
-        target_job_functions: {
+        target_seniorities: {
           type: "array",
           items: { type: "string" },
-          description: "Target job functions (e.g., 'Marketing', 'Engineering', 'Sales')",
+          description: "Target seniorities, e.g. ['senior','manager','director','vp','cxo']",
+        },
+        target_functions: {
+          type: "array",
+          items: { type: "string" },
+          description: "Target job functions, e.g. ['engineering','it','operations']",
+        },
+        target_audiences: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "Matched-audience segment IDs. Must be the adSegment id (list_audiences 'destination_segment_id'), NOT the dmpSegment id — a dmpSegment id fails with a bare HTTP 500.",
         },
       },
-      required: ["name", "objective", "daily_budget"],
+      // company_size / industry / job_function were advertised here but the
+      // backend script declares no such flags; group_id, which it REQUIRES,
+      // was not exposed at all. Every call this schema described was a 400.
+      required: ["name", "group_id"],
     },
   },
 
@@ -593,22 +606,20 @@ const tools: Tool[] = [
           enum: ["TRAFFIC", "CONVERSIONS", "VIDEO_VIEWS", "APP_INSTALLS", "REACH"],
           description: "Campaign objective",
         },
-        daily_budget: {
-          type: "number",
-          description: "Daily budget in USD",
+        status: {
+          type: "string",
+          description: "Initial campaign status",
         },
-        subreddits: {
-          type: "array",
-          items: { type: "string" },
-          description: "Subreddits to target (optional - omit for interest-based targeting)",
-        },
-        interests: {
-          type: "array",
-          items: { type: "string" },
-          description: "Interest categories to target",
+        account_id: {
+          type: "string",
+          description: "Override the default Reddit ad account ID",
         },
       },
-      required: ["name", "objective", "daily_budget"],
+      // subreddits / interests / daily_budget were advertised here but Reddit
+      // sets targeting AND budget on the AD GROUP, not the campaign — the
+      // script declares no --subreddit/--interest and its own --daily-budget
+      // help says "(Ignored)". Create the campaign, then the ad group.
+      required: ["name", "objective"],
     },
   },
 
@@ -1168,7 +1179,8 @@ async function handleTool(
       platform: "google",
       argMapper: (a) => [
         "--campaign-id", a.campaign_id as string,
-        "--budget", String(a.daily_budget),
+        // update_campaign_budget.py declares --daily-budget; there is no --budget.
+        "--daily-budget", String(a.daily_budget),
       ],
     },
 
@@ -1207,9 +1219,12 @@ async function handleTool(
       script: "google_ads_add_negative_keywords",
       platform: "google",
       argMapper: (a) => {
+        // google_ads_add_negative_keywords takes ONE comma-separated
+        // --keywords (unlike the create-campaign scripts' repeated --keyword)
+        // and has no --level at all.
         const cliArgs: string[] = ["--campaign-id", a.campaign_id as string];
-        (a.keywords as string[] || []).forEach((k) => cliArgs.push("--keyword", k));
-        if (a.level) cliArgs.push("--level", a.level as string);
+        const keywords = (a.keywords as string[]) || [];
+        if (keywords.length) cliArgs.push("--keywords", keywords.join(","));
         return cliArgs;
       },
     },
@@ -1232,7 +1247,11 @@ async function handleTool(
     },
     diagnose_tracking: {
       script: "diagnose_conversion_tracking",
-      argMapper: (a) => ["--url", a.url as string],
+      // The script declares NO argparse options — it reads the account from the
+      // environment. --url was rejected, and because the backend preflight
+      // fails open for a no-flag script the call SUCCEEDED and returned a
+      // diagnosis of a different account than the url named.
+      argMapper: () => [],
     },
 
     // Creative generation
@@ -1254,7 +1273,8 @@ async function handleTool(
           "--benefit", a.key_benefit as string,
         ];
         if (a.concept) cliArgs.push("--concept", a.concept as string);
-        if (a.target_audience) cliArgs.push("--audience", a.target_audience as string);
+        // generate_video_ad declares --target-audience, not --audience.
+        if (a.target_audience) cliArgs.push("--target-audience", a.target_audience as string);
         if (a.duration) cliArgs.push("--duration", String(a.duration));
         if (a.provider) cliArgs.push("--provider", a.provider as string);
         return cliArgs;
@@ -1277,14 +1297,27 @@ async function handleTool(
       script: "linkedin_ads_create_campaign_complete",
       platform: "linkedin",
       argMapper: (a) => {
+        // linkedin_ads_create_campaign_complete REQUIRES --group-id (a campaign
+        // group must exist first) and declares no --company-size/--industry/
+        // --job-function. Its real targeting surface is the --target-* family,
+        // comma-separated. The old shape could not produce one successful call.
+        if (!a.group_id) {
+          throw new Error(
+            "create_linkedin_campaign requires group_id: LinkedIn campaigns must belong to a campaign group. " +
+            "Create one first, or list existing groups with linkedin_ads_get_campaign_groups."
+          );
+        }
         const cliArgs: string[] = [
           "--name", a.name as string,
-          "--objective", a.objective as string,
-          "--daily-budget", String(a.daily_budget),
+          "--group-id", a.group_id as string,
         ];
-        (a.target_company_sizes as string[] || []).forEach((s) => cliArgs.push("--company-size", s));
-        (a.target_industries as string[] || []).forEach((i) => cliArgs.push("--industry", i));
-        (a.target_job_functions as string[] || []).forEach((j) => cliArgs.push("--job-function", j));
+        if (a.objective) cliArgs.push("--objective", a.objective as string);
+        if (a.daily_budget) cliArgs.push("--daily-budget", String(a.daily_budget));
+        const csv = (v: unknown) => (v as string[]).join(",");
+        if ((a.target_locations as string[])?.length) cliArgs.push("--target-locations", csv(a.target_locations));
+        if ((a.target_seniorities as string[])?.length) cliArgs.push("--target-seniorities", csv(a.target_seniorities));
+        if ((a.target_functions as string[])?.length) cliArgs.push("--target-functions", csv(a.target_functions));
+        if ((a.target_audiences as string[])?.length) cliArgs.push("--target-audiences", csv(a.target_audiences));
         return cliArgs;
       },
     },
@@ -1294,13 +1327,16 @@ async function handleTool(
       script: "reddit_ads_create_campaign",
       platform: "reddit",
       argMapper: (a) => {
+        // reddit_ads_create_campaign has no --subreddit or --interest: Reddit
+        // sets targeting AND budget on the ad group, and the script's own
+        // --daily-budget help says "(Ignored)". All three are dropped rather
+        // than sent as flags that 400 or values that silently do nothing.
         const cliArgs: string[] = [
           "--name", a.name as string,
           "--objective", a.objective as string,
-          "--daily-budget", String(a.daily_budget),
         ];
-        (a.subreddits as string[] || []).forEach((s) => cliArgs.push("--subreddit", s));
-        (a.interests as string[] || []).forEach((i) => cliArgs.push("--interest", i));
+        if (a.status) cliArgs.push("--status", a.status as string);
+        if (a.account_id) cliArgs.push("--account-id", a.account_id as string);
         return cliArgs;
       },
     },
