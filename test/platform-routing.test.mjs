@@ -60,16 +60,34 @@ test("get_performance maps every advertised platform to a distinct real script",
   assert.equal(new Set(scripts).size, scripts.length, "duplicate script mapping");
 });
 
-test("get_performance script names match the verified apps/ppc-backend/client-tools/ files (naming is NOT uniform)", () => {
+// These are backend SCRIPT NAMES (the `script_name` field POSTed to
+// /api/v1/tools/run), NOT the .py filenames. This test previously asserted the
+// FILENAMES -- runner.py maps `"pull_google_ads": "pull_google_ads_data.py"`,
+// key is the wire name and value is the file -- so it locked in the bug it was
+// supposed to prevent: google and linkedin returned 400 UNKNOWN_TOOL on every
+// get_performance call. Verified live with inspect_script.
+test("get_performance maps each platform to the backend SCRIPT NAME, not the .py filename", () => {
   assert.deepEqual(GET_PERFORMANCE_SCRIPT_BY_PLATFORM, {
-    google: "pull_google_ads_data",
+    google: "pull_google_ads",
     meta: "pull_meta_ads",
-    linkedin: "pull_linkedin_ads_data",
+    linkedin: "pull_linkedin_ads",
     microsoft: "pull_microsoft_ads",
     reddit: "pull_reddit_ads",
     tiktok: "pull_tiktok_ads",
     x: "pull_x_ads",
   });
+});
+
+test("no mapped script name is a .py filename stem that differs from its wire name", () => {
+  // The two that bit us. Guarding the shape, not just the values, so a future
+  // edit that reintroduces a "_data" filename fails here by name.
+  for (const [platform, script] of Object.entries(GET_PERFORMANCE_SCRIPT_BY_PLATFORM)) {
+    assert.ok(
+      !script.endsWith("_data"),
+      `${platform} maps to "${script}", which looks like a .py filename stem. ` +
+        "Use the WHITELISTED_SCRIPTS key from apps/ppc-backend/scripts/runner.py.",
+    );
+  }
 });
 
 test("date_range values used by the tool schema all convert to a positive day count", () => {
