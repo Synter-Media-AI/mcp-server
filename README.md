@@ -11,6 +11,8 @@ Create campaigns. Adjust budgets. Pause underperformers. Generate creatives. Pul
 
 **This is the first [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that gives AI agents a credit card.**
 
+> **Note:** [`Synter-Media-AI/plugin`](https://github.com/Synter-Media-AI/plugin) is the canonical installable Claude plugin repo. The `.claude-plugin/` copy in this repo is not the install source.
+
 ---
 
 ## How Synter Compares
