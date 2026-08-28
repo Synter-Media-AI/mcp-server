@@ -314,3 +314,21 @@ test("every routing table covers exactly the advertised platform enum", () => {
     assert.deepEqual(Object.keys(table).sort(), [...ADVERTISED].sort());
   }
 });
+
+// A bare table[key] walks the prototype chain: platform "constructor" resolves
+// to Object's constructor (truthy, so it survives a `if (!table[key])` guard)
+// and date_range "toString" stringifies a native function into a --days value.
+test("prototype-chain keys are refused, not resolved", () => {
+  for (const key of ["constructor", "__proto__", "toString", "valueOf", "hasOwnProperty"]) {
+    assert.throws(
+      () => requirePlatform("list_campaigns", key, LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM),
+      /unsupported platform/,
+      `requirePlatform resolved prototype key "${key}" instead of refusing`,
+    );
+    assert.deepEqual(
+      resolveDateRangeArgs(key, new Date("2026-03-14T00:00:00Z")),
+      [],
+      `resolveDateRangeArgs resolved prototype key "${key}"`,
+    );
+  }
+});

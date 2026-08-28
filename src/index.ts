@@ -28,6 +28,7 @@ import {
   resolveDateRangeArgs,
   requirePlatform,
   DAILY_SPEND_SCRIPT_BY_PLATFORM,
+  own,
 } from "./platform-routing.js";
 
 const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
@@ -1089,8 +1090,8 @@ async function handleTool(
 
   if (name === "get_performance") {
     // Same fix shape as list_campaigns above (real per-platform script), plus
-    // date_range -> --days conversion since none of the scripts accept
-    // date_range directly (see DATE_RANGE_TO_DAYS comment).
+    // date_range resolution -- none of the scripts accept a named date_range,
+    // so resolveDateRangeArgs converts it to the flags they do declare.
     const platform = requirePlatform(
       "get_performance",
       args.platform,
@@ -1154,7 +1155,7 @@ async function handleTool(
       name === "pause_campaign"
         ? PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM
         : UPDATE_BUDGET_SCRIPT_BY_PLATFORM;
-    const script = table[platform];
+    const script = own(table, platform);
     if (!script) {
       throw new Error(
         `${name}: platform is required and must be one of ${Object.keys(table).join(", ")}` +

@@ -76,6 +76,21 @@ export const CALENDAR_DATE_RANGES = [
   "LAST_MONTH",
 ] as const;
 
+/**
+ * Own-property lookup. A bare `table[key]` walks the prototype chain, so
+ * `platform: "constructor"` resolves to Object's constructor -- truthy, so it
+ * passes a `if (!table[key])` guard -- and `date_range: "toString"` resolves to
+ * a function that then gets stringified straight into a CLI flag value. Neither
+ * is exploitable (the backend rejects the garbage), but both turn a clean
+ * "unsupported platform" error into a confusing downstream failure, and the
+ * lookup should never see anything it did not define.
+ */
+export function own<T>(table: Record<string, T>, key: string): T | undefined {
+  return Object.prototype.hasOwnProperty.call(table, key)
+    ? table[key]
+    : undefined;
+}
+
 function utcDay(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
@@ -98,7 +113,7 @@ export function resolveDateRangeArgs(
   range: string,
   now: Date = new Date(),
 ): string[] {
-  const rollingDays = ROLLING_DATE_RANGE_DAYS[range];
+  const rollingDays = own(ROLLING_DATE_RANGE_DAYS, range);
   if (rollingDays) return ["--days", String(rollingDays)];
 
   const year = now.getUTCFullYear();
@@ -239,7 +254,7 @@ export function requirePlatform(
     );
   }
   const normalized = platform.trim().toLowerCase();
-  if (!table[normalized]) {
+  if (own(table, normalized) === undefined) {
     throw new Error(
       `${toolName}: unsupported platform "${normalized}". Supported: ${supported.join(", ")}.`,
     );
