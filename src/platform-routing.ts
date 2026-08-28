@@ -44,17 +44,229 @@ export const GET_PERFORMANCE_SCRIPT_BY_PLATFORM: Record<string, string> = {
   x: "pull_x_ads",
 };
 
-// Approximate date_range -> --days mapping. None of the 7 scripts accept a
-// named date-range flag or exact calendar-month boundaries via a single flag
-// (only --start-date/--end-date, which would need real date arithmetic this
-// tool doesn't have inputs for) — this is a best-effort day-count that is
-// still strictly more correct than the prior behavior of silently ignoring
-// date_range entirely and falling back to each script's own --days default.
-export const DATE_RANGE_TO_DAYS: Record<string, number> = {
-  TODAY: 1,
-  YESTERDAY: 1,
+// Date-range resolution.
+//
+// The previous mapping collapsed every named range onto a rolling `--days`
+// count, which made three of the six ranges wrong: THIS_MONTH and LAST_MONTH
+// both resolved to a trailing 31 days rather than calendar-month boundaries
+// (so LAST_MONTH never once returned last month), and YESTERDAY resolved to
+// `--days 1`, which is TODAY — a partial, still-accumulating day reported as
+// a closed one.
+//
+// Every one of the 7 confirmed pull_* scripts declares --start-date and
+// --end-date (verified against apps/ppc-backend/script_catalog.json), so the
+// calendar-anchored ranges are now emitted as explicit boundaries. The two
+// genuinely rolling ranges keep --days, because that is what they mean.
+//
+// TIMEZONE: boundaries are computed in UTC. Ad platforms report in the ad
+// account's own timezone, so a UTC calendar month can differ from the
+// account's calendar month by a few hours at each edge. UTC is chosen because
+// it is deterministic and stated, rather than silently inheriting whatever
+// timezone the machine running this MCP server happens to sit in. Callers who
+// need account-timezone boundaries should pass explicit dates upstream.
+export const ROLLING_DATE_RANGE_DAYS: Record<string, number> = {
   LAST_7_DAYS: 7,
   LAST_30_DAYS: 30,
-  THIS_MONTH: 31,
-  LAST_MONTH: 31,
 };
+
+export const CALENDAR_DATE_RANGES = [
+  "TODAY",
+  "YESTERDAY",
+  "THIS_MONTH",
+  "LAST_MONTH",
+] as const;
+
+/**
+ * Own-property lookup. A bare `table[key]` walks the prototype chain, so
+ * `platform: "constructor"` resolves to Object's constructor -- truthy, so it
+ * passes a `if (!table[key])` guard -- and `date_range: "toString"` resolves to
+ * a function that then gets stringified straight into a CLI flag value. Neither
+ * is exploitable (the backend rejects the garbage), but both turn a clean
+ * "unsupported platform" error into a confusing downstream failure, and the
+ * lookup should never see anything it did not define.
+ */
+export function own<T>(table: Record<string, T>, key: string): T | undefined {
+  return Object.prototype.hasOwnProperty.call(table, key)
+    ? table[key]
+    : undefined;
+}
+
+function utcDay(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function utcDate(year: number, month: number, day: number): Date {
+  return new Date(Date.UTC(year, month, day));
+}
+
+/**
+ * Resolve a named date_range to the CLI flags the backend scripts accept.
+ *
+ * Returns [] for an unrecognized range, which preserves the prior behavior of
+ * letting the script fall back to its own --days default rather than failing
+ * the call.
+ *
+ * `now` is injectable so the calendar arithmetic is testable without freezing
+ * the clock.
+ */
+export function resolveDateRangeArgs(
+  range: string,
+  now: Date = new Date(),
+): string[] {
+  const rollingDays = own(ROLLING_DATE_RANGE_DAYS, range);
+  if (rollingDays) return ["--days", String(rollingDays)];
+
+  const year = now.getUTCFullYear();
+  const month = now.getUTCMonth();
+  const day = now.getUTCDate();
+
+  switch (range) {
+    case "TODAY": {
+      const today = utcDay(utcDate(year, month, day));
+      return ["--start-date", today, "--end-date", today];
+    }
+    case "YESTERDAY": {
+      // day - 1 rolls back across month and year boundaries on its own.
+      const yesterday = utcDay(utcDate(year, month, day - 1));
+      return ["--start-date", yesterday, "--end-date", yesterday];
+    }
+    case "THIS_MONTH": {
+      // First of this month through today. The month is still open, so the
+      // end is today, not the last day of the month.
+      return [
+        "--start-date", utcDay(utcDate(year, month, 1)),
+        "--end-date", utcDay(utcDate(year, month, day)),
+      ];
+    }
+    case "LAST_MONTH": {
+      // Day 0 of this month is the last day of the previous month.
+      return [
+        "--start-date", utcDay(utcDate(year, month - 1, 1)),
+        "--end-date", utcDay(utcDate(year, month, 0)),
+      ];
+    }
+    default:
+      return [];
+  }
+}
+
+// get_performance exposes a `campaign_id` filter, but only two of the seven
+// pull_* scripts declare --campaign-id (google and x; verified against
+// script_catalog.json). The previous code forwarded the flag for google and
+// SILENTLY DROPPED it for the other five, so a caller filtering to one
+// campaign got whole-account totals back with nothing to indicate the filter
+// had been ignored — a wrong number that looks right. Unsupported platforms
+// now fail loudly instead.
+export const PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS: ReadonlySet<string> =
+  new Set(["google", "x"]);
+
+// Write routes. pause_campaign and update_campaign_budget both advertise the
+// full 7-platform enum as a REQUIRED argument and describe themselves as
+// working "across all connected platforms", while hardcoding platform:
+// "google" and discarding the caller's value. An agent asked to pause a
+// Reddit campaign therefore issued a GOOGLE pause carrying a Reddit campaign
+// id. Script names and flags below are read from
+// apps/ppc-backend/script_catalog.json, not guessed.
+//
+// Note google's own pause script is `google_ads_pause_campaign`; the
+// unqualified `pause_campaign` is the same Google-only tool under its legacy
+// name, and `update_campaign_budget` is likewise Google-only. Neither accepts
+// a --platform flag, which is why per-platform routing is required rather
+// than forwarding a platform argument.
+export const PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM: Record<string, string> = {
+  google: "google_ads_pause_campaign",
+  meta: "meta_ads_update_campaign",
+  linkedin: "linkedin_ads_update_campaign",
+  microsoft: "microsoft_ads_update_campaign",
+  reddit: "reddit_ads_update_campaign",
+  tiktok: "tiktok_ads_update_campaign",
+  x: "x_ads_update_campaign",
+};
+
+// x_ads_update_campaign declares --status (ACTIVE/PAUSED) and no --action;
+// the other six declare --action with a "pause" choice.
+const PAUSE_VIA_STATUS_FLAG: ReadonlySet<string> = new Set(["x"]);
+
+export function pauseCampaignArgs(platform: string, campaignId: string): string[] {
+  const args = ["--campaign-id", campaignId];
+  return PAUSE_VIA_STATUS_FLAG.has(platform)
+    ? [...args, "--status", "PAUSED"]
+    : [...args, "--action", "pause"];
+}
+
+// All seven budget scripts declare --campaign-id and --daily-budget.
+export const UPDATE_BUDGET_SCRIPT_BY_PLATFORM: Record<string, string> = {
+  google: "update_campaign_budget",
+  meta: "meta_ads_update_campaign",
+  linkedin: "linkedin_ads_update_campaign",
+  microsoft: "microsoft_ads_update_campaign",
+  reddit: "reddit_ads_update_campaign",
+  tiktok: "tiktok_ads_update_campaign",
+  x: "x_ads_update_campaign",
+};
+
+export function updateBudgetArgs(campaignId: string, dailyBudget: number | string): string[] {
+  return ["--campaign-id", campaignId, "--daily-budget", String(dailyBudget)];
+}
+
+// Every advertised platform, in schema order. Exported so the tool schemas and
+// the runtime cannot drift apart on what "supported" means.
+export const ADVERTISED_PLATFORMS = [
+  "google",
+  "meta",
+  "linkedin",
+  "microsoft",
+  "reddit",
+  "tiktok",
+  "x",
+] as const;
+
+/**
+ * Resolve the caller's `platform` argument, or refuse.
+ *
+ * list_campaigns, get_performance and get_daily_spend all declared `platform`
+ * OPTIONAL and silently fell back to Google when it was omitted -- while their
+ * own descriptions promised the opposite ("List all campaigns across connected
+ * ad platforms", "lists all if not specified", "across all connected ad
+ * accounts"). An advertiser running six platforms asked for everything, got
+ * Google, and had no way to tell from the response. That is a wrong number
+ * that looks right, which is the worst failure mode a reporting tool has.
+ *
+ * True cross-platform aggregation is a real feature and a larger change: it
+ * means fanning out to every connected platform and merging currencies,
+ * timezones and differing conversion semantics, which is not something to
+ * fake. Until it exists, the honest behavior is to make the caller name the
+ * platform. An agent that gets this error re-calls correctly; an agent that
+ * got Google silently never knew to.
+ */
+export function requirePlatform(
+  toolName: string,
+  platform: unknown,
+  table: Record<string, string>,
+): string {
+  const supported = Object.keys(table);
+  if (typeof platform !== "string" || !platform.trim()) {
+    throw new Error(
+      `${toolName}: platform is required. Pass one of: ${supported.join(", ")}. ` +
+      `This tool reports on one platform per call -- it does not aggregate across ` +
+      `platforms, and it no longer defaults to Google. Call list_ad_accounts to see ` +
+      `which platforms this workspace has connected.`,
+    );
+  }
+  const normalized = platform.trim().toLowerCase();
+  if (own(table, normalized) === undefined) {
+    throw new Error(
+      `${toolName}: unsupported platform "${normalized}". Supported: ${supported.join(", ")}.`,
+    );
+  }
+  return normalized;
+}
+
+// get_account_daily_spend is ONE unified script that takes its own --platform
+// flag, so unlike the tables above this maps every platform to the same script
+// name. Kept as a table anyway so it validates through requirePlatform with
+// the others and cannot drift from the advertised enum.
+export const DAILY_SPEND_SCRIPT_BY_PLATFORM: Record<string, string> =
+  Object.fromEntries(
+    ADVERTISED_PLATFORMS.map((p) => [p, "get_account_daily_spend"]),
+  );
