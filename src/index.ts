@@ -20,7 +20,12 @@ import {
 import {
   LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM,
   GET_PERFORMANCE_SCRIPT_BY_PLATFORM,
-  DATE_RANGE_TO_DAYS,
+  PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS,
+  PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM,
+  UPDATE_BUDGET_SCRIPT_BY_PLATFORM,
+  pauseCampaignArgs,
+  updateBudgetArgs,
+  resolveDateRangeArgs,
 } from "./platform-routing.js";
 
 const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
@@ -1094,16 +1099,53 @@ async function handleTool(
       );
     }
     const cliArgs: string[] = [];
-    // campaign_id filtering is only confirmed supported by the Google script;
-    // other platforms' scripts don't expose it, so don't pass a flag they'd
-    // reject or silently ignore for a filter the caller asked for.
-    if (args.campaign_id && platform === "google") {
+    // Only pull_google_ads and pull_x_ads declare --campaign-id. Previously a
+    // campaign_id passed for any other platform was silently dropped and the
+    // caller got account-wide totals back as if they were one campaign's.
+    // Refuse instead: a wrong number that looks right is worse than an error.
+    if (args.campaign_id) {
+      if (!PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS.has(platform)) {
+        throw new Error(
+          `get_performance: campaign_id filtering is not supported for platform "${platform}" ` +
+          `(supported: ${[...PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS].join(", ")}). ` +
+          `Re-run without campaign_id to get account-level performance, or filter the results yourself.`
+        );
+      }
       cliArgs.push("--campaign-id", args.campaign_id as string);
     }
     if (args.date_range) {
-      const days = DATE_RANGE_TO_DAYS[args.date_range as string];
-      if (days) cliArgs.push("--days", String(days));
+      cliArgs.push(...resolveDateRangeArgs(args.date_range as string));
     }
+    return callSynterAPI("tools/run", {
+      script_name: script,
+      args: cliArgs,
+      platform,
+    });
+  }
+
+  if (name === "pause_campaign" || name === "update_campaign_budget") {
+    // Both tools require `platform` and advertise all 7, but used to hardcode
+    // the Google script and discard the caller's value — so "pause this Reddit
+    // campaign" issued a Google pause. platform is REQUIRED in both schemas,
+    // so there is no legacy default to preserve here: an omitted or unknown
+    // platform is a caller error, not a reason to guess Google.
+    const platform = ((args.platform as string) || "").toLowerCase();
+    const table =
+      name === "pause_campaign"
+        ? PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM
+        : UPDATE_BUDGET_SCRIPT_BY_PLATFORM;
+    const script = table[platform];
+    if (!script) {
+      throw new Error(
+        `${name}: platform is required and must be one of ${Object.keys(table).join(", ")}` +
+        (platform ? ` (got "${platform}")` : "")
+      );
+    }
+    const campaignId = args.campaign_id as string;
+    const cliArgs =
+      name === "pause_campaign"
+        ? pauseCampaignArgs(platform, campaignId)
+        : updateBudgetArgs(campaignId, args.daily_budget as number);
     return callSynterAPI("tools/run", {
       script_name: script,
       args: cliArgs,
@@ -1169,21 +1211,6 @@ async function handleTool(
         return cliArgs;
       },
     },
-    pause_campaign: {
-      script: "pause_campaign",
-      platform: "google",
-      argMapper: (a) => ["--campaign-id", a.campaign_id as string],
-    },
-    update_campaign_budget: {
-      script: "update_campaign_budget",
-      platform: "google",
-      argMapper: (a) => [
-        "--campaign-id", a.campaign_id as string,
-        // update_campaign_budget.py declares --daily-budget; there is no --budget.
-        "--daily-budget", String(a.daily_budget),
-      ],
-    },
-
     // Performance
     get_daily_spend: {
       // get_account_daily_spend is a single unified script that already takes
