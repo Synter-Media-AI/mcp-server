@@ -18,6 +18,9 @@ import {
   updateBudgetArgs,
   resolveDateRangeArgs,
   ROLLING_DATE_RANGE_DAYS,
+  requirePlatform,
+  DAILY_SPEND_SCRIPT_BY_PLATFORM,
+  ADVERTISED_PLATFORMS as ADVERTISED,
 } from "../dist/platform-routing.js";
 
 const ADVERTISED_PLATFORMS = [
@@ -259,5 +262,55 @@ test("only platforms whose script declares --campaign-id accept the filter", () 
       !PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS.has(p),
       `${p} claims campaign_id support its pull_* script does not declare`,
     );
+  }
+});
+
+// The bug: list_campaigns, get_performance and get_daily_spend all declared
+// `platform` OPTIONAL and silently fell back to Google, while describing
+// themselves as covering "all connected ad platforms". A six-platform
+// advertiser asked for everything, got Google, and could not tell from the
+// response. No silent default is the fix; aggregation is a separate feature.
+test("an omitted platform is refused, never defaulted to Google", () => {
+  for (const [tool, table] of [
+    ["list_campaigns", LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM],
+    ["get_performance", GET_PERFORMANCE_SCRIPT_BY_PLATFORM],
+    ["get_daily_spend", DAILY_SPEND_SCRIPT_BY_PLATFORM],
+  ]) {
+    for (const missing of [undefined, null, "", "   ", 7]) {
+      assert.throws(
+        () => requirePlatform(tool, missing, table),
+        /platform is required/,
+        `${tool} accepted ${JSON.stringify(missing)} instead of refusing`,
+      );
+    }
+    // The refusal must not quietly resolve to google either.
+    assert.throws(() => requirePlatform(tool, undefined, table), (err) => {
+      assert.ok(!/^google$/.test(String(err)), "defaulted to google");
+      assert.match(String(err), /does not aggregate across/);
+      return true;
+    });
+  }
+});
+
+test("requirePlatform normalizes case and whitespace but rejects unknowns", () => {
+  assert.equal(
+    requirePlatform("list_campaigns", "  Reddit ", LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM),
+    "reddit",
+  );
+  assert.throws(
+    () => requirePlatform("list_campaigns", "snapchat", LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM),
+    /unsupported platform "snapchat"/,
+  );
+});
+
+test("every routing table covers exactly the advertised platform enum", () => {
+  for (const table of [
+    LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM,
+    GET_PERFORMANCE_SCRIPT_BY_PLATFORM,
+    PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM,
+    UPDATE_BUDGET_SCRIPT_BY_PLATFORM,
+    DAILY_SPEND_SCRIPT_BY_PLATFORM,
+  ]) {
+    assert.deepEqual(Object.keys(table).sort(), [...ADVERTISED].sort());
   }
 });

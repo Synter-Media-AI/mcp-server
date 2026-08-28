@@ -193,3 +193,65 @@ export const UPDATE_BUDGET_SCRIPT_BY_PLATFORM: Record<string, string> = {
 export function updateBudgetArgs(campaignId: string, dailyBudget: number | string): string[] {
   return ["--campaign-id", campaignId, "--daily-budget", String(dailyBudget)];
 }
+
+// Every advertised platform, in schema order. Exported so the tool schemas and
+// the runtime cannot drift apart on what "supported" means.
+export const ADVERTISED_PLATFORMS = [
+  "google",
+  "meta",
+  "linkedin",
+  "microsoft",
+  "reddit",
+  "tiktok",
+  "x",
+] as const;
+
+/**
+ * Resolve the caller's `platform` argument, or refuse.
+ *
+ * list_campaigns, get_performance and get_daily_spend all declared `platform`
+ * OPTIONAL and silently fell back to Google when it was omitted -- while their
+ * own descriptions promised the opposite ("List all campaigns across connected
+ * ad platforms", "lists all if not specified", "across all connected ad
+ * accounts"). An advertiser running six platforms asked for everything, got
+ * Google, and had no way to tell from the response. That is a wrong number
+ * that looks right, which is the worst failure mode a reporting tool has.
+ *
+ * True cross-platform aggregation is a real feature and a larger change: it
+ * means fanning out to every connected platform and merging currencies,
+ * timezones and differing conversion semantics, which is not something to
+ * fake. Until it exists, the honest behavior is to make the caller name the
+ * platform. An agent that gets this error re-calls correctly; an agent that
+ * got Google silently never knew to.
+ */
+export function requirePlatform(
+  toolName: string,
+  platform: unknown,
+  table: Record<string, string>,
+): string {
+  const supported = Object.keys(table);
+  if (typeof platform !== "string" || !platform.trim()) {
+    throw new Error(
+      `${toolName}: platform is required. Pass one of: ${supported.join(", ")}. ` +
+      `This tool reports on one platform per call -- it does not aggregate across ` +
+      `platforms, and it no longer defaults to Google. Call list_ad_accounts to see ` +
+      `which platforms this workspace has connected.`,
+    );
+  }
+  const normalized = platform.trim().toLowerCase();
+  if (!table[normalized]) {
+    throw new Error(
+      `${toolName}: unsupported platform "${normalized}". Supported: ${supported.join(", ")}.`,
+    );
+  }
+  return normalized;
+}
+
+// get_account_daily_spend is ONE unified script that takes its own --platform
+// flag, so unlike the tables above this maps every platform to the same script
+// name. Kept as a table anyway so it validates through requirePlatform with
+// the others and cannot drift from the advertised enum.
+export const DAILY_SPEND_SCRIPT_BY_PLATFORM: Record<string, string> =
+  Object.fromEntries(
+    ADVERTISED_PLATFORMS.map((p) => [p, "get_account_daily_spend"]),
+  );

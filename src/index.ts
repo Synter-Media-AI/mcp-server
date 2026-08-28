@@ -26,6 +26,8 @@ import {
   pauseCampaignArgs,
   updateBudgetArgs,
   resolveDateRangeArgs,
+  requirePlatform,
+  DAILY_SPEND_SCRIPT_BY_PLATFORM,
 } from "./platform-routing.js";
 
 const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
@@ -43,7 +45,7 @@ const tools: Tool[] = [
   {
     name: "list_campaigns",
     description:
-      "List all campaigns across connected ad platforms. Returns campaign name, status, budget, and performance metrics.",
+      "List campaigns for ONE ad platform. `platform` is required -- this tool does not aggregate across platforms. Returns campaign name, status, budget, and performance metrics.",
     annotations: { readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
@@ -51,7 +53,7 @@ const tools: Tool[] = [
         platform: {
           type: "string",
           enum: ["google", "meta", "linkedin", "microsoft", "reddit", "tiktok", "x"],
-          description: "Filter by platform (optional - lists all if not specified)",
+          description: "Ad platform to list campaigns for (required)",
         },
         status: {
           type: "string",
@@ -63,6 +65,7 @@ const tools: Tool[] = [
           description: "Maximum number of campaigns to return (default: 50)",
         },
       },
+      required: ["platform"],
     },
   },
   {
@@ -292,7 +295,7 @@ const tools: Tool[] = [
         platform: {
           type: "string",
           enum: ["google", "meta", "linkedin", "microsoft", "reddit", "tiktok", "x"],
-          description: "Filter by platform (optional)",
+          description: "Ad platform to report on (required)",
         },
         campaign_id: {
           type: "string",
@@ -304,11 +307,12 @@ const tools: Tool[] = [
           description: "Date range for metrics (default: LAST_7_DAYS)",
         },
       },
+      required: ["platform"],
     },
   },
   {
     name: "get_daily_spend",
-    description: "Get daily spend breakdown across all connected ad accounts.",
+    description: "Get daily spend breakdown for ONE ad platform. `platform` is required -- this tool does not aggregate across platforms.",
     annotations: { readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
@@ -320,9 +324,10 @@ const tools: Tool[] = [
         platform: {
           type: "string",
           enum: ["google", "meta", "linkedin", "microsoft", "reddit", "tiktok", "x"],
-          description: "Filter by platform (optional)",
+          description: "Ad platform to report on (required)",
         },
       },
+      required: ["platform"],
     },
   },
 
@@ -1064,19 +1069,14 @@ async function handleTool(
   }
 
   if (name === "list_campaigns") {
-    // Explicit platform routes to that platform's real script (the confirmed
-    // fix). NOTE: an omitted platform still only queries Google, not "all
-    // connected platforms" as the tool description promises — aggregating
-    // across every connected platform is a larger, separate feature gap this
-    // fix does not attempt; left as Google-only to preserve prior behavior
-    // for existing callers that don't pass platform.
-    const platform = ((args.platform as string) || "google").toLowerCase();
+    // platform is required: the silent Google fallback contradicted this
+    // tool's own "lists all if not specified" description. See requirePlatform.
+    const platform = requirePlatform(
+      "list_campaigns",
+      args.platform,
+      LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM,
+    );
     const script = LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM[platform];
-    if (!script) {
-      throw new Error(
-        `list_campaigns: unsupported platform "${platform}". Supported: ${Object.keys(LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM).join(", ")}`
-      );
-    }
     const cliArgs: string[] = [];
     if (args.status) cliArgs.push("--status", args.status as string);
     if (args.limit) cliArgs.push("--limit", String(args.limit));
@@ -1091,13 +1091,12 @@ async function handleTool(
     // Same fix shape as list_campaigns above (real per-platform script), plus
     // date_range -> --days conversion since none of the scripts accept
     // date_range directly (see DATE_RANGE_TO_DAYS comment).
-    const platform = ((args.platform as string) || "google").toLowerCase();
+    const platform = requirePlatform(
+      "get_performance",
+      args.platform,
+      GET_PERFORMANCE_SCRIPT_BY_PLATFORM,
+    );
     const script = GET_PERFORMANCE_SCRIPT_BY_PLATFORM[platform];
-    if (!script) {
-      throw new Error(
-        `get_performance: unsupported platform "${platform}". Supported: ${Object.keys(GET_PERFORMANCE_SCRIPT_BY_PLATFORM).join(", ")}`
-      );
-    }
     const cliArgs: string[] = [];
     // Only pull_google_ads and pull_x_ads declare --campaign-id. Previously a
     // campaign_id passed for any other platform was silently dropped and the
@@ -1118,6 +1117,27 @@ async function handleTool(
     }
     return callSynterAPI("tools/run", {
       script_name: script,
+      args: cliArgs,
+      platform,
+    });
+  }
+
+  if (name === "get_daily_spend") {
+    // get_account_daily_spend is one unified script taking its own --platform
+    // flag. It used to default to google when the caller omitted platform,
+    // while the tool described itself as covering "all connected ad accounts".
+    // Handled here rather than in the toolMappings literal below because that
+    // literal is built eagerly on every dispatch -- a throwing requirePlatform
+    // inside it would reject unrelated tool calls.
+    const platform = requirePlatform(
+      "get_daily_spend",
+      args.platform,
+      DAILY_SPEND_SCRIPT_BY_PLATFORM,
+    );
+    const cliArgs: string[] = ["--platform", platform.toUpperCase()];
+    if (args.days) cliArgs.push("--days", String(args.days));
+    return callSynterAPI("tools/run", {
+      script_name: DAILY_SPEND_SCRIPT_BY_PLATFORM[platform],
       args: cliArgs,
       platform,
     });
@@ -1212,24 +1232,6 @@ async function handleTool(
       },
     },
     // Performance
-    get_daily_spend: {
-      // get_account_daily_spend is a single unified script that already takes
-      // its own --platform flag (GOOGLE/META/LINKEDIN/MICROSOFT/REDDIT/X) — the
-      // bug here was never forwarding the caller's platform argument at all
-      // (it was silently dropped, so the backend received no --platform and
-      // fell back to whatever its own default is, regardless of what the tool
-      // schema advertised accepting). Omitted platform still defaults to
-      // google to preserve prior behavior for existing callers.
-      script: "get_account_daily_spend",
-      platform: (args.platform as string) || "google",
-      argMapper: (a) => {
-        const cliArgs: string[] = [
-          "--platform", ((a.platform as string) || "google").toUpperCase(),
-        ];
-        if (a.days) cliArgs.push("--days", String(a.days));
-        return cliArgs;
-      },
-    },
 
     // Keywords
     add_keywords: {
