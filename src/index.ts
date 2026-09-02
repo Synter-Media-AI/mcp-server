@@ -1433,7 +1433,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.2.0",
+      version: "1.2.4",
     },
     {
       capabilities: {
