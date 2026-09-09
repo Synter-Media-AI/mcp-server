@@ -1,19 +1,26 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.Synter-Media-AI/synter-ads",
-  "description": "Reporting across 19 ad platforms, campaign creation on 14, write actions on 16, via AI.",
+  "description": "Dynamic stdio bridge to Synter's hosted agentic advertising tool catalog.",
   "status": "active",
   "repository": {
     "url": "https://github.com/Synter-Media-AI/mcp-server",
     "source": "github"
   },
-  "version": "1.2.4",
+  "version": "1.3.0",
+  "icons": [
+    {
+      "src": "https://syntermedia.ai/brand/android-chrome-192x192.png",
+      "mimeType": "image/png",
+      "sizes": ["192x192"]
+    }
+  ],
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@synterai/mcp-server",
-      "version": "1.2.4",
+      "version": "1.3.0",
       "transport": {
         "type": "stdio"
       },
@@ -31,15 +38,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.syntermedia.ai/mcp/",
-      "headers": [
-        {
-          "name": "X-Synter-Key",
-          "description": "Your Synter API key. Get one at https://syntermedia.ai/developer",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.syntermedia.ai/mcp/"
     }
   ]
 }

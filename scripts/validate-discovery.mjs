@@ -23,6 +23,7 @@ function invariant(condition, message) {
 const packageJson = readJson("package.json");
 const serverJson = readJson("server.json");
 const manifestJson = readJson("manifest.json");
+const pluginJson = readJson(".claude-plugin/plugin.json");
 
 invariant(
   serverJson.name === packageJson.mcpName,
@@ -37,6 +38,11 @@ invariant(
 invariant(
   manifestJson.version === packageJson.version,
   `manifest.json version ${manifestJson.version} must match package.json version ${packageJson.version}`,
+);
+
+invariant(
+  pluginJson.version === packageJson.version,
+  `.claude-plugin/plugin.json version ${pluginJson.version} must match package.json version ${packageJson.version}`,
 );
 
 const npmPackage = serverJson.packages?.find(
@@ -67,8 +73,13 @@ invariant(
 );
 
 invariant(
-  primaryRemote.headers?.some((header) => header.name === "X-Synter-Key" && header.isRequired),
-  "server.json remote must document the required X-Synter-Key header",
+  !primaryRemote.headers?.length,
+  "server.json hosted remote must use browser OAuth, not advertise a static API-key header",
+);
+
+invariant(
+  !Object.hasOwn(manifestJson, "tools"),
+  "manifest.json must not embed a stale tool inventory; runtime tools/list is authoritative",
 );
 
 const publicDocs = ["README.md", ".mcp.json"];
@@ -85,6 +96,16 @@ for (const relativePath of publicDocs) {
 invariant(
   readText("README.md").includes("https://mcp.syntermedia.ai/mcp/"),
   "README.md must document the canonical hosted MCP endpoint https://mcp.syntermedia.ai/mcp/",
+);
+
+invariant(
+  readText("README.md").includes("https://syntermedia.ai/brand/android-chrome-192x192.png"),
+  "README.md must use the working Synter brand asset",
+);
+
+invariant(
+  !readText("README.md").includes("https://docs.syntermedia.ai/tools"),
+  "README.md must not link to the removed /tools documentation page",
 );
 
 // Registry schema limits on server.json. These were checked nowhere until a

@@ -8,3 +8,4 @@ dist/
 CLAUDE.md
 .worktrees/
 package-lock.json
+release/
