@@ -23,6 +23,7 @@ async function main(): Promise<void> {
   const server = new Server(
     {
       name: "synter-ads",
+      title: "Synter",
       version: "1.3.0",
       icons: [
         {

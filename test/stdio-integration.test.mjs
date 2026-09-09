@@ -74,6 +74,7 @@ test("compiled stdio server advertises Synter metadata and the complete hosted c
     clientInfo: { name: "test", version: "1" },
   });
   assert.equal(initialized.result.serverInfo.name, "synter-ads");
+  assert.equal(initialized.result.serverInfo.title, "Synter");
   assert.equal(initialized.result.serverInfo.version, "1.3.0");
   assert.equal(initialized.result.serverInfo.icons[0].src, "https://syntermedia.ai/brand/android-chrome-192x192.png");
 

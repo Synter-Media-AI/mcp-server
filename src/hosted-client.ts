@@ -134,6 +134,36 @@ const legacyAliases: LegacyAlias[] = [
   },
 ];
 
+function availableLegacyAliases(hostedNames: ReadonlySet<string>): LegacyAlias[] {
+  return legacyAliases.flatMap((alias) => {
+    if (hostedNames.has(alias.tool.name)) return [];
+    if (alias.target !== "__platform_performance__") {
+      return hostedNames.has(alias.target) ? [alias] : [];
+    }
+
+    const supportedPlatforms = PLATFORMS.filter((platform) =>
+      hostedNames.has(PERFORMANCE_TOOLS[platform]),
+    );
+    if (supportedPlatforms.length === 0) return [];
+
+    const properties = alias.tool.inputSchema.properties || {};
+    const platform = properties.platform as Record<string, unknown>;
+    return [{
+      ...alias,
+      tool: {
+        ...alias.tool,
+        inputSchema: {
+          ...alias.tool.inputSchema,
+          properties: {
+            ...properties,
+            platform: { ...platform, enum: supportedPlatforms },
+          },
+        },
+      },
+    }];
+  });
+}
+
 function formatValidationErrors(errors: ErrorObject[] | null | undefined): string {
   return (errors || [])
     .map((error) => `${error.instancePath || "/"} ${error.message || "is invalid"}`)
@@ -230,7 +260,7 @@ export class HostedMcpClient {
     }
 
     this.aliases = new Map(
-      legacyAliases.filter((alias) => !names.has(alias.tool.name)).map((alias) => [alias.tool.name, alias]),
+      availableLegacyAliases(names).map((alias) => [alias.tool.name, alias]),
     );
     const catalog = [...hosted, ...[...this.aliases.values()].map((alias) => alias.tool)];
     this.validators.clear();

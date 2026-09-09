@@ -206,6 +206,92 @@ test("legacy wrappers are collision-free and forward corrected account-aware con
   assert.equal(calls.length, 4, "obsolete list_campaigns limit must be rejected before forwarding");
 });
 
+test("advertises aliases only for discovered targets and narrows performance platforms", async () => {
+  const metaPerformance = fixture.find(({ name }) => name === "pull_meta_ads_performance");
+  const calls = [];
+  const client = new HostedMcpClient({
+    fetch: async (_url, init) => {
+      const request = JSON.parse(init.body);
+      if (request.method === "tools/list") {
+        return response({ jsonrpc: "2.0", id: request.id, result: { tools: [metaPerformance] } });
+      }
+      calls.push(request.params);
+      return response({ jsonrpc: "2.0", id: request.id, result: { content: [] } });
+    },
+  });
+
+  const tools = await client.listTools();
+  const performance = tools.find(({ name }) => name === "get_performance");
+  assert.deepEqual(performance.inputSchema.properties.platform.enum, ["meta"]);
+  for (const unavailable of ["get_daily_spend", "list_ad_accounts", "run_tool"]) {
+    assert.ok(!tools.some(({ name }) => name === unavailable), `${unavailable} was advertised without its target`);
+  }
+  await assert.rejects(
+    () => client.callTool("get_performance", { platform: "google" }),
+    /invalid arguments/,
+  );
+  assert.equal(calls.length, 0);
+  await client.callTool("get_performance", { platform: "meta", account_id: "act-1" });
+  assert.deepEqual(calls, [{ name: "pull_meta_ads_performance", arguments: { account_id: "act-1" } }]);
+
+  let absentTargetCalls = 0;
+  const noTargets = new HostedMcpClient({
+    fetch: async (_url, init) => {
+      const request = JSON.parse(init.body);
+      if (request.method === "tools/list") {
+        return response({ jsonrpc: "2.0", id: request.id, result: { tools: [fixture[0]] } });
+      }
+      absentTargetCalls += 1;
+      return response({ jsonrpc: "2.0", id: request.id, result: { content: [] } });
+    },
+  });
+  const withoutAliases = await noTargets.listTools();
+  for (const unavailable of ["get_performance", "get_daily_spend", "list_ad_accounts", "run_tool"]) {
+    assert.ok(!withoutAliases.some(({ name }) => name === unavailable));
+  }
+  await assert.rejects(() => noTargets.callTool("get_performance", { platform: "meta" }), /Unknown tool/);
+  assert.equal(absentTargetCalls, 0);
+});
+
+test("rejects mapped alias arguments on target schema drift before tools/call", async () => {
+  let toolCalls = 0;
+  const driftedExecute = {
+    name: "execute",
+    description: "drifted fixture",
+    inputSchema: {
+      type: "object",
+      properties: {
+        action: { type: "string" },
+        nonce: { type: "string" },
+      },
+      required: ["action", "nonce"],
+      additionalProperties: false,
+    },
+  };
+  const client = new HostedMcpClient({
+    fetch: async (_url, init) => {
+      const request = JSON.parse(init.body);
+      if (request.method === "tools/list") {
+        return response({ jsonrpc: "2.0", id: request.id, result: { tools: [driftedExecute] } });
+      }
+      toolCalls += 1;
+      return response({ jsonrpc: "2.0", id: request.id, result: { content: [] } });
+    },
+  });
+
+  const tools = await client.listTools();
+  assert.ok(tools.some(({ name }) => name === "get_daily_spend"));
+  await assert.rejects(
+    () => client.callTool("get_daily_spend", {
+      platform: "meta",
+      account_id: "act-1",
+      date: "2026-09-08",
+    }),
+    /not supported by hosted target execute/,
+  );
+  assert.equal(toolCalls, 0);
+});
+
 test("returns useful HTTP, RPC, and timeout errors", async () => {
   const http = new HostedMcpClient({
     fetch: async () => response({ error: "rate limited" }, { status: 429, headers: { "retry-after": "5" } }),
@@ -224,6 +310,20 @@ test("returns useful HTTP, RPC, and timeout errors", async () => {
     }),
   });
   await assert.rejects(() => timeout.listTools(), /timed out after 5ms/);
+});
+
+test("times out while a response body is stalled", async () => {
+  const client = new HostedMcpClient({
+    discoveryTimeoutMs: 5,
+    fetch: async (_url, init) => new Response(new ReadableStream({
+      start(controller) {
+        init.signal.addEventListener("abort", () => {
+          controller.error(new DOMException("aborted", "AbortError"));
+        });
+      },
+    }), { status: 200, headers: { "content-type": "application/json" } }),
+  });
+  await assert.rejects(() => client.listTools(), /timed out after 5ms/);
 });
 
 test("accepts a Streamable HTTP SSE response", async () => {
