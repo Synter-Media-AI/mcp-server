@@ -1,0 +1,73 @@
+name: CI
+
+# Builds the server and runs test/*.test.mjs.
+#
+# Why this exists: test/platform-routing.test.mjs has 20 tests covering the
+# platform->script routing tables and date-range resolution, and nothing ran
+# them. The only workflow was mcp-discovery-validate.yml, whose paths filter
+# lists .mcp.json / README.md / package.json / server.json / manifest.json /
+# scripts/validate-discovery.mjs — so a change to src/ or test/ triggered no CI
+# at all, and there was no `npm test` script to run locally either.
+#
+# The gap was not theoretical. #7 routed list_campaigns/get_performance by
+# platform and, in doing so, read the pull_* values off runner.py's map and
+# shipped the .py FILENAME stems rather than the wire script names. #15 then
+# had to fix get_performance returning 400 UNKNOWN_TOOL for google and linkedin
+# on every call in between. The assertion that catches exactly that mistake —
+# "get_performance maps each platform to the backend SCRIPT NAME, not the .py
+# filename" — was added in #15 and has never run in CI.
+#
+# Verified non-vacuous before opening this PR: re-applying the #15 regression
+# (google: "pull_google_ads" -> "pull_google_ads_data") turns the suite red
+# with 2 failures, and reverting it returns 20/20 green.
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "test/**"
+      - "package.json"
+      - "tsconfig.json"
+      - ".github/workflows/ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "test/**"
+      - "package.json"
+      - "tsconfig.json"
+      - ".github/workflows/ci.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 18 is the floor package.json `engines` advertises; 22 is current LTS.
+        # Testing the advertised floor is the point — `node --test` and the
+        # ES2022/NodeNext build output both have to work there for the engines
+        # field to be true.
+        node-version: ["18", "22"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          # No `cache: npm`: package-lock.json is in .gitignore, and the npm
+          # cache action requires a committed lockfile to key on.
+
+      # `npm install`, not `npm ci`, for the same reason — there is no
+      # committed lockfile for `npm ci` to install from.
+      - name: Install dependencies
+        run: npm install
+
+      # `npm test` runs the build first, so this also serves as the typecheck
+      # gate that src/ changes previously had none of.
+      - name: Build and test
+        run: npm test
