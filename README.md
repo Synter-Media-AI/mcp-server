@@ -2,6 +2,10 @@
 
 [![npm version](https://img.shields.io/npm/v/@synterai/mcp-server.svg)](https://www.npmjs.com/package/@synterai/mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm downloads](https://img.shields.io/npm/dm/@synterai/mcp-server.svg)](https://www.npmjs.com/package/@synterai/mcp-server)
+[![GitHub stars](https://img.shields.io/github/stars/Synter-Media-AI/mcp-server?style=social)](https://github.com/Synter-Media-AI/mcp-server)
+[![MCP Queen grade](https://mcpqueen.com/badge/io.github.Synter-Media-AI/synter-ads.svg)](https://mcpqueen.com/s/io.github.Synter-Media-AI/synter-ads)
+[![Glama score](https://glama.ai/mcp/servers/Synter-Media-AI/mcp-server/badges/score.svg)](https://glama.ai/mcp/servers/Synter-Media-AI/mcp-server)
 
 ### The most complete MCP server for advertising.
 
@@ -54,6 +58,23 @@ We built in confirmations for destructive actions. But still, maybe don't give t
 ---
 
 ## Quick Start
+
+### One-click install (remote, OAuth)
+
+The hosted server signs you in with OAuth, so there's no API key to paste.
+
+[![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=synter&config=eyJ1cmwiOiAiaHR0cHM6Ly9tY3Auc3ludGVybWVkaWEuYWkvbWNwLyJ9)
+[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Synter_MCP-0098FF?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=synter&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A//mcp.syntermedia.ai/mcp/%22%7D)
+
+**Claude Code:**
+
+```bash
+claude mcp add --transport http synter https://mcp.syntermedia.ai/mcp/
+```
+
+**Claude Desktop, Claude.ai, or ChatGPT:** add a custom connector with the URL `https://mcp.syntermedia.ai/mcp/`.
+
+Prefer a local `npx` server with an API key? Follow the steps below.
 
 ### 1. Get Your API Key
 
@@ -434,6 +455,12 @@ Two things: write access and platform coverage. The official Google Ads MCP is r
 - **MCP Server Comparison:** [syntermedia.ai/blog/best-ad-platform-mcp-servers](https://syntermedia.ai/blog/best-ad-platform-mcp-servers)
 - **Free Agent Skills (47 open-source):** [github.com/Synter-Media-AI/free-skills](https://github.com/Synter-Media-AI/free-skills) (also on [skills.sh](https://skills.sh/synter-media-ai/free-skills))
 - **Support:** [hello@syntermedia.ai](mailto:hello@syntermedia.ai)
+
+---
+
+## Contributing
+
+Issues and PRs are welcome. If Synter saved you an afternoon in an ads console, a ⭐ helps other people find it. To report a bug, [open an issue](https://github.com/Synter-Media-AI/mcp-server/issues/new) with your client (Cursor, Claude, ChatGPT, Amp) and the tool call that failed.
 
 ---
 
