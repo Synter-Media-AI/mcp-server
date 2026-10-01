@@ -3,9 +3,9 @@
 [![npm version](https://img.shields.io/npm/v/@synterai/mcp-server.svg)](https://www.npmjs.com/package/@synterai/mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### The most complete MCP server for advertising.
+### An open-source MCP server for running ads with AI agents.
 
-Reporting across 19 ad platforms and full campaign creation on 14 of them, spanning every major buying channel, with built-in confirmations for destructive actions.
+Reporting across 19 ad platforms and full campaign creation on 14 of them, spanning every major buying channel. Destructive tools are flagged so your MCP client asks before running them.
 
 Create campaigns. Adjust budgets. Pause underperformers. Generate creatives. Pull performance data. All through natural conversation, across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, and more.
 
@@ -326,13 +326,13 @@ To manage ads on each platform, you'll need to connect your accounts in Synter:
 - Spotify Ads ✅
 - Amazon DSP ✅
 - The Trade Desk ✅
-- Amazon Ads 📊
+- Amazon Ads ✅
 - Walmart Connect 📊
 - Instacart Ads 📊
 - Target Roundel 📊
 - Criteo 📊
 - Display & Video 360 📊
-- OpenAI Ads (ChatGPT) 📊
+- OpenAI Ads (ChatGPT) ✅
 
 ---
 
@@ -350,9 +350,9 @@ See the full tool list at [docs.syntermedia.ai/tools](https://docs.syntermedia.a
 > What tools are available for LinkedIn Ads?
 ```
 
-### Safe by Default: `execute` Dry-Runs Unless Told Otherwise
+### Safety: Confirmations Happen in Your Client
 
-The universal `execute` tool never runs an action on the first call unless you opt in. By default (`dry_run: true`) it validates the request and stops there — nothing executes, nothing spends. Pass `dry_run: false` to actually run the action; for anything that spends money, do that only with the account owner's approval.
+Every write tool, including the universal `execute` tool, is annotated as destructive, so MCP clients that honor annotations (Claude, Cursor, ChatGPT) ask you before running it. `execute` runs immediately by default; pass `dry_run: true` to validate a request without running it. Server-side, Synter checks plan entitlement, account holds, and a payment method on file before campaign writes. It does not add a second approval step, so for anything that spends money, approve only what the account owner wants.
 
 ---
 
@@ -417,7 +417,7 @@ Yes, two kinds. Google ships an official Google Ads MCP server, which is read-on
 
 ### Can Claude or ChatGPT manage my ad campaigns?
 
-Yes. With the Synter MCP server connected, Claude (Claude Desktop, Claude Code), ChatGPT, Cursor, and any other MCP-compatible client can create campaigns, adjust budgets, pause underperformers, generate creatives, and sync audiences on 14 ad platforms, and pull performance data across all 19. Claude and other stdio clients connect via `npx @synterai/mcp-server` with a `SYNTER_API_KEY`; ChatGPT and other HTTP clients connect to the remote server at `https://mcp.syntermedia.ai/mcp/` with an `X-Synter-Key` header. Destructive actions have built-in confirmations.
+Yes. With the Synter MCP server connected, Claude (Claude Desktop, Claude Code), ChatGPT, Cursor, and any other MCP-compatible client can create campaigns, adjust budgets, pause underperformers, generate creatives, and sync audiences on 14 ad platforms, and pull performance data across all 19. Claude and other stdio clients connect via `npx @synterai/mcp-server` with a `SYNTER_API_KEY`; ChatGPT and other HTTP clients connect to the remote server at `https://mcp.syntermedia.ai/mcp/` with an `X-Synter-Key` header. Destructive tools are flagged so your client asks for confirmation before running them.
 
 ### What is the difference between the official Google Ads MCP and Synter?
 
@@ -432,7 +432,7 @@ Two things: write access and platform coverage. The official Google Ads MCP is r
 - **Claude Plugin:** [github.com/Synter-Media-AI/plugin](https://github.com/Synter-Media-AI/plugin) (skills, agents & this MCP for Claude Code / Desktop)
 - **Tool Reference:** [docs.syntermedia.ai/tools](https://docs.syntermedia.ai/tools)
 - **MCP Server Comparison:** [syntermedia.ai/blog/best-ad-platform-mcp-servers](https://syntermedia.ai/blog/best-ad-platform-mcp-servers)
-- **Free Agent Skills (47 open-source):** [github.com/Synter-Media-AI/free-skills](https://github.com/Synter-Media-AI/free-skills) (also on [skills.sh](https://skills.sh/synter-media-ai/free-skills))
+- **Open-Source Agent Skills (47):** [github.com/Synter-Media-AI/free-skills](https://github.com/Synter-Media-AI/free-skills) (also on [skills.sh](https://skills.sh/synter-media-ai/free-skills))
 - **Support:** [hello@syntermedia.ai](mailto:hello@syntermedia.ai)
 
 ---
