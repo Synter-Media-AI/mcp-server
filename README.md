@@ -9,11 +9,11 @@
 
 ### The most complete MCP server for advertising.
 
-Reporting across 19 ad platforms and full campaign creation on 14 of them (write actions on 16), spanning every major buying channel, with built-in confirmations for destructive actions.
+Reporting across 19 ad platforms and full campaign creation on 14 of them, spanning every major buying channel, with built-in confirmations for destructive actions.
 
 Create campaigns. Adjust budgets. Pause underperformers. Generate creatives. Pull performance data. All through natural conversation, across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, and more.
 
-**This is the first [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that gives AI agents a credit card.**
+**An open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that lets AI agents read and run your ad accounts, with confirmations on destructive actions.**
 
 > **Note:** [`Synter-Media-AI/plugin`](https://github.com/Synter-Media-AI/plugin) is the canonical installable Claude plugin repo. The `.claude-plugin/` copy in this repo is not the install source.
 
@@ -25,7 +25,7 @@ The official Google Ads MCP server is read-only by design: per Google's document
 
 | | Synter MCP | Official Google Ads MCP | Typical third-party ad MCPs |
 |---|---|---|---|
-| **Access** | Read on all 19 platforms, campaign creation on 14, write actions on 16 | Read-only (current release) | Often read-only or partial write |
+| **Access** | Read on all 19 platforms, campaign creation on 14 | Read-only (current release) | Often read-only or partial write |
 | **Platforms** | 19 reporting, 14 with full campaign creation (lists below) | Google Ads only | Usually a single platform |
 | **Create campaigns** | ✅ Google Search, Display, PMax, Meta, LinkedIn, Reddit, more via `run_tool` | ❌ | Rarely |
 | **Budgets and pause** | ✅ | ❌ | Varies |
@@ -47,7 +47,7 @@ For registry-style MCP discovery, [`server.json`](./server.json) is the machine-
 ## ⚠️ Fair Warning
 
 Your AI agent will be able to:
-- **Create campaigns** that immediately start spending your budget
+- **Create and launch campaigns** that spend real budget once they're live
 - **Adjust bids** that affect how much you pay per click
 - **Pause campaigns** (sometimes that's a good thing)
 - **Add keywords** that change who sees your ads
@@ -434,11 +434,11 @@ You need to connect at least one ad platform:
 
 ### Is there an MCP server for Google Ads?
 
-Yes, two kinds. Google ships an official Google Ads MCP server, which is read-only in its current release: it can query reports, metrics, and metadata, but per Google's documentation it "cannot modify bids, pause campaigns, or create new assets." Our MCP server covers Google Ads with both read and write: create Search, Display, and Performance Max campaigns, add keywords and negative keywords, adjust budgets, pause campaigns, manage Customer Match audiences, set up conversion tracking, and pull performance data. The same server reports across 18 other ad platforms and offers full campaign execution on 11 of them.
+Yes, two kinds. Google ships an official Google Ads MCP server, which is read-only in its current release: it can query reports, metrics, and metadata, but per Google's documentation it "cannot modify bids, pause campaigns, or create new assets." Our MCP server covers Google Ads with both read and write: create Search, Display, and Performance Max campaigns, add keywords and negative keywords, adjust budgets, pause campaigns, manage Customer Match audiences, set up conversion tracking, and pull performance data. The same server reports across 18 other ad platforms and offers full campaign creation on 13 of them.
 
 ### Can Claude or ChatGPT manage my ad campaigns?
 
-Yes. With the Synter MCP server connected, Claude (Claude Desktop, Claude Code), ChatGPT, Cursor, and any other MCP-compatible client can create campaigns, adjust budgets, pause underperformers, generate creatives, and sync audiences on 14 ad platforms (write actions on 16), and pull performance data across all 19. Claude and other stdio clients connect via `npx @synterai/mcp-server` with a `SYNTER_API_KEY`; ChatGPT and other HTTP clients connect to the remote server at `https://mcp.syntermedia.ai/mcp/` with an `X-Synter-Key` header. Destructive actions have built-in confirmations.
+Yes. With the Synter MCP server connected, Claude (Claude Desktop, Claude Code), ChatGPT, Cursor, and any other MCP-compatible client can create campaigns, adjust budgets, pause underperformers, generate creatives, and sync audiences on 14 ad platforms, and pull performance data across all 19. Claude and other stdio clients connect via `npx @synterai/mcp-server` with a `SYNTER_API_KEY`; ChatGPT, Cursor, and other HTTP clients connect to the remote server at `https://mcp.syntermedia.ai/mcp/` and sign in with browser OAuth (an `X-Synter-Key` header also works for headless use). Destructive actions have built-in confirmations.
 
 ### What is the difference between the official Google Ads MCP and Synter?
 
@@ -475,7 +475,7 @@ MIT License - see [LICENSE](LICENSE) for details.
     <img src="https://syntermedia.ai/logo.svg" alt="Synter" width="120" />
   </a>
   <br />
-  <strong>The MCP extension they don't want you to use.</strong>
+  <strong>Open source. MIT licensed. Built for agents that run ads.</strong>
   <br />
-  <em>Because AI agents with ad budgets change everything.</em>
+  <em>Review what your agent proposes before anything spends.</em>
 </p>
