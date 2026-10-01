@@ -3,13 +3,13 @@
 [![npm version](https://img.shields.io/npm/v/@synterai/mcp-server.svg)](https://www.npmjs.com/package/@synterai/mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### The most complete MCP server for advertising.
+### An open-source MCP server for running ads with AI agents.
 
-Reporting across 19 ad platforms and full campaign creation on 14 of them (write actions on 16), spanning every major buying channel, with built-in confirmations for destructive actions.
+Reporting across 19 ad platforms and full campaign creation on 14 of them, spanning every major buying channel. Destructive tools are flagged so your MCP client asks before running them.
 
 Create campaigns. Adjust budgets. Pause underperformers. Generate creatives. Pull performance data. All through natural conversation, across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, and more.
 
-**This is the first [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that gives AI agents a credit card.**
+**An open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that lets AI agents read and run your ad accounts, with confirmations on destructive actions.**
 
 > **Note:** [`Synter-Media-AI/plugin`](https://github.com/Synter-Media-AI/plugin) is the canonical installable Claude plugin repo. The `.claude-plugin/` copy in this repo is not the install source.
 
@@ -21,7 +21,7 @@ The official Google Ads MCP server is read-only by design: per Google's document
 
 | | Synter MCP | Official Google Ads MCP | Typical third-party ad MCPs |
 |---|---|---|---|
-| **Access** | Read on all 19 platforms, campaign creation on 14, write actions on 16 | Read-only (current release) | Often read-only or partial write |
+| **Access** | Read on all 19 platforms, campaign creation on 14 | Read-only (current release) | Often read-only or partial write |
 | **Platforms** | 19 reporting, 14 with full campaign creation (lists below) | Google Ads only | Usually a single platform |
 | **Create campaigns** | ✅ Google Search, Display, PMax, Meta, LinkedIn, Reddit, more via `run_tool` | ❌ | Rarely |
 | **Budgets and pause** | ✅ | ❌ | Varies |
@@ -43,7 +43,7 @@ For registry-style MCP discovery, [`server.json`](./server.json) is the machine-
 ## ⚠️ Fair Warning
 
 Your AI agent will be able to:
-- **Create campaigns** that immediately start spending your budget
+- **Create and launch campaigns** that spend real budget once they're live
 - **Adjust bids** that affect how much you pay per click
 - **Pause campaigns** (sometimes that's a good thing)
 - **Add keywords** that change who sees your ads
@@ -326,13 +326,13 @@ To manage ads on each platform, you'll need to connect your accounts in Synter:
 - Spotify Ads ✅
 - Amazon DSP ✅
 - The Trade Desk ✅
-- Amazon Ads 📊
+- Amazon Ads ✅
 - Walmart Connect 📊
 - Instacart Ads 📊
 - Target Roundel 📊
 - Criteo 📊
 - Display & Video 360 📊
-- OpenAI Ads (ChatGPT) 📊
+- OpenAI Ads (ChatGPT) ✅
 
 ---
 
@@ -350,9 +350,9 @@ See the full tool list at [docs.syntermedia.ai/tools](https://docs.syntermedia.a
 > What tools are available for LinkedIn Ads?
 ```
 
-### Safe by Default: `execute` Dry-Runs Unless Told Otherwise
+### Safety: Confirmations Happen in Your Client
 
-The universal `execute` tool never runs an action on the first call unless you opt in. By default (`dry_run: true`) it validates the request and stops there — nothing executes, nothing spends. Pass `dry_run: false` to actually run the action; for anything that spends money, do that only with the account owner's approval.
+Every write tool, including the universal `execute` tool, is annotated as destructive, so MCP clients that honor annotations (Claude, Cursor, ChatGPT) ask you before running it. `execute` runs immediately by default; pass `dry_run: true` to validate a request without running it. Server-side, Synter checks plan entitlement, account holds, and a payment method on file before campaign writes. It does not add a second approval step, so for anything that spends money, approve only what the account owner wants.
 
 ---
 
@@ -413,11 +413,11 @@ You need to connect at least one ad platform:
 
 ### Is there an MCP server for Google Ads?
 
-Yes, two kinds. Google ships an official Google Ads MCP server, which is read-only in its current release: it can query reports, metrics, and metadata, but per Google's documentation it "cannot modify bids, pause campaigns, or create new assets." Our MCP server covers Google Ads with both read and write: create Search, Display, and Performance Max campaigns, add keywords and negative keywords, adjust budgets, pause campaigns, manage Customer Match audiences, set up conversion tracking, and pull performance data. The same server reports across 18 other ad platforms and offers full campaign execution on 11 of them.
+Yes, two kinds. Google ships an official Google Ads MCP server, which is read-only in its current release: it can query reports, metrics, and metadata, but per Google's documentation it "cannot modify bids, pause campaigns, or create new assets." Our MCP server covers Google Ads with both read and write: create Search, Display, and Performance Max campaigns, add keywords and negative keywords, adjust budgets, pause campaigns, manage Customer Match audiences, set up conversion tracking, and pull performance data. The same server reports across 18 other ad platforms and offers full campaign creation on 13 of them.
 
 ### Can Claude or ChatGPT manage my ad campaigns?
 
-Yes. With the Synter MCP server connected, Claude (Claude Desktop, Claude Code), ChatGPT, Cursor, and any other MCP-compatible client can create campaigns, adjust budgets, pause underperformers, generate creatives, and sync audiences on 14 ad platforms (write actions on 16), and pull performance data across all 19. Claude and other stdio clients connect via `npx @synterai/mcp-server` with a `SYNTER_API_KEY`; ChatGPT and other HTTP clients connect to the remote server at `https://mcp.syntermedia.ai/mcp/` with an `X-Synter-Key` header. Destructive actions have built-in confirmations.
+Yes. With the Synter MCP server connected, Claude (Claude Desktop, Claude Code), ChatGPT, Cursor, and any other MCP-compatible client can create campaigns, adjust budgets, pause underperformers, generate creatives, and sync audiences on 14 ad platforms, and pull performance data across all 19. Claude and other stdio clients connect via `npx @synterai/mcp-server` with a `SYNTER_API_KEY`; ChatGPT and other HTTP clients connect to the remote server at `https://mcp.syntermedia.ai/mcp/` with an `X-Synter-Key` header. Destructive tools are flagged so your client asks for confirmation before running them.
 
 ### What is the difference between the official Google Ads MCP and Synter?
 
@@ -432,7 +432,7 @@ Two things: write access and platform coverage. The official Google Ads MCP is r
 - **Claude Plugin:** [github.com/Synter-Media-AI/plugin](https://github.com/Synter-Media-AI/plugin) (skills, agents & this MCP for Claude Code / Desktop)
 - **Tool Reference:** [docs.syntermedia.ai/tools](https://docs.syntermedia.ai/tools)
 - **MCP Server Comparison:** [syntermedia.ai/blog/best-ad-platform-mcp-servers](https://syntermedia.ai/blog/best-ad-platform-mcp-servers)
-- **Free Agent Skills (47 open-source):** [github.com/Synter-Media-AI/free-skills](https://github.com/Synter-Media-AI/free-skills) (also on [skills.sh](https://skills.sh/synter-media-ai/free-skills))
+- **Open-Source Agent Skills (47):** [github.com/Synter-Media-AI/free-skills](https://github.com/Synter-Media-AI/free-skills) (also on [skills.sh](https://skills.sh/synter-media-ai/free-skills))
 - **Support:** [hello@syntermedia.ai](mailto:hello@syntermedia.ai)
 
 ---
@@ -448,7 +448,7 @@ MIT License - see [LICENSE](LICENSE) for details.
     <img src="https://syntermedia.ai/logo.svg" alt="Synter" width="120" />
   </a>
   <br />
-  <strong>The MCP extension they don't want you to use.</strong>
+  <strong>Open source. MIT licensed. Built for agents that run ads.</strong>
   <br />
-  <em>Because AI agents with ad budgets change everything.</em>
+  <em>Review what your agent proposes before anything spends.</em>
 </p>
