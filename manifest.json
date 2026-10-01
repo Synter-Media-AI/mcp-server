@@ -3,7 +3,7 @@
   "name": "synter",
   "version": "1.2.4",
   "display_name": "Synter",
-  "description": "The most complete MCP server for advertising. Reporting across 19 ad platforms and full campaign execution on 12, spanning every major buying channel. Manage ad campaigns with AI agents.",
+  "description": "Open-source MCP server for running ads with AI agents: reporting across 19 ad platforms and campaign creation on 14. Destructive tools are flagged so your MCP client asks before running them.",
   "author": {
     "name": "Synter",
     "email": "hello@syntermedia.ai",
@@ -125,7 +125,7 @@
     },
     {
       "name": "stage_audience_artifact",
-      "description": "Stage large hashed-PII payloads for bulk audience uploads (free)"
+      "description": "Stage large hashed-PII payloads for bulk audience uploads (no credits charged)"
     },
     {
       "name": "sync_audience",
@@ -134,6 +134,10 @@
     {
       "name": "run_tool",
       "description": "Run any of 140+ Synter tools directly"
+    },
+    {
+      "name": "list_landing_pages",
+      "description": "List landing pages for the authenticated workspace, including publish status, custom domain, and URLs"
     }
   ]
 }
