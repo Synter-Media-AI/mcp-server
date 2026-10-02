@@ -58,12 +58,12 @@ invariant(
 );
 
 const primaryRemote = serverJson.remotes?.find(
-  (remote) => remote.type === "streamable-http" && remote.url === "https://mcp.syntermedia.ai/mcp/",
+  (remote) => remote.type === "streamable-http" && remote.url === "https://mcp.synterai.com/mcp",
 );
 
 invariant(
   primaryRemote,
-  "server.json must advertise the canonical hosted MCP endpoint https://mcp.syntermedia.ai/mcp/",
+  "server.json must advertise the canonical hosted MCP endpoint https://mcp.synterai.com/mcp",
 );
 
 invariant(
@@ -83,8 +83,8 @@ for (const relativePath of publicDocs) {
 }
 
 invariant(
-  readText("README.md").includes("https://mcp.syntermedia.ai/mcp/"),
-  "README.md must document the canonical hosted MCP endpoint https://mcp.syntermedia.ai/mcp/",
+  readText("README.md").includes("https://mcp.synterai.com/mcp"),
+  "README.md must document the canonical hosted MCP endpoint https://mcp.synterai.com/mcp",
 );
 
 // Registry schema limits on server.json. These were checked nowhere until a
