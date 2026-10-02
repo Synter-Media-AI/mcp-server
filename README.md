@@ -9,7 +9,7 @@ Reporting across 19 ad platforms and full campaign creation on 14 of them, spann
 
 Create campaigns. Adjust budgets. Pause underperformers. Generate creatives. Pull performance data. All through natural conversation, across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, and more.
 
-**An open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that lets AI agents read and run your ad accounts, with confirmations on destructive actions.**
+**An open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that lets AI agents read and run your ad accounts, with write tools flagged so your MCP client asks before running them.**
 
 > **Note:** [`Synter-Media-AI/plugin`](https://github.com/Synter-Media-AI/plugin) is the canonical installable Claude plugin repo. The `.claude-plugin/` copy in this repo is not the install source.
 
@@ -27,7 +27,7 @@ The official Google Ads MCP server is read-only by design: per Google's document
 | **Budgets and pause** | ✅ | ❌ | Varies |
 | **AI creative generation** | ✅ Images, video, copy | ❌ | ❌ |
 | **Audience sync** | ✅ Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X | ❌ | ❌ |
-| **Safety** | Confirmations for destructive actions | n/a (read-only) | Varies |
+| **Safety** | Write tools annotated as destructive, so clients prompt first | n/a (read-only) | Varies |
 | **Open source** | ✅ MIT | ✅ | Varies |
 
 **Reporting coverage (19 platforms):** Google Ads, Microsoft Ads (Bing), Meta (Facebook and Instagram), LinkedIn Ads, X (Twitter) Ads, Reddit Ads, TikTok Ads, Snapchat Ads, Pinterest Ads, Spotify Ads, Amazon Ads, Amazon DSP, Walmart Connect, Instacart Ads, Target Roundel, Criteo, The Trade Desk, Display & Video 360, and OpenAI Ads (ChatGPT).
@@ -49,7 +49,7 @@ Your AI agent will be able to:
 - **Add keywords** that change who sees your ads
 - **Generate creatives** and upload them to your accounts
 
-We built in confirmations for destructive actions. But still, maybe don't give this to an agent you just met.
+Write tools are annotated as destructive, so MCP clients prompt before running them. But still, maybe don't give this to an agent you just met.
 
 ---
 
