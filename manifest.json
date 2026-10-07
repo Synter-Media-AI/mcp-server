@@ -1,19 +1,19 @@
 {
   "manifest_version": "0.2",
   "name": "synter",
-  "version": "1.2.4",
+  "version": "1.3.0",
   "display_name": "Synter",
   "description": "Open-source MCP server for running ads with AI agents across 16 ad platforms: reporting, campaigns, budgets, and creatives. Destructive tools are flagged so your MCP client asks before running them.",
   "author": {
     "name": "Synter",
-    "email": "hello@syntermedia.ai",
-    "url": "https://syntermedia.ai"
+    "email": "hello@synterai.com",
+    "url": "https://synterai.com"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/Synter-Media-AI/mcp-server"
   },
-  "homepage": "https://syntermedia.ai",
+  "homepage": "https://synterai.com/mcp",
   "license": "MIT",
   "icon": "icon.png",
   "server": {
@@ -41,7 +41,7 @@
   "tools": [
     {
       "name": "list_campaigns",
-      "description": "List campaigns across all connected ad platforms"
+      "description": "List campaigns for one ad platform (platform is required)"
     },
     {
       "name": "create_search_campaign",

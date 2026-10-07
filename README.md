@@ -211,7 +211,7 @@ It also ships a headless [Claude Agent SDK](https://www.npmjs.com/package/@anthr
 
 | Tool | Description |
 |------|-------------|
-| `list_campaigns` | List campaigns across all connected platforms |
+| `list_campaigns` | List campaigns for one ad platform (`platform` is required) |
 | `create_search_campaign` | Create a Google Search campaign with keywords and ads |
 | `create_display_campaign` | Create a Google Display campaign with images |
 | `create_pmax_campaign` | Create a Performance Max campaign |
@@ -257,6 +257,18 @@ It also ships a headless [Claude Agent SDK](https://www.npmjs.com/package/@anthr
 |------|-------------|
 | `list_ad_accounts` | List all connected ad accounts |
 | `run_tool` | Run any of 140+ Synter tools directly |
+
+### Tool names: stdio package vs hosted server
+
+The `npx` package and the hosted server at `https://mcp.synterai.com` name a few equivalent tools differently:
+
+| stdio (`@synterai/mcp-server`) | Hosted (`https://mcp.synterai.com`) |
+|------|------|
+| `get_performance` (with `platform`) | `pull_<platform>_ads_performance`, e.g. `pull_google_ads_performance`, `pull_meta_ads_performance` |
+| `get_daily_spend` | No single hosted tool; use `pull_<platform>_ads_performance` (Google supports `segment: "date"` for per-day rows) |
+| `list_ad_accounts` | `list_connected_accounts` |
+
+As of the next hosted release, the hosted server also accepts the stdio names above as aliases, so the same tool calls work against either transport.
 
 ---
 
@@ -422,7 +434,8 @@ Every write tool, including the universal `execute` tool, is annotated as destru
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `SYNTER_API_KEY` | Yes (stdio) | Your Synter API key, from [synterai.com/developer](https://synterai.com/developer) |
-| `SYNTER_API_URL` | No | API base URL override (defaults to the hosted Synter API) |
+| `SYNTER_API_URL` | No | API base URL override (default `https://synterai.com`) |
+| `SYNTER_ARTIFACT_API_URL` | No | Artifact API override used by `stage_audience_artifact` (default `https://api.synterai.com`) |
 
 These apply to the local `npx` server only. The hosted server at `https://mcp.synterai.com` uses browser OAuth and needs no environment variables.
 
