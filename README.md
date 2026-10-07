@@ -5,13 +5,75 @@
 
 ### An open-source MCP server for running ads with AI agents.
 
-Reporting across 19 ad platforms and full campaign creation on 14 of them, spanning every major buying channel. Destructive tools are flagged so your MCP client asks before running them.
+Run ads across 16 ad platforms from any MCP client: Google Ads, Microsoft Ads, Meta, LinkedIn, X, Reddit, TikTok, Snapchat, Pinterest, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, Display & Video 360, and StackAdapt. Destructive tools are flagged so your MCP client asks before running them.
 
-Create campaigns. Adjust budgets. Pause underperformers. Generate creatives. Pull performance data. All through natural conversation, across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, and more.
+Create campaigns. Adjust budgets. Pause underperformers. Generate creatives. Pull performance data. All through natural conversation.
 
 **An open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that lets AI agents read and run your ad accounts, with write tools flagged so your MCP client asks before running them.**
 
 > **Note:** [`Synter-Media-AI/plugin`](https://github.com/Synter-Media-AI/plugin) is the canonical installable Claude plugin repo. The `.claude-plugin/` copy in this repo is not the install source.
+
+---
+
+## Install (hosted, browser sign-in)
+
+[![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=synter-ads&config=eyJ1cmwiOiJodHRwczovL21jcC5zeW50ZXJhaS5jb20ifQ==)
+[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Synter-0098FF?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=synter-ads&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.synterai.com%22%7D)
+
+The hosted server lives at **`https://mcp.synterai.com`**. Add it to your client and sign in through your browser the first time you use it (OAuth with dynamic client registration and PKCE, per the MCP authorization spec). No API key to copy, nothing to install locally.
+
+Signup is self-serve at [synterai.com/sign-up](https://synterai.com/sign-up). There is no access review: sign up, connect your ad accounts, and your MCP client can start working.
+
+**Cursor:** click the badge above, or open `cursor://anysphere.cursor-deeplink/mcp/install?name=synter-ads&config=eyJ1cmwiOiJodHRwczovL21jcC5zeW50ZXJhaS5jb20ifQ==`
+
+**VS Code:** click the badge above, or open `vscode:mcp/install?%7B%22name%22%3A%22synter-ads%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.synterai.com%22%7D`
+
+**Claude Code:**
+
+```bash
+claude mcp add --transport http synter-ads https://mcp.synterai.com
+```
+
+**Codex:**
+
+```bash
+codex mcp add synter-ads --url https://mcp.synterai.com
+codex mcp login synter-ads
+```
+
+**Gemini CLI:** install this repo as an extension (it ships a [`gemini-extension.json`](./gemini-extension.json)):
+
+```bash
+gemini extensions install https://github.com/Synter-Media-AI/mcp-server
+```
+
+Or add it to `settings.json`:
+
+```json
+{"mcpServers":{"synter-ads":{"httpUrl":"https://mcp.synterai.com"}}}
+```
+
+**Windsurf:** add to `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{"mcpServers":{"synter-ads":{"serverUrl":"https://mcp.synterai.com"}}}
+```
+
+**Cline:**
+
+```json
+{"mcpServers":{"synter-ads":{"type":"streamableHttp","url":"https://mcp.synterai.com","disabled":false,"autoApprove":[]}}}
+```
+
+**Claude.ai / ChatGPT:** add a custom connector with the URL `https://mcp.synterai.com` and sign in when prompted.
+
+Then start chatting:
+
+> "Show me all my Google Ads campaigns"
+
+> "Create a search campaign for 'project management software' with a $50/day budget"
+
+> "Pause the campaign that's overspending"
 
 ---
 
@@ -21,8 +83,8 @@ The official Google Ads MCP server is read-only by design: per Google's document
 
 | | Synter MCP | Official Google Ads MCP | Typical third-party ad MCPs |
 |---|---|---|---|
-| **Access** | Read on all 19 platforms, campaign creation on 14 | Read-only (current release) | Often read-only or partial write |
-| **Platforms** | 19 reporting, 14 with full campaign creation (lists below) | Google Ads only | Usually a single platform |
+| **Access** | Read and write across 16 ad platforms | Read-only (current release) | Often read-only or partial write |
+| **Platforms** | 16 ad platforms (list below) | Google Ads only | Usually a single platform |
 | **Create campaigns** | ✅ Google Search, Display, PMax, Meta, LinkedIn, Reddit, more via `run_tool` | ❌ | Rarely |
 | **Budgets and pause** | ✅ | ❌ | Varies |
 | **AI creative generation** | ✅ Images, video, copy | ❌ | ❌ |
@@ -30,13 +92,13 @@ The official Google Ads MCP server is read-only by design: per Google's document
 | **Safety** | Write tools annotated as destructive, so clients prompt first | n/a (read-only) | Varies |
 | **Open source** | ✅ MIT | ✅ | Varies |
 
-**Reporting coverage (19 platforms):** Google Ads, Microsoft Ads (Bing), Meta (Facebook and Instagram), LinkedIn Ads, X (Twitter) Ads, Reddit Ads, TikTok Ads, Snapchat Ads, Pinterest Ads, Spotify Ads, Amazon Ads, Amazon DSP, Walmart Connect, Instacart Ads, Target Roundel, Criteo, The Trade Desk, Display & Video 360, and OpenAI Ads (ChatGPT).
+**16 ad platforms:** Google Ads, Microsoft Ads (Bing), Meta (Facebook and Instagram), LinkedIn Ads, X (Twitter) Ads, Reddit Ads, TikTok Ads, Snapchat Ads, Pinterest Ads, Spotify Ads, Amazon Ads (Sponsored Products, Brands, and Display), Amazon DSP, The Trade Desk, OpenAI Ads (ChatGPT), Display & Video 360, and StackAdapt.
 
-**Full campaign creation (14 platforms):** Google Ads, Microsoft Ads, Meta, LinkedIn, X, Reddit, TikTok, Snapchat, Pinterest, Spotify, Amazon Ads (Sponsored Products, Brands, and Display), Amazon DSP, The Trade Desk, and OpenAI Ads. Display & Video 360 and StackAdapt additionally support write actions (pause, budget and line-item updates, audience upload) without campaign creation. The remaining 4 (Walmart Connect, Instacart, Target Roundel, and Criteo) are reporting-only today.
+Full campaign creation is available on most of them. Display & Video 360 and StackAdapt support write actions (pause, budget and line-item updates, audience upload) without campaign creation. A few retail media networks are also connected for reporting only.
 
-The `npx` package ships typed tools for the most common operations plus `run_tool` access to the full catalog of 140+ Synter tools. The remote server at `https://mcp.syntermedia.ai/mcp/` exposes the full hosted tool set, including performance pulls for every platform above.
+The hosted server at `https://mcp.synterai.com` exposes the full hosted tool set, including performance pulls for every platform above. The `npx` package ships typed tools for the most common operations plus `run_tool` access to the full catalog of 140+ Synter tools.
 
-For registry-style MCP discovery, [`server.json`](./server.json) is the machine-readable source of truth. Keep it aligned with [`package.json`](./package.json), [`manifest.json`](./manifest.json), and the setup examples in this README.
+For registry-style MCP discovery, [`server.json`](./server.json) is the machine-readable source of truth. Keep it aligned with [`package.json`](./package.json), [`manifest.json`](./manifest.json), [`gemini-extension.json`](./gemini-extension.json), and the setup examples in this README.
 
 ---
 
@@ -53,11 +115,13 @@ Write tools are annotated as destructive, so MCP clients prompt before running t
 
 ---
 
-## Quick Start
+## Local stdio (npx) / API-key fallback
+
+Use this when your client only speaks stdio, or when you run headless and can't complete a browser sign-in.
 
 ### 1. Get Your API Key
 
-Sign up at [syntermedia.ai](https://syntermedia.ai) and create an API key in the [Developer Settings](https://syntermedia.ai/developer).
+Sign up at [synterai.com/sign-up](https://synterai.com/sign-up). Your API key is created automatically; you can view it or create more in [Developer Settings](https://synterai.com/developer).
 
 ### 2. Configure Your AI Client
 
@@ -109,24 +173,18 @@ Sign up at [syntermedia.ai](https://syntermedia.ai) and create an API key in the
 }
 ```
 
-**Remote (Streamable HTTP):** For ChatGPT, n8n, Zapier, or any MCP client that supports HTTP transport:
+**HTTP clients that need a header instead of OAuth** (n8n, Zapier, scripts, other headless clients):
 
 ```
-URL: https://mcp.syntermedia.ai/mcp/
+URL: https://mcp.synterai.com
 Header: X-Synter-Key: syn_your_api_key_here
 ```
 
-No local install needed. Works with any MCP client that supports [Streamable HTTP](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http) transport.
+The header is optional; browser OAuth is the default. Works with any MCP client that supports [Streamable HTTP](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http) transport.
 
 ### 3. Start Using It
 
-Restart your AI client and start chatting:
-
-> "Show me all my Google Ads campaigns"
-
-> "Create a search campaign for 'project management software' with a $50/day budget"
-
-> "Pause the campaign that's overspending"
+Restart your AI client and start chatting.
 
 ---
 
@@ -139,7 +197,7 @@ This package is the raw MCP server. If you use **Claude Code** or **Claude Deskt
 /plugin install synter@synter
 ```
 
-It also ships a headless [Claude Agent SDK](https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk) runner for automation. See the [plugin repo](https://github.com/Synter-Media-AI/plugin) or the [Claude Plugin guide](https://docs.syntermedia.ai/guides/claude-plugin). Use this MCP package directly when you want just the tools, or are wiring another client.
+It also ships a headless [Claude Agent SDK](https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk) runner for automation. See the [plugin repo](https://github.com/Synter-Media-AI/plugin) or the [Claude Plugin guide](https://docs.synterai.com/guides/claude-plugin). Use this MCP package directly when you want just the tools, or are wiring another client.
 
 ---
 
@@ -271,7 +329,7 @@ Before creating your first campaign, you'll need:
 > **Agent:** I'll create a Search campaign with those keywords. What headlines should I use? Here are some suggestions:
 > - "Team Collaboration Made Simple"
 > - "Project Management for Modern Teams"
-> - "Start Free - No Credit Card"
+> - "Book a Demo Today"
 
 ### Check Performance
 
@@ -289,9 +347,9 @@ Before creating your first campaign, you'll need:
 
 ### Add Negative Keywords
 
-> **You:** I'm getting clicks for "free project management" but we don't have a free tier. Block those.
+> **You:** I'm getting clicks for "project management jobs" but we're not hiring. Block those.
 
-> **Agent:** Added "free" as a negative keyword to your campaign. This will stop your ads from showing for any search containing "free".
+> **Agent:** Added "jobs" as a negative keyword to your campaign. This will stop your ads from showing for any search containing "jobs".
 
 ### Generate Ad Creative
 
@@ -308,31 +366,30 @@ Before creating your first campaign, you'll need:
 
 To manage ads on each platform, you'll need to connect your accounts in Synter:
 
-1. Go to [syntermedia.ai/settings/credentials](https://syntermedia.ai/settings/credentials)
+1. Go to [synterai.com/settings/credentials](https://synterai.com/settings/credentials)
 2. Click "Connect" next to each platform
 3. Complete the OAuth flow
 4. Your agent can now manage that platform
 
-**Supported Platforms (19; ✅ = reporting + full campaign execution, 📊 = reporting):**
+**Supported ad platforms (16; ✅ = reporting + full campaign creation, ✏️ = reporting + write actions without campaign creation):**
 - Google Ads ✅
+- Microsoft Ads (Bing) ✅
 - Meta (Facebook/Instagram) ✅
 - LinkedIn Ads ✅
-- Microsoft Ads (Bing) ✅
+- X (Twitter) Ads ✅
 - Reddit Ads ✅
 - TikTok Ads ✅
-- X (Twitter) Ads ✅
 - Snapchat Ads ✅
 - Pinterest Ads ✅
 - Spotify Ads ✅
+- Amazon Ads ✅
 - Amazon DSP ✅
 - The Trade Desk ✅
-- Amazon Ads ✅
-- Walmart Connect 📊
-- Instacart Ads 📊
-- Target Roundel 📊
-- Criteo 📊
-- Display & Video 360 📊
 - OpenAI Ads (ChatGPT) ✅
+- Display & Video 360 ✏️
+- StackAdapt ✏️
+
+A few retail media networks are also connected for reporting only.
 
 ---
 
@@ -344,7 +401,7 @@ For power users, you can call any of 140+ Synter tools directly:
 > Use run_tool to call google_ads_list_audiences
 ```
 
-See the full tool list at [docs.syntermedia.ai/tools](https://docs.syntermedia.ai/tools) or ask your agent:
+See the full tool list at [docs.synterai.com/mcp/tools](https://docs.synterai.com/mcp/tools) or ask your agent:
 
 ```
 > What tools are available for LinkedIn Ads?
@@ -360,8 +417,10 @@ Every write tool, including the universal `execute` tool, is annotated as destru
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `SYNTER_API_KEY` | Yes | Your Synter API key |
-| `SYNTER_API_URL` | No | API URL override (default: https://syntermedia.ai) |
+| `SYNTER_API_KEY` | Yes (stdio) | Your Synter API key, from [synterai.com/developer](https://synterai.com/developer) |
+| `SYNTER_API_URL` | No | API base URL override (defaults to the hosted Synter API) |
+
+These apply to the local `npx` server only. The hosted server at `https://mcp.synterai.com` uses browser OAuth and needs no environment variables.
 
 ---
 
@@ -384,6 +443,10 @@ SYNTER_API_KEY=syn_your_key_here node dist/index.js
 
 ## Troubleshooting
 
+### Browser sign-in didn't open (hosted server)
+
+Most clients open the sign-in page the first time a Synter tool is used. In Codex, run `codex mcp login synter-ads`. If your client can't do a browser sign-in at all, use the `X-Synter-Key` header fallback described in [Local stdio (npx) / API-key fallback](#local-stdio-npx--api-key-fallback).
+
 ### "SYNTER_API_KEY not set"
 
 Make sure your API key is in the `env` section of your MCP config. The key should start with `syn_`.
@@ -391,13 +454,13 @@ Make sure your API key is in the `env` section of your MCP config. The key shoul
 ### "Invalid or expired API key"
 
 1. Check that you copied the full key (they're long!)
-2. Verify the key is active at [syntermedia.ai/developer](https://syntermedia.ai/developer)
+2. Verify the key is active at [synterai.com/developer](https://synterai.com/developer)
 3. Make sure the key has `tools:write` scope
 
 ### "No ad accounts connected"
 
 You need to connect at least one ad platform:
-1. Go to [syntermedia.ai/settings/credentials](https://syntermedia.ai/settings/credentials)
+1. Go to [synterai.com/settings/credentials](https://synterai.com/settings/credentials)
 2. Click "Connect" next to Google Ads (or another platform)
 3. Complete the OAuth authorization
 
@@ -413,27 +476,27 @@ You need to connect at least one ad platform:
 
 ### Is there an MCP server for Google Ads?
 
-Yes, two kinds. Google ships an official Google Ads MCP server, which is read-only in its current release: it can query reports, metrics, and metadata, but per Google's documentation it "cannot modify bids, pause campaigns, or create new assets." Our MCP server covers Google Ads with both read and write: create Search, Display, and Performance Max campaigns, add keywords and negative keywords, adjust budgets, pause campaigns, manage Customer Match audiences, set up conversion tracking, and pull performance data. The same server reports across 18 other ad platforms and offers full campaign creation on 13 of them.
+Yes, two kinds. Google ships an official Google Ads MCP server, which is read-only in its current release: it can query reports, metrics, and metadata, but per Google's documentation it "cannot modify bids, pause campaigns, or create new assets." Our MCP server covers Google Ads with both read and write: create Search, Display, and Performance Max campaigns, add keywords and negative keywords, adjust budgets, pause campaigns, manage Customer Match audiences, set up conversion tracking, and pull performance data. The same server covers 15 other ad platforms, with full campaign creation on most of them.
 
 ### Can Claude or ChatGPT manage my ad campaigns?
 
-Yes. With the Synter MCP server connected, Claude (Claude Desktop, Claude Code), ChatGPT, Cursor, and any other MCP-compatible client can create campaigns, adjust budgets, pause underperformers, generate creatives, and sync audiences on 14 ad platforms, and pull performance data across all 19. Claude and other stdio clients connect via `npx @synterai/mcp-server` with a `SYNTER_API_KEY`; ChatGPT and other HTTP clients connect to the remote server at `https://mcp.syntermedia.ai/mcp/` with an `X-Synter-Key` header. Destructive tools are flagged so your client asks for confirmation before running them.
+Yes. With the Synter MCP server connected, Claude (Claude Desktop, Claude Code), ChatGPT, Cursor, and any other MCP-compatible client can create campaigns, adjust budgets, pause underperformers, generate creatives, and sync audiences, and pull performance data across 16 ad platforms. Add the hosted server at `https://mcp.synterai.com` and sign in through your browser (OAuth); in Claude.ai and ChatGPT it's a custom connector with that URL. Signup is self-serve at [synterai.com/sign-up](https://synterai.com/sign-up). Clients that only speak stdio can run `npx @synterai/mcp-server` with a `SYNTER_API_KEY`, and headless HTTP clients can send an optional `X-Synter-Key` header instead of signing in. Destructive tools are flagged so your client asks for confirmation before running them.
 
 ### What is the difference between the official Google Ads MCP and Synter?
 
-Two things: write access and platform coverage. The official Google Ads MCP is read-only in its current release and covers Google Ads only. Synter reports across 19 platforms and offers full campaign creation on 14 of them, including Google Ads, Meta, LinkedIn, Microsoft, TikTok, Amazon Ads, Amazon DSP, OpenAI Ads, and The Trade Desk. If you only need Google Ads reporting, the official server is a solid choice. If you want an agent that can act on what it finds, on Google and everywhere else you advertise, that is what we built Synter for.
+Two things: write access and platform coverage. The official Google Ads MCP is read-only in its current release and covers Google Ads only. Synter covers 16 ad platforms, with full campaign creation on most of them, including Google Ads, Meta, LinkedIn, Microsoft, TikTok, Amazon Ads, Amazon DSP, OpenAI Ads, and The Trade Desk. If you only need Google Ads reporting, the official server is a solid choice. If you want an agent that can act on what it finds, on Google and everywhere else you advertise, that is what we built Synter for.
 
 ---
 
 ## Resources
 
-- **Synter Manual:** [syntermedia.ai/manual](https://syntermedia.ai/manual)
-- **API Documentation:** [docs.syntermedia.ai](https://docs.syntermedia.ai)
+- **Sign up:** [synterai.com/sign-up](https://synterai.com/sign-up)
+- **Synter Manual:** [synterai.com/manual](https://synterai.com/manual)
+- **Documentation:** [docs.synterai.com](https://docs.synterai.com)
 - **Claude Plugin:** [github.com/Synter-Media-AI/plugin](https://github.com/Synter-Media-AI/plugin) (skills, agents & this MCP for Claude Code / Desktop)
-- **Tool Reference:** [docs.syntermedia.ai/tools](https://docs.syntermedia.ai/tools)
-- **MCP Server Comparison:** [syntermedia.ai/blog/best-ad-platform-mcp-servers](https://syntermedia.ai/blog/best-ad-platform-mcp-servers)
-- **Open-Source Agent Skills (47):** [github.com/Synter-Media-AI/free-skills](https://github.com/Synter-Media-AI/free-skills) (also on [skills.sh](https://skills.sh/synter-media-ai/free-skills))
-- **Support:** [hello@syntermedia.ai](mailto:hello@syntermedia.ai)
+- **Tool Reference:** [docs.synterai.com/mcp/tools](https://docs.synterai.com/mcp/tools)
+- **MCP Server Comparison:** [synterai.com/blog/best-ad-platform-mcp-servers](https://synterai.com/blog/best-ad-platform-mcp-servers)
+- **Support:** [synterai.com/support](https://synterai.com/support) or [GitHub issues](https://github.com/Synter-Media-AI/mcp-server/issues)
 
 ---
 
@@ -444,8 +507,8 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  <a href="https://syntermedia.ai">
-    <img src="https://syntermedia.ai/logo.svg" alt="Synter" width="120" />
+  <a href="https://synterai.com">
+    <img src="https://synterai.com/brand/logo-symbol-lime.png" alt="Synter" width="120" />
   </a>
   <br />
   <strong>Open source. MIT licensed. Built for agents that run ads.</strong>
