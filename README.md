@@ -26,7 +26,7 @@ Signup is self-serve at [synterai.com/sign-up](https://synterai.com/sign-up). Th
 
 Synter's canonical domain is **synterai.com**; the hosted MCP endpoint is `https://mcp.synterai.com`.
 
-> **Official packages:** The only official packages are `@synterai/mcp-server`, `@synterai/sdk-js`, PyPI `synter`, crates.io `synter`. `@iflow-mcp/*` copies are unofficial and outdated.
+> **Official packages:** The only official packages are `@synterai/mcp-server`, `@synterai/sdk-js`, PyPI `synter`, crates.io `synter`, Maven `ai.syntermedia:synter-sdk`. `@iflow-mcp/*` copies are unofficial and outdated.
 
 **Cursor:** click the badge above, or open `cursor://anysphere.cursor-deeplink/mcp/install?name=synter-ads&config=eyJ1cmwiOiJodHRwczovL21jcC5zeW50ZXJhaS5jb20ifQ==`
 
