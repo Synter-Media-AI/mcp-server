@@ -3,7 +3,7 @@
   "name": "synter",
   "version": "1.2.4",
   "display_name": "Synter",
-  "description": "Open-source MCP server for running ads with AI agents across 16 ad platforms: reporting, campaigns, budgets, and creatives. Destructive tools are flagged so your MCP client asks before running them.",
+  "description": "Open-source MCP server for running ads with AI agents across Google, Meta, LinkedIn, Microsoft, TikTok, Reddit, X, Amazon and other major ad platforms: reporting, campaigns, budgets, and creatives. Destructive tools are flagged so your MCP client asks before running them.",
   "author": {
     "name": "Synter",
     "email": "hello@syntermedia.ai",

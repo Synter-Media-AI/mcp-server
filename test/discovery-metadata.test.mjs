@@ -16,8 +16,10 @@ test("public metadata does not reference syntermedia.ai", () => {
   }
 });
 
-test('README says "16 ad platforms"', () => {
-  assert.ok(read("README.md").includes("16 ad platforms"));
+test("public metadata does not hard-code a platform count", () => {
+  for (const p of ["README.md", "server.json", "gemini-extension.json", "manifest.json"]) {
+    assert.doesNotMatch(read(p), /\b\d+\s+(ad\s+)?platforms\b/i, `${p} hard-codes a platform count`);
+  }
 });
 
 test("validate-discovery passes", () => {

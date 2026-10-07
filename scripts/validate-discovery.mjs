@@ -103,7 +103,12 @@ invariant(
   readme.includes(CANONICAL_REMOTE),
   `README.md must document the canonical hosted MCP endpoint ${CANONICAL_REMOTE}`,
 );
-invariant(readme.includes("16 ad platforms"), 'README.md must say "16 ad platforms"');
+// The canonical platform count is not decided yet, so public copy must not
+// hard-code one ("16 ad platforms", "19 platforms", ...). Name platforms instead.
+for (const relativePath of ["README.md", "server.json", "gemini-extension.json", "manifest.json"]) {
+  const match = readText(relativePath).match(/\b\d+\s+(ad\s+)?platforms\b/i);
+  invariant(!match, `${relativePath} hard-codes a platform count (${match?.[0]}); use number-free wording`);
+}
 
 // syntermedia.ai still resolves but must not be advertised in public copy.
 for (const relativePath of ["README.md", "server.json", "gemini-extension.json"]) {

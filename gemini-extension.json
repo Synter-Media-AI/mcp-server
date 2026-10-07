@@ -1,7 +1,7 @@
 {
   "name": "synter-ads",
   "version": "1.2.4",
-  "description": "Run ads across 16 ad platforms from Gemini CLI (hosted Synter MCP, browser OAuth).",
+  "description": "Run ads on Google, Meta, LinkedIn, TikTok and more from Gemini CLI (hosted Synter MCP, browser OAuth).",
   "mcpServers": {
     "synter-ads": {
       "httpUrl": "https://mcp.synterai.com"

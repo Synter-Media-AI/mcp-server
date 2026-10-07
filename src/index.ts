@@ -642,7 +642,7 @@ const tools: Tool[] = [
     description:
       "Stage a hashed-PII payload (newline-delimited identifiers — SHA-256 emails, phones, or raw MAIDs) " +
       "in Synter's private artifact store and return an opaque artifact_id. Pass that id to " +
-      "sync_audience via *_artifact_id parameters. FREE — no credits charged. Use this instead of " +
+      "sync_audience via *_artifact_id parameters. No credits charged. Use this instead of " +
       "pasting hashed identifiers inline when you have more than ~500 entries.",
     annotations: { readOnlyHint: false },
     inputSchema: {
