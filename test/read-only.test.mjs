@@ -77,3 +77,32 @@ test("calling mutating tool in read-only mode returns isError response", async (
     assert.match(text, /disabled in read-only mode/, "error text must indicate read-only restriction");
   });
 });
+
+test("run_tool is filtered and blocked in read-only mode", async () => {
+  await withClient({ env: { SYNTER_READ_ONLY: "true" } }, async (client) => {
+    const { tools } = await client.listTools();
+    const toolNames = tools.map((t) => t.name);
+    assert.ok(!toolNames.includes("run_tool"), "run_tool must not be listed in read-only mode");
+
+    const res = await client.callTool({
+      name: "run_tool",
+      arguments: { script_name: "google_ads_list_audiences" },
+    });
+    assert.equal(res.isError, true, "run_tool call must return isError: true");
+    const text = res.content?.[0]?.text ?? "";
+    assert.match(text, /disabled in read-only mode/, "run_tool error text must indicate read-only restriction");
+  });
+});
+
+test("unknown tool calls fail closed in read-only mode", async () => {
+  await withClient({ env: { SYNTER_READ_ONLY: "true" } }, async (client) => {
+    const res = await client.callTool({
+      name: "unknown_arbitrary_mutation",
+      arguments: {},
+    });
+    assert.equal(res.isError, true, "unknown tool call must return isError: true");
+    const text = res.content?.[0]?.text ?? "";
+    assert.match(text, /disabled in read-only mode/, "unknown tool error text must indicate read-only restriction");
+  });
+});
+

@@ -1460,7 +1460,7 @@ async function main() {
 
     if (IS_READ_ONLY) {
       const toolDef = tools.find((t) => t.name === name);
-      if (toolDef && toolDef.annotations?.readOnlyHint !== true) {
+      if (!toolDef || toolDef.annotations?.readOnlyHint !== true) {
         return {
           content: [
             {
