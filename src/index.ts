@@ -6,8 +6,9 @@
  * Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, and more.
  *
  * Environment variables:
- * - SYNTER_API_KEY: Your Synter API key (get one at syntermedia.ai/developer)
- * - SYNTER_API_URL: Optional API URL override (default: https://syntermedia.ai)
+ * - SYNTER_API_KEY: Your Synter API key (get one at synterai.com/developer)
+ * - SYNTER_API_URL: Optional API URL override (default: https://synterai.com)
+ * - SYNTER_ARTIFACT_API_URL: Optional artifact API URL override (default: https://api.synterai.com)
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -32,8 +33,8 @@ import {
 } from "./platform-routing.js";
 
 const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
-const SYNTER_API_URL = process.env.SYNTER_API_URL || "https://syntermedia.ai";
-const SYNTER_ARTIFACT_API_URL = process.env.SYNTER_ARTIFACT_API_URL || "https://api.syntermedia.ai";
+const SYNTER_API_URL = process.env.SYNTER_API_URL || "https://synterai.com";
+const SYNTER_ARTIFACT_API_URL = process.env.SYNTER_ARTIFACT_API_URL || "https://api.synterai.com";
 
 // =============================================================================
 // Tool Definitions
@@ -841,7 +842,7 @@ const tools: Tool[] = [
   {
     name: "run_tool",
     description:
-      "Run any Synter tool by name. Use this for advanced operations not covered by other tools. See docs.syntermedia.ai for full tool list.",
+      "Run any Synter tool by name. Use this for advanced operations not covered by other tools. See docs.synterai.com for full tool list.",
     annotations: { destructiveHint: true },
     inputSchema: {
       type: "object" as const,
@@ -884,7 +885,7 @@ async function callSynterAPI(
 ): Promise<Record<string, unknown>> {
   if (!SYNTER_API_KEY) {
     throw new Error(
-      "SYNTER_API_KEY not set. Get your API key at https://syntermedia.ai/developer"
+      "SYNTER_API_KEY not set. Get your API key at https://synterai.com/developer"
     );
   }
 
@@ -912,7 +913,7 @@ async function callSynterAPIGet(
 ): Promise<Record<string, unknown>> {
   if (!SYNTER_API_KEY) {
     throw new Error(
-      "SYNTER_API_KEY not set. Get your API key at https://syntermedia.ai/developer"
+      "SYNTER_API_KEY not set. Get your API key at https://synterai.com/developer"
     );
   }
 
@@ -942,7 +943,7 @@ async function stageAudienceArtifact(
 ): Promise<Record<string, unknown>> {
   if (!SYNTER_API_KEY) {
     throw new Error(
-      "SYNTER_API_KEY not set. Get your API key at https://syntermedia.ai/developer"
+      "SYNTER_API_KEY not set. Get your API key at https://synterai.com/developer"
     );
   }
 
@@ -1433,7 +1434,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.2.4",
+      version: "1.3.0",
     },
     {
       capabilities: {
