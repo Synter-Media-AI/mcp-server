@@ -3,7 +3,7 @@
   "name": "synter",
   "version": "1.2.4",
   "display_name": "Synter",
-  "description": "Open-source MCP server for running ads with AI agents: reporting across 19 ad platforms and campaign creation on 14. Destructive tools are flagged so your MCP client asks before running them.",
+  "description": "Open-source MCP server for running ads with AI agents across 16 ad platforms: reporting, campaigns, budgets, and creatives. Destructive tools are flagged so your MCP client asks before running them.",
   "author": {
     "name": "Synter",
     "email": "hello@syntermedia.ai",
@@ -33,7 +33,7 @@
     "api_key": {
       "type": "string",
       "title": "Synter API Key",
-      "description": "Your Synter API key from syntermedia.ai/developer",
+      "description": "Your Synter API key from synterai.com/developer",
       "required": true,
       "sensitive": true
     }

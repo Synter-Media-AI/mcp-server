@@ -57,18 +57,33 @@ invariant(
   "server.json npm package must declare SYNTER_API_KEY as required",
 );
 
+const CANONICAL_REMOTE = "https://mcp.synterai.com";
+
 const primaryRemote = serverJson.remotes?.find(
-  (remote) => remote.type === "streamable-http" && remote.url === "https://mcp.syntermedia.ai/mcp/",
+  (remote) => remote.type === "streamable-http" && remote.url === CANONICAL_REMOTE,
 );
 
 invariant(
   primaryRemote,
-  "server.json must advertise the canonical hosted MCP endpoint https://mcp.syntermedia.ai/mcp/",
+  `server.json must advertise the canonical hosted MCP endpoint ${CANONICAL_REMOTE}`,
 );
 
+// Hosted OAuth (browser sign-in) is the default; the header is a fallback for
+// headless clients, so it must be documented but NOT required.
 invariant(
-  primaryRemote.headers?.some((header) => header.name === "X-Synter-Key" && header.isRequired),
-  "server.json remote must document the required X-Synter-Key header",
+  primaryRemote.headers?.some((header) => header.name === "X-Synter-Key" && header.isRequired === false),
+  "server.json remote must document the X-Synter-Key header as optional (isRequired: false)",
+);
+
+const geminiExtension = readJson("gemini-extension.json");
+
+invariant(
+  geminiExtension.version === packageJson.version,
+  `gemini-extension.json version ${geminiExtension.version} must match package.json version ${packageJson.version}`,
+);
+invariant(
+  geminiExtension.mcpServers?.["synter-ads"]?.httpUrl === CANONICAL_REMOTE,
+  `gemini-extension.json must point mcpServers.synter-ads.httpUrl at ${CANONICAL_REMOTE}`,
 );
 
 const publicDocs = ["README.md", ".mcp.json"];
@@ -82,10 +97,28 @@ for (const relativePath of publicDocs) {
   );
 }
 
+const readme = readText("README.md");
+
 invariant(
-  readText("README.md").includes("https://mcp.syntermedia.ai/mcp/"),
-  "README.md must document the canonical hosted MCP endpoint https://mcp.syntermedia.ai/mcp/",
+  readme.includes(CANONICAL_REMOTE),
+  `README.md must document the canonical hosted MCP endpoint ${CANONICAL_REMOTE}`,
 );
+// The canonical platform count is 16 (Growth, 2026-10-07). Stale counts from
+// earlier copy must not come back.
+invariant(readme.includes("16 ad platforms"), 'README.md must say "16 ad platforms"');
+for (const relativePath of ["README.md", "server.json", "gemini-extension.json", "manifest.json", "package.json"]) {
+  const match = readText(relativePath).match(/\b(14|19|21|27)\s+(ad\s+)?platforms\b/i);
+  invariant(!match, `${relativePath} has a stale platform count (${match?.[0]}); use "16 ad platforms"`);
+}
+
+// syntermedia.ai still resolves but must not be advertised in public copy.
+for (const relativePath of ["README.md", "server.json", "gemini-extension.json"]) {
+  invariant(
+    // The About section's "formerly syntermedia.ai" disclosure is the one allowed mention.
+    !readText(relativePath).replaceAll("formerly syntermedia.ai", "").includes("syntermedia.ai"),
+    `${relativePath} must not reference syntermedia.ai; use synterai.com`,
+  );
+}
 
 // Registry schema limits on server.json. These were checked nowhere until a
 // publish attempt on 2026-08-04 was rejected with

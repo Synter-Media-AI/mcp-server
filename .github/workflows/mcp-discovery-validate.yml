@@ -8,6 +8,7 @@ on:
       - "package.json"
       - "server.json"
       - "manifest.json"
+      - "gemini-extension.json"
       - "scripts/validate-discovery.mjs"
       - ".github/workflows/mcp-discovery-validate.yml"
   push:
@@ -19,6 +20,7 @@ on:
       - "package.json"
       - "server.json"
       - "manifest.json"
+      - "gemini-extension.json"
       - "scripts/validate-discovery.mjs"
       - ".github/workflows/mcp-discovery-validate.yml"
 
