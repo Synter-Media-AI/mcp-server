@@ -117,6 +117,63 @@ For registry-style MCP discovery, [`server.json`](./server.json) is the machine-
 
 ---
 
+## 🔒 Architecture, Security & Privacy
+
+```mermaid
+flowchart TD
+    Client["AI Agent / MCP Client<br/>(Claude Desktop, Cursor, VS Code, Windsurf)"]
+    
+    subgraph LocalTransport["Local or Hosted Transport"]
+        Stdio["stdio Transport<br/>npx @synterai/mcp-server<br/>(Optional: SYNTER_READ_ONLY=true)"]
+        Streamable["Streamable HTTP<br/>https://mcp.synterai.com<br/>(OAuth 2.1 with PKCE)"]
+    end
+    
+    subgraph SynterGateway["Synter Centralized Gateway (api.synterai.com)"]
+        Audit["Append-Only Audit Log<br/>(Tool, caller, latency, cost)"]
+        WriteGate{"Write Gate & Blast Radius<br/>(SOLO / SCALE / CUSTOM)"}
+        Nango["Credential Custody<br/>(OAuth Tokens AES-256 Encrypted via KMS)"]
+    end
+    
+    subgraph AdNetworks["External Ad Platforms (16+ Networks)"]
+        Google["Google Ads"]
+        Meta["Meta (FB & IG)"]
+        LinkedIn["LinkedIn Ads"]
+        MSFT["Microsoft Ads"]
+        Other["Reddit, TikTok, X, Amazon, etc."]
+    end
+
+    Client --> Stdio & Streamable
+    Stdio & Streamable --> SynterGateway
+    SynterGateway --> Audit
+    SynterGateway --> WriteGate
+    WriteGate --> Nango
+    Nango --> Google & Meta & LinkedIn & MSFT & Other
+    
+    classDef client fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff;
+    classDef gate fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#fff;
+    classDef platform fill:#334155,stroke:#94a3b8,stroke-width:1px,color:#fff;
+    class Client,Stdio,Streamable client;
+    class Audit,WriteGate,Nango gate;
+    class Google,Meta,LinkedIn,MSFT,Other platform;
+```
+
+### Blast-Radius Protection (Bounding the Downside)
+Unlike database or analytics MCPs where accidents drop temporary tables, unconstrained ad mutations can incur irreversible ad spend. Synter bounds your blast radius through three layers of defense:
+1. **Client-Side Read-Only Flag (`--read-only` / `SYNTER_READ_ONLY=true`)**:
+   Pass `--read-only` or set `SYNTER_READ_ONLY=true` in your MCP config. Mutating tools (`create_`, `update_`, `pause_`, `enable_`, `sync_audience`) are completely unregistered from the tool manifest and blocked locally.
+2. **Advisory Tool Annotations (`readOnlyHint` & `destructiveHint`)**:
+   Every tool explicitly declares whether it is read-only or destructive per the Model Context Protocol specification, prompting your client before modifying spend or pausing campaigns.
+3. **Server-Side Write Gates**:
+   Even if an agent attempts an unauthorized mutation, Synter's central gateway rejects mutating calls for unverified/cardless callers with `402 PAYMENT_METHOD_REQUIRED`.
+
+### Data Privacy & Zero Model-Training Guarantee
+- **Zero Model Training**: Customer ad credentials, performance metrics, conversion payloads, and search terms are **never used to train or fine-tune models** by Synter or its subprocessors.
+- **Credential Custody**: Ad platform OAuth tokens are encrypted at rest using AES-256 with KMS. Tokens are never passed into LLM prompt contexts.
+- **Immutable Audit Logging**: 100% of tool executions are logged with caller identity, IP, tool name, latency, and cost ($0.00 on free diagnosis calls).
+- **Prompt Injection Resilience**: Structured schemas strictly validate all parameters before dispatch, preventing indirect prompt injection from search queries or social comments from altering execution parameters.
+
+---
+
 ## ⚠️ Fair Warning
 
 Your AI agent will be able to:
@@ -147,9 +204,10 @@ Sign up at [synterai.com/sign-up](https://synterai.com/sign-up). Your API key is
   "mcpServers": {
     "synter": {
       "command": "npx",
-      "args": ["@synterai/mcp-server"],
+      "args": ["-y", "@synterai/mcp-server@latest", "--read-only"],
       "env": {
-        "SYNTER_API_KEY": "syn_your_api_key_here"
+        "SYNTER_API_KEY": "syn_your_api_key_here",
+        "SYNTER_READ_ONLY": "true"
       }
     }
   }
@@ -161,9 +219,48 @@ Sign up at [synterai.com/sign-up](https://synterai.com/sign-up). Your API key is
 ```json
 {
   "mcpServers": {
+    "synter-ads": {
+      "command": "npx",
+      "args": ["-y", "@synterai/mcp-server@latest"],
+      "env": {
+        "SYNTER_API_KEY": "syn_your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+**For VS Code / Cline:** Add to `cline_mcp_settings.json`:
+
+```json
+{
+  "mcpServers": {
     "synter": {
       "command": "npx",
-      "args": ["@synterai/mcp-server"],
+      "args": ["-y", "@synterai/mcp-server@latest"],
+      "env": {
+        "SYNTER_API_KEY": "syn_your_api_key_here"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "pull_google_ads_performance",
+        "pull_meta_ads_performance",
+        "pull_linkedin_ads_performance",
+        "get_spend_reconciliation"
+      ]
+    }
+  }
+}
+```
+
+**For Windsurf (Codeium):** Add to `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "synter": {
+      "command": "npx",
+      "args": ["-y", "@synterai/mcp-server@latest"],
       "env": {
         "SYNTER_API_KEY": "syn_your_api_key_here"
       }
@@ -179,7 +276,7 @@ Sign up at [synterai.com/sign-up](https://synterai.com/sign-up). Your API key is
   "mcpServers": {
     "synter": {
       "command": "npx",
-      "args": ["@synterai/mcp-server"],
+      "args": ["-y", "@synterai/mcp-server@latest"],
       "env": {
         "SYNTER_API_KEY": "syn_your_api_key_here"
       }

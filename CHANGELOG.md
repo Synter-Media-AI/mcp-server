@@ -24,6 +24,8 @@
 ### Added
 
 - **Free Diagnostic Read Tier ($0.00 / 0 credits)**: Connecting ad accounts and inspecting campaigns, pulling performance metrics, and checking conversion tracking across all platforms is 100% free with zero credits deducted and no credit card required.
+- **Client-Side Read-Only Mode (`SYNTER_READ_ONLY=true` / `--read-only`)**: When active, all mutating tools (`create_`, `update_`, `pause_`, `enable_`, `sync_audience`) are completely unregistered from the tool manifest, and any mutation attempts are rejected locally with actionable error messages.
+- **Architecture, Security & Privacy Documentation**: Added comprehensive architecture diagrams, token encryption statements (AES-256 via KMS), immutable audit logging standards, and a zero model-training guarantee.
 - **Synter Ångström Grounded Output Verification**: Real-time readback probes against live provider APIs (Google Ads, Meta, LinkedIn, etc.) to verify delivery state, servability (`RUNNABLE`), and budget constraints, preventing AI agents from hallucinating campaign status.
 - Competitive comparison in README evaluating Synter against Google's read-only MCP, AdCP (Ad Context Protocol schema spec), and Pipeboard (single-channel proxy).
 - Transparent subscription tier documentation for write execution (SOLO $20/mo with $20.00 claimable credits, SCALE $500/mo with $500.00 claimable credits, CUSTOM enterprise).

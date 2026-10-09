@@ -35,6 +35,10 @@ import {
 const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
 const SYNTER_API_URL = process.env.SYNTER_API_URL || "https://synterai.com";
 const SYNTER_ARTIFACT_API_URL = process.env.SYNTER_ARTIFACT_API_URL || "https://api.synterai.com";
+export const IS_READ_ONLY =
+  process.env.SYNTER_READ_ONLY === "true" ||
+  process.env.SYNTER_READ_ONLY === "1" ||
+  process.argv.includes("--read-only");
 
 // =============================================================================
 // Tool Definitions
@@ -1443,14 +1447,31 @@ async function main() {
     }
   );
 
-  // List available tools
+  // List available tools (filtered to read-only tools when read-only mode is active)
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools,
+    tools: IS_READ_ONLY
+      ? tools.filter((t) => t.annotations?.readOnlyHint === true)
+      : tools,
   }));
 
   // Handle tool calls
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
+
+    if (IS_READ_ONLY) {
+      const toolDef = tools.find((t) => t.name === name);
+      if (toolDef && toolDef.annotations?.readOnlyHint !== true) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: Tool '${name}' is disabled in read-only mode (SYNTER_READ_ONLY / --read-only active). Remove --read-only or set SYNTER_READ_ONLY=false to enable mutations.`,
+            },
+          ],
+          isError: true,
+        };
+      }
+    }
 
     try {
       const result = await handleTool(name, (args || {}) as ToolArgs);
@@ -1480,7 +1501,9 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  console.error("Synter MCP server running on stdio");
+  console.error(
+    `Synter MCP server running on stdio${IS_READ_ONLY ? " (READ-ONLY mode active)" : ""}`
+  );
 }
 
 main().catch((error) => {
