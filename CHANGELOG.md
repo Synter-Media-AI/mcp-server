@@ -21,6 +21,13 @@
 - Error messages and the `run_tool` description point to synterai.com.
 - Hosted MCP endpoint is `https://mcp.synterai.com` (root, matching the OAuth protected-resource identifier).
 
+### Added
+
+- **Free Diagnostic Read Tier ($0.00 / 0 credits)**: Connecting ad accounts and inspecting campaigns, pulling performance metrics, and checking conversion tracking across all platforms is 100% free with zero credits deducted and no credit card required.
+- **Synter Ångström Grounded Output Verification**: Real-time readback probes against live provider APIs (Google Ads, Meta, LinkedIn, etc.) to verify delivery state, servability (`RUNNABLE`), and budget constraints, preventing AI agents from hallucinating campaign status.
+- Competitive comparison in README evaluating Synter against Google's read-only MCP, AdCP (Ad Context Protocol schema spec), and Pipeboard (single-channel proxy).
+- Transparent subscription tier documentation for write execution (SOLO $20/mo with $20.00 claimable credits, SCALE $500/mo with $500.00 claimable credits, CUSTOM enterprise).
+
 ### Metadata
 
 - `package.json`: description leads with "Official Synter MCP server" and "16 ad platforms";

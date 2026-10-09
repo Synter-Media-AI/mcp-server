@@ -83,22 +83,33 @@ Then start chatting:
 
 ## How Synter Compares
 
-The official Google Ads MCP server is read-only by design: per Google's documentation, it is "strictly read-only" and "cannot modify bids, pause campaigns, or create new assets." Most third-party ad MCP servers cover a single platform. We built Synter to do both halves of the job, across every major buying channel, from one server.
+The official Google Ads MCP server is read-only by design: per Google's documentation, it is "strictly read-only" and "cannot modify bids, pause campaigns, or create new assets." Most third-party ad MCP servers cover a single platform or provide raw schema protocols without an execution engine. We built Synter to do both halves of the job, across every major buying channel, with free read-only diagnostics and grounded verification.
 
-| | Synter MCP | Official Google Ads MCP | Typical third-party ad MCPs |
-|---|---|---|---|
-| **Access** | Read and write across 16 ad platforms | Read-only (current release) | Often read-only or partial write |
-| **Platforms** | 16 ad platforms (list below) | Google Ads only | Usually a single platform |
-| **Create campaigns** | ✅ Google Search, Display, PMax, Meta, LinkedIn, Reddit, more via `run_tool` | ❌ | Rarely |
-| **Budgets and pause** | ✅ | ❌ | Varies |
-| **AI creative generation** | ✅ Images, video, copy | ❌ | ❌ |
-| **Audience sync** | ✅ Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X | ❌ | ❌ |
-| **Safety** | Write tools annotated as destructive, so clients prompt first | n/a (read-only) | Varies |
-| **Open source** | ✅ MIT | ✅ | Varies |
+| | Synter MCP | Official Google Ads MCP | AdCP (Ad Context Protocol) | Pipeboard |
+|---|---|---|---|---|
+| **Free Read Access** | ✅ **100% Free ($0.00 / 0 credits)** | ✅ Free (Google only) | Schema spec only | ❌ Paywalled after trial |
+| **Write Mutations** | ✅ Managed paywall (SOLO, SCALE, CUSTOM) | ❌ Read-only | ❌ Spec only | ⚠️ Single-channel proxy |
+| **Platform Coverage** | **16 ad platforms** (list below) | Google Ads only | Spec standard only | 6 platforms |
+| **Grounded Verification** | ✅ **Synter Ångström** live readback | ❌ | ❌ | ❌ |
+| **Pre-Approved OAuth** | ✅ 1-click self-serve | Custom cloud setup | None | Basic API keys |
+| **AI Creative Generation**| ✅ Images, video, copy | ❌ | ❌ | ❌ |
+| **Audience Sync** | ✅ Cross-channel custom audiences | ❌ | ❌ | ❌ |
+| **Safety** | Write tools annotated as destructive | n/a (read-only) | n/a | Varies |
+| **Open Source** | ✅ MIT | ✅ Apache 2.0 | ✅ Apache 2.0 | ❌ Closed source core |
 
 **16 ad platforms:** Google Ads, Microsoft Ads (Bing), Meta (Facebook and Instagram), LinkedIn Ads, X (Twitter) Ads, Reddit Ads, TikTok Ads, Snapchat Ads, Pinterest Ads, Spotify Ads, Amazon Ads (Sponsored Products, Brands, and Display), Amazon DSP, The Trade Desk, OpenAI Ads (ChatGPT), Display & Video 360, and StackAdapt.
 
 Full campaign creation is available on most of them. Display & Video 360 and StackAdapt support write actions (pause, budget and line-item updates, audience upload) without campaign creation. A few retail media networks are also connected for reporting only.
+
+### 🔬 Synter Ångström Grounded Output Verification
+Never trust an unverified API response. Every mutation and observation in Synter is passed through **Synter Ångström**, which probes live provider APIs to verify that the effective state, servability (`RUNNABLE`), delivery status, and constraints match the exact requested intent before reporting back to your agent.
+
+### 💳 Transparent Pricing: Free Reads & Predictable Writes
+- **Free Diagnostic Read Tier ($0.00 / 0 credits)**: Connect your ad accounts and inspect campaigns, pull metrics, and audit tracking completely free. No credit card required.
+- **Paid Campaign Execution**: When you ask your agent to pause campaigns, adjust budgets, create ads, or scale winning angles, execution is billed transparently through Synter subscription tiers:
+  - **SOLO**: $20 / month ($200 / year), includes **$20.00 in claimable monthly credits**.
+  - **SCALE**: $500 / month ($5,000 / year), includes **$500.00 in claimable monthly credits**.
+  - **CUSTOM**: Sales-led enterprise contracts with dedicated capacity.
 
 The hosted server at `https://mcp.synterai.com` exposes the full hosted tool set, including performance pulls for every platform above. The `npx` package ships typed tools for the most common operations plus `run_tool` access to the full catalog of 140+ Synter tools.
 
