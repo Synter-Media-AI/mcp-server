@@ -31,14 +31,48 @@ import {
   DAILY_SPEND_SCRIPT_BY_PLATFORM,
   own,
 } from "./platform-routing.js";
+import { isDemoMode, getSandboxToolResult } from "./demo-sandbox.js";
 
 const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
 const SYNTER_API_URL = process.env.SYNTER_API_URL || "https://synterai.com";
 const SYNTER_ARTIFACT_API_URL = process.env.SYNTER_ARTIFACT_API_URL || "https://api.synterai.com";
+
 export const IS_READ_ONLY =
   process.env.SYNTER_READ_ONLY === "true" ||
   process.env.SYNTER_READ_ONLY === "1" ||
   process.argv.includes("--read-only");
+
+export const IS_DEMO = isDemoMode(process.env, process.argv);
+
+if (process.argv.includes("--help") || process.argv.includes("-h")) {
+  console.log(`Synter MCP Server (@synterai/mcp-server)
+
+Official MCP server connecting AI agents to 16 ad platforms:
+Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, and more.
+
+Usage:
+  synter-mcp [options]
+  npx @synterai/mcp-server [options]
+
+Options:
+  --demo       Run in zero-credential demo sandbox mode with realistic mock ad data
+  --read-only  Disable all mutating tools and enforce strict read-only mode
+  --version    Display version number
+  --help, -h   Show this help message
+
+Environment Variables:
+  SYNTER_API_KEY     Your Synter API key from https://synterai.com/developer
+  SYNTER_DEMO        Enable demo sandbox mode (true / 1)
+  SYNTER_READ_ONLY   Enforce read-only mode (true / 1)
+  SYNTER_API_URL     API URL override (default: https://synterai.com)
+`);
+  process.exit(0);
+}
+
+if (process.argv.includes("--version") || process.argv.includes("-v")) {
+  console.log("1.3.0");
+  process.exit(0);
+}
 
 // =============================================================================
 // Tool Definitions
@@ -889,7 +923,7 @@ async function callSynterAPI(
 ): Promise<Record<string, unknown>> {
   if (!SYNTER_API_KEY) {
     throw new Error(
-      "SYNTER_API_KEY not set. Get your API key at https://synterai.com/developer"
+      "SYNTER_API_KEY not set. Get your API key at https://synterai.com/developer or run with --demo for zero-credential sandbox mode."
     );
   }
 
@@ -917,7 +951,7 @@ async function callSynterAPIGet(
 ): Promise<Record<string, unknown>> {
   if (!SYNTER_API_KEY) {
     throw new Error(
-      "SYNTER_API_KEY not set. Get your API key at https://synterai.com/developer"
+      "SYNTER_API_KEY not set. Get your API key at https://synterai.com/developer or run with --demo for zero-credential sandbox mode."
     );
   }
 
@@ -947,7 +981,7 @@ async function stageAudienceArtifact(
 ): Promise<Record<string, unknown>> {
   if (!SYNTER_API_KEY) {
     throw new Error(
-      "SYNTER_API_KEY not set. Get your API key at https://synterai.com/developer"
+      "SYNTER_API_KEY not set. Get your API key at https://synterai.com/developer or run with --demo for zero-credential sandbox mode."
     );
   }
 
@@ -1033,6 +1067,15 @@ async function handleTool(
   name: string,
   args: ToolArgs
 ): Promise<Record<string, unknown>> {
+  const toolDef = tools.find((t) => t.name === name);
+  if (!toolDef) {
+    throw new Error(`Unknown tool: ${name}`);
+  }
+
+  if (IS_DEMO) {
+    return getSandboxToolResult(name, args);
+  }
+
   // Tools that bypass the standard /api/v1/tools/run dispatcher.
   if (name === "stage_audience_artifact") {
     const body = args.body as string;
@@ -1502,7 +1545,7 @@ async function main() {
   await server.connect(transport);
 
   console.error(
-    `Synter MCP server running on stdio${IS_READ_ONLY ? " (READ-ONLY mode active)" : ""}`
+    `Synter MCP server running on stdio${IS_DEMO ? " (DEMO SANDBOX mode active: zero credentials required)" : ""}${IS_READ_ONLY ? " (READ-ONLY mode active)" : ""}`
   );
 }
 

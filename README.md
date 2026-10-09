@@ -26,6 +26,8 @@ Signup is self-serve at [synterai.com/sign-up](https://synterai.com/sign-up). Th
 
 Synter's canonical domain is **synterai.com**; the hosted MCP endpoint is `https://mcp.synterai.com`.
 
+> ⚡ **Try in < 60 Seconds with Zero Credentials:** Run `npx @synterai/mcp-server --demo` (or set `SYNTER_DEMO=true`) to explore campaigns, inspect performance metrics, and simulate mutations with high-fidelity sandbox data. No account or API key required.
+
 > **Official packages:** The only official packages are `@synterai/mcp-server`, `@synterai/sdk-js`, PyPI `synter`, crates.io `synter`, Maven `ai.syntermedia:synter-sdk`. `@iflow-mcp/*` copies are unofficial and outdated.
 
 **Cursor:** click the badge above, or open `cursor://anysphere.cursor-deeplink/mcp/install?name=synter-ads&config=eyJ1cmwiOiJodHRwczovL21jcC5zeW50ZXJhaS5jb20ifQ==`
@@ -191,7 +193,29 @@ Write tools are annotated as destructive, so MCP clients prompt before running t
 
 Use this when your client only speaks stdio, or when you run headless and can't complete a browser sign-in.
 
-### 1. Get Your API Key
+### ⚡ Quick Demo Sandbox Mode (< 60s Evaluation)
+
+Test immediately with realistic mock ad data across Google, Meta, LinkedIn, and more without needing an account or API key:
+
+```json
+{
+  "mcpServers": {
+    "synter-demo": {
+      "command": "npx",
+      "args": ["-y", "@synterai/mcp-server@latest", "--demo"]
+    }
+  }
+}
+```
+
+Or run directly from your terminal:
+```bash
+npx @synterai/mcp-server --demo
+```
+
+---
+
+### 1. Get Your API Key (For Live Accounts)
 
 Sign up at [synterai.com/sign-up](https://synterai.com/sign-up). Your API key is created automatically; you can view it or create more in [Developer Settings](https://synterai.com/developer).
 
