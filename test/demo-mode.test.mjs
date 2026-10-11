@@ -38,17 +38,77 @@ async function withDemoClient(options, fn) {
   }
 }
 
-test("demo mode via --demo flag lists all 25 tools without API key", async () => {
+test("demo mode via --demo flag lists all 29 tools without API key", async () => {
   await withDemoClient({ args: ["--demo"] }, async (client) => {
     const { tools } = await client.listTools();
-    assert.equal(tools.length, 25, "all 25 tools should be available in demo mode");
+    assert.equal(tools.length, 29, "all 29 tools should be available in demo mode");
   });
 });
 
-test("demo mode via SYNTER_DEMO=true lists all 25 tools without API key", async () => {
+test("demo mode via SYNTER_DEMO=true lists all 29 tools without API key", async () => {
   await withDemoClient({ env: { SYNTER_DEMO: "true" } }, async (client) => {
     const { tools } = await client.listTools();
-    assert.equal(tools.length, 25, "all 25 tools should be available in demo mode");
+    assert.equal(tools.length, 29, "all 29 tools should be available in demo mode");
+  });
+});
+
+test("demo mode exposes free Agent Shield, Ångström, Skills, and LLM Visibility tools", async () => {
+  await withDemoClient({ args: ["--demo"] }, async (client) => {
+    // 1. inspect_agent_shield
+    const shieldRes = await client.callTool({
+      name: "inspect_agent_shield",
+      arguments: {},
+    });
+    assert.ok(!shieldRes.isError);
+    const shieldData = JSON.parse(shieldRes.content[0].text);
+    assert.equal(shieldData.sandbox, true);
+    assert.equal(shieldData.shield_status, "ENFORCING");
+    assert.ok(shieldData.spend_guardrails.max_daily_budget_multiplier > 0);
+    assert.equal(shieldData.pii_sanitization.mode, "STRICT_ZERO_UNHASHED");
+
+    // 2. verify_angstrom_claim
+    const angstromRes = await client.callTool({
+      name: "verify_angstrom_claim",
+      arguments: { claim: "Scale daily search budget by 15% with $45 Target CPA" },
+    });
+    assert.ok(!angstromRes.isError);
+    const angstromData = JSON.parse(angstromRes.content[0].text);
+    assert.equal(angstromData.model, "synter-angstrom-v1");
+    assert.equal(angstromData.verified, true);
+    assert.ok(angstromData.confidence_score > 0.9);
+
+    // 3. get_skill
+    const skillRes = await client.callTool({
+      name: "get_skill",
+      arguments: { skill: "pmax-brand-cannibalization" },
+    });
+    assert.ok(!skillRes.isError);
+    const skillData = JSON.parse(skillRes.content[0].text);
+    assert.equal(skillData.skill_id, "pmax-brand-cannibalization");
+    assert.ok(Array.isArray(skillData.skill.execution_runbook));
+
+    // 4. get_llm_visibility
+    const llmRes = await client.callTool({
+      name: "get_llm_visibility",
+      arguments: {},
+    });
+    assert.ok(!llmRes.isError);
+    const llmData = JSON.parse(llmRes.content[0].text);
+    assert.ok(llmData.overall_visibility_score > 80);
+    assert.ok(Array.isArray(llmData.ranking_among_alternatives));
+
+    // 5. MCP Resources
+    const { resources } = await client.listResources();
+    assert.equal(resources.length, 4, "server should advertise 4 MCP resources");
+    const uris = resources.map((r) => r.uri);
+    assert.ok(uris.includes("synter://agent-shield/policies"));
+    assert.ok(uris.includes("synter://angstrom/rubric"));
+    assert.ok(uris.includes("synter://skills/catalog"));
+    assert.ok(uris.includes("synter://pricing/coverage"));
+
+    // Read a resource
+    const readRes = await client.readResource({ uri: "synter://angstrom/rubric" });
+    assert.match(readRes.contents[0].text, /Synter Ångström/);
   });
 });
 

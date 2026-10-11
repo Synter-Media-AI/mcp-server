@@ -36,6 +36,10 @@ const EXPECTED_TOOLS = [
   "upload_image",
   "run_tool",
   "list_landing_pages",
+  "inspect_agent_shield",
+  "verify_angstrom_claim",
+  "get_skill",
+  "get_llm_visibility",
 ];
 
 const pkg = JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"));
@@ -66,7 +70,7 @@ test("server boots over stdio and reports name and package version", async () =>
   });
 });
 
-test("tools/list returns the same 25 tool names as 1.2.4", async () => {
+test("tools/list returns all 29 tools including 4 free intelligence/security tools", async () => {
   await withClient(async (client) => {
     const { tools } = await client.listTools();
     assert.deepEqual(

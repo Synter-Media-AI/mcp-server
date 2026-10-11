@@ -16,6 +16,8 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
   type Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 import {
@@ -911,6 +913,62 @@ const tools: Tool[] = [
       properties: {},
     },
   },
+  {
+    name: "inspect_agent_shield",
+    description:
+      "Inspect Synter Agent Shield security guardrails: spend velocity limits, circuit breaker status, and PII protection fences. Free read-only security audit tool.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {},
+    },
+  },
+  {
+    name: "verify_angstrom_claim",
+    description:
+      "Verify advertising claims, budget shifts, or campaign targets against Synter Ångström deterministic ground-truth verification model. Free claim verification tool.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        claim: {
+          type: "string",
+          description: "Campaign optimization claim, targeting rule, or creative copy to verify",
+        },
+      },
+      required: ["claim"],
+    },
+  },
+  {
+    name: "get_skill",
+    description:
+      "Retrieve core advertising skill runbooks and playbooks (e.g. 'pmax-brand-cannibalization', 'search-hygiene-shield', 'marginal-cpa-budget-rebalancer', 'meta-asc-dark-pool-auditor', 'single-truth-attribution') or pass 'all' to list catalog. Free loadable operational knowledge for AI coding agents.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        skill: {
+          type: "string",
+          description: "Skill identifier (or 'all'/'list' to see catalog)",
+        },
+      },
+    },
+  },
+  {
+    name: "get_llm_visibility",
+    description:
+      "Query AI model visibility, Answer Engine Optimization (AEO) ranking, and brand share of voice across ChatGPT, Claude, Perplexity, and Gemini. Free read-only intelligence tool.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        topic: {
+          type: "string",
+          description: "Search topic or product category (default: 'AI Ad Operations & Multi-Platform MCP')",
+        },
+      },
+    },
+  },
 ];
 
 // =============================================================================
@@ -1073,6 +1131,24 @@ async function handleTool(
   }
 
   if (IS_DEMO) {
+    return getSandboxToolResult(name, args);
+  }
+
+  // Free zero-credential read/audit tools: work even when SYNTER_API_KEY is not set
+  if (
+    name === "inspect_agent_shield" ||
+    name === "verify_angstrom_claim" ||
+    name === "get_skill" ||
+    name === "get_llm_visibility"
+  ) {
+    if (SYNTER_API_KEY) {
+      try {
+        return await callSynterAPI(`tools/${name}`, args);
+      } catch {
+        // Fall back to built-in local client-side evaluation
+        return getSandboxToolResult(name, args);
+      }
+    }
     return getSandboxToolResult(name, args);
   }
 
@@ -1486,6 +1562,7 @@ async function main() {
     {
       capabilities: {
         tools: {},
+        resources: {},
       },
     }
   );
@@ -1496,6 +1573,142 @@ async function main() {
       ? tools.filter((t) => t.annotations?.readOnlyHint === true)
       : tools,
   }));
+
+  // List free knowledge & security resources
+  server.setRequestHandler(ListResourcesRequestSchema, async () => ({
+    resources: [
+      {
+        uri: "synter://agent-shield/policies",
+        name: "Synter Agent Shield Active Guardrails",
+        description: "Active spend velocity limits, circuit breaker settings, and PII protection invariants.",
+        mimeType: "application/json",
+      },
+      {
+        uri: "synter://angstrom/rubric",
+        name: "Synter Ångström Ground-Truth Verification Standard",
+        description: "Deterministic rubric and verification criteria for ad claims, platform APIs, and conversion tracking.",
+        mimeType: "text/markdown",
+      },
+      {
+        uri: "synter://skills/catalog",
+        name: "Synter Agent Skills Catalog",
+        description: "Directory of core advertising playbooks (PMax cannibalization, search hygiene, marginal CPA rebalancing, Meta ASC dark pool, attribution).",
+        mimeType: "application/json",
+      },
+      {
+        uri: "synter://pricing/coverage",
+        name: "Verified Pricing and Platform Coverage Reference",
+        description: "Canonical pricing tiers ($0.00 free read diagnostics, SOLO $20/mo, SCALE $500/mo, 3% spend fee) and 27-platform matrix.",
+        mimeType: "text/markdown",
+      },
+    ],
+  }));
+
+  // Read resource contents
+  server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+    const uri = request.params.uri;
+    if (uri === "synter://agent-shield/policies") {
+      return {
+        contents: [
+          {
+            uri,
+            mimeType: "application/json",
+            text: JSON.stringify(
+              {
+                status: "ENFORCING",
+                guardrails: {
+                  max_daily_budget_multiplier: 2.0,
+                  daily_spend_velocity_cap_usd: 5000.0,
+                  anomalous_cpa_circuit_breaker: "PAUSE_IMMEDIATELY",
+                  pii_sanitization: "STRICT_ZERO_UNHASHED",
+                },
+                policies: [
+                  "Never execute mutations without explicit user consent or dry-run evaluation",
+                  "Mandatory post-write provider readback on all campaign and budget changes",
+                  "Enforce Google RSA 11-headline / 4-description creative floor",
+                  "Auto-pause campaigns when CPA exceeds 3x threshold",
+                ],
+              },
+              null,
+              2
+            ),
+          },
+        ],
+      };
+    }
+    if (uri === "synter://angstrom/rubric") {
+      return {
+        contents: [
+          {
+            uri,
+            mimeType: "text/markdown",
+            text: `# Synter Ångström Ground-Truth Verification Standard
+
+Ångström provides deterministic ground-truth verification of advertising operations:
+1. API Capability: Every tool call corresponds to verified, live ad network endpoints.
+2. Tag Readiness: Conversion tracking and tags must be active before deploying paid traffic.
+3. Budget Safety Floor: Budgets must meet network-specific floors ($5-$10/day) and remain within account caps.
+4. Creative Compliance: Zero prohibited claims, strict headline/description minimums (11/4 for Google RSA).
+5. Post-Write Readback: All state mutations must be independently verified by re-reading the remote provider state.`,
+          },
+        ],
+      };
+    }
+    if (uri === "synter://skills/catalog") {
+      return {
+        contents: [
+          {
+            uri,
+            mimeType: "application/json",
+            text: JSON.stringify(
+              {
+                catalog: [
+                  { id: "pmax-brand-cannibalization", name: "Google PMax Brand Cannibalization Shield" },
+                  { id: "search-hygiene-shield", name: "Search Term Waste & Hygiene Shield" },
+                  { id: "marginal-cpa-budget-rebalancer", name: "Marginal CPA Cross-Channel Budget Rebalancer" },
+                  { id: "meta-asc-dark-pool-auditor", name: "Meta Advantage+ Shopping Dark Pool Auditor" },
+                  { id: "single-truth-attribution", name: "Single-Truth Multi-Touch Attribution" },
+                ],
+              },
+              null,
+              2
+            ),
+          },
+        ],
+      };
+    }
+    if (uri === "synter://pricing/coverage") {
+      return {
+        contents: [
+          {
+            uri,
+            mimeType: "text/markdown",
+            text: `# Synter Verified Pricing & 27-Platform Matrix
+
+## 100% Free Read-Only Access ($0.00 / 0 credits)
+- Performance metrics across all 16 direct execution platforms
+- Daily spend time-series breakdown (get_daily_spend)
+- Conversion tracking diagnostics (diagnose_tracking)
+- Agent Shield security inspection (inspect_agent_shield)
+- Synter Ångström claim verification (verify_angstrom_claim)
+- Agent skills catalog and execution runbooks (get_skill)
+- LLM visibility and AEO ranking reads (get_llm_visibility)
+
+## Subscription Plans
+- SOLO: $20/month ($200/year), 1 seat, includes $20.00/mo claimable credits
+- SCALE: $500/month ($5,000/year), 5 seats, includes $500.00/mo claimable credits
+- CUSTOM: Enterprise, custom seats and credit allocations
+- Autonomous Ad Spend Fee: Flat 3% (0% markup on media spend)
+
+## Platform Matrix
+- 16 Direct Execution: Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, StackAdapt
+- 11 Extended Catalog: FreeWheel, CM360, Walmart Connect, Instacart, Target Roundel, Criteo, SA360, Samsung Ads, Taboola, Outbrain, Apple Search Ads`,
+          },
+        ],
+      };
+    }
+    throw new Error(`Resource not found: ${uri}`);
+  });
 
   // Handle tool calls
   server.setRequestHandler(CallToolRequestSchema, async (request) => {

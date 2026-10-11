@@ -51,15 +51,25 @@ async function withMcpClient(options, fn) {
 
 test("BEATS AdCP: Executable multi-tool server with live JSON-RPC vs passive schema specification", async () => {
   // AdCP is a proposed JSON schema standard with 0 executable tools and no runtime.
-  // Synter is a production MCP server with 25 executable tools operating over JSON-RPC stdio.
+  // Synter is a production MCP server with 29 executable tools operating over JSON-RPC stdio.
   await withMcpClient({ args: ["--demo"] }, async (client) => {
     const { tools } = await client.listTools();
-    assert.equal(tools.length, 25, "Synter provides 25 live tools; AdCP provides 0 executable tools");
+    assert.equal(tools.length, 29, "Synter provides 29 live tools; AdCP provides 0 executable tools");
 
     const reportingTools = tools.filter((t) =>
-      ["get_performance", "get_daily_spend", "list_campaigns", "list_ad_accounts", "diagnose_tracking"].includes(t.name)
+      [
+        "get_performance",
+        "get_daily_spend",
+        "list_campaigns",
+        "list_ad_accounts",
+        "diagnose_tracking",
+        "inspect_agent_shield",
+        "verify_angstrom_claim",
+        "get_skill",
+        "get_llm_visibility",
+      ].includes(t.name)
     );
-    assert.equal(reportingTools.length, 5, "Synter provides 5 dedicated reporting/diagnostics tools");
+    assert.equal(reportingTools.length, 9, "Synter provides 9 dedicated reporting/diagnostics/intelligence tools");
 
     // AdCP cannot execute tool calls. Synter executes immediately with deterministic responses.
     const start = Date.now();

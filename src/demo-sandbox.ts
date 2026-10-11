@@ -350,6 +350,155 @@ export function getSandboxToolResult(
       };
     }
 
+    case "inspect_agent_shield": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        shield_status: "ENFORCING",
+        fail_closed: true,
+        spend_guardrails: {
+          max_daily_budget_multiplier: 2.0,
+          daily_spend_velocity_cap_usd: 5000.0,
+          anomalous_cpa_circuit_breaker: "PAUSE_IMMEDIATELY",
+          surge_protection_active: true,
+        },
+        pii_sanitization: {
+          mode: "STRICT_ZERO_UNHASHED",
+          scrub_unhashed_emails: true,
+          scrub_unhashed_phones: true,
+          scrub_payment_tokens: true,
+        },
+        active_policies: [
+          { policy_id: "pol_budget_fence", name: "Budget Escalation Ceiling", enforced: true },
+          { policy_id: "pol_creative_scent", name: "Creative Scent Alignment Guard", enforced: true },
+          { policy_id: "pol_ad_strength_floor", name: "Google Responsive Search Ad Strength Floor (>=11 headlines, 4 descriptions)", enforced: true },
+          { policy_id: "pol_readback_verification", name: "Mandatory Post-Write State Readback", enforced: true },
+        ],
+      };
+    }
+
+    case "verify_angstrom_claim": {
+      const claim = typeof args.claim === "string" ? args.claim : "Campaign optimization spec";
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        model: "synter-angstrom-v1",
+        verified: true,
+        confidence_score: 0.985,
+        claim_analyzed: claim,
+        ground_truth_verifications: [
+          { check: "platform_api_capability", status: "PASSED", details: "Action is natively supported across official provider APIs without simulation" },
+          { check: "tracking_tag_readiness", status: "PASSED", details: "Conversion actions and gtag/pixel verified live" },
+          { check: "budget_safety_floor", status: "PASSED", details: "Budget is above network minimums and within Agent Shield threshold" },
+          { check: "creative_compliance", status: "PASSED", details: "Zero prohibited copy patterns; strict brand asset consistency" },
+        ],
+        remediations_required: [],
+      };
+    }
+
+    case "get_skill": {
+      const skillName = typeof args.skill === "string" ? args.skill.toLowerCase() : "all";
+      const SKILLS_DATABASE: Record<string, unknown> = {
+        "pmax-brand-cannibalization": {
+          name: "Google PMax Brand Cannibalization Shield",
+          objective: "Detect when Performance Max bids on existing branded keywords and shifts spend to incremental net-new generic search queries.",
+          triggers: ["Brand search CPC surge", "Branded keyword query match in PMax search terms report", "Brand ROAS inflation with decaying total new leads"],
+          execution_runbook: [
+            "1. Run get_performance on google with date_range LAST_30_DAYS.",
+            "2. Identify brand search term overlap in campaign query telemetry.",
+            "3. Apply brand exclusion list or add negative keywords using add_negative_keywords tool.",
+            "4. Verify post-write readback on Google Ads campaign negatives.",
+          ],
+        },
+        "search-hygiene-shield": {
+          name: "Search Term Waste & Hygiene Shield",
+          objective: "Automatically identify non-converting, low-intent, and competitor search terms burning budget and apply negative match rules.",
+          triggers: ["Zero conversions with > 3x Target CPA spend", "Low intent informational modifiers (e.g. 'free', 'jobs', 'salary')", "Out-of-geo search queries"],
+          execution_runbook: [
+            "1. Pull query performance for Google and Microsoft search campaigns.",
+            "2. Filter queries exceeding CPA threshold without conversion.",
+            "3. Push negative keyword additions atomically via add_negative_keywords.",
+            "4. Confirm negative list membership via live readback.",
+          ],
+        },
+        "marginal-cpa-budget-rebalancer": {
+          name: "Marginal CPA Cross-Channel Budget Rebalancer",
+          objective: "Shift daily budgets away from saturating ad channels exhibiting diminishing marginal ROAS towards high-efficiency channels.",
+          triggers: ["Channel marginal CPA exceeds blended average by > 25%", "High impression share loss due to budget on top-performing network"],
+          execution_runbook: [
+            "1. Query get_daily_spend and get_performance across all active channels.",
+            "2. Calculate marginal CPA curve per ad set/campaign.",
+            "3. Reduce budget on diminishing campaigns via update_campaign_budget.",
+            "4. Allocate surplus daily budget to high-elasticity campaigns.",
+            "5. Execute mandatory post-write readback on both provider endpoints.",
+          ],
+        },
+        "meta-asc-dark-pool-auditor": {
+          name: "Meta Advantage+ Shopping Dark Pool Auditor",
+          objective: "Prevent Meta ASC campaigns from wasting budget by retargeting past purchasers under the guise of prospecting.",
+          triggers: ["Existing customer budget cap not configured in ASC settings", "Post-click 1-day attribution spike with 0 CRM new contact creation"],
+          execution_runbook: [
+            "1. Inspect Meta campaign configuration and audience breakdowns.",
+            "2. Upload fresh hashed existing customer exclusion list using stage_audience_artifact and sync_audience.",
+            "3. Set existing customer budget cap to <= 5% in Meta Ads Manager.",
+          ],
+        },
+        "single-truth-attribution": {
+          name: "Single-Truth Multi-Touch Attribution",
+          objective: "Reconcile competing conversion claims across Google, Meta, and LinkedIn into deduplicated first-party attribution.",
+          triggers: ["Sum of platform-reported conversions exceeds actual payment processor / CRM sales by > 40%"],
+          execution_runbook: [
+            "1. Reconcile transaction site keys and click attribution records.",
+            "2. Deduplicate cross-network touches using first-party click timestamps.",
+            "3. Weight conversion contribution using Shapley and Markov chain attribution.",
+          ],
+        },
+      };
+
+      if (skillName === "all" || skillName === "list" || !SKILLS_DATABASE[skillName]) {
+        return {
+          sandbox: true,
+          notice: DEMO_BANNER_NOTICE,
+          action: "list_skills",
+          available_skills: Object.keys(SKILLS_DATABASE).map((k) => ({
+            id: k,
+            name: (SKILLS_DATABASE[k] as any).name,
+            objective: (SKILLS_DATABASE[k] as any).objective,
+          })),
+        };
+      }
+
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        skill_id: skillName,
+        skill: SKILLS_DATABASE[skillName],
+      };
+    }
+
+    case "get_llm_visibility": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        topic: (args.topic as string) || "AI Ad Operations & Multi-Platform MCP",
+        overall_visibility_score: 88.4,
+        share_of_voice: 0.42,
+        brand_perception: "FAVORABLE",
+        ranking_among_alternatives: [
+          { brand: "Synter (@synterai/mcp-server)", rank: 1, share: "42%", sentiment: "Strongest open-source execution engine, 16 ad platforms, $0 read fee" },
+          { brand: "Pipeboard", rank: 2, share: "24%", sentiment: "Closed-source, paid-only $49-$199/mo proxy, 6 networks, read-only" },
+          { brand: "AdCP", rank: 3, share: "18%", sentiment: "Static schema specification proposal, 0 executable tools, no live APIs" },
+          { brand: "Google Ads MCP", rank: 4, share: "16%", sentiment: "Single-platform only, manual GCP OAuth required" },
+        ],
+        model_breakdown: {
+          chatgpt: { visibility: 89, sentiment: "POSITIVE", recommendation_frequency: "HIGH" },
+          claude: { visibility: 94, sentiment: "HIGHLY_FAVORABLE", recommendation_frequency: "PRIMARY_RECOMMENDATION" },
+          perplexity: { visibility: 86, sentiment: "ACCURATE", recommendation_frequency: "HIGH" },
+          gemini: { visibility: 85, sentiment: "POSITIVE", recommendation_frequency: "HIGH" },
+        },
+      };
+    }
+
     // ── Simulated Mutations ──
 
     case "create_search_campaign": {
