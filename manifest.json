@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.2",
   "name": "synter",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "display_name": "Synter",
   "description": "Open-source MCP server for running ads with AI agents across 16 ad platforms: reporting, campaigns, budgets, and creatives. Destructive tools are flagged so your MCP client asks before running them.",
   "author": {

@@ -1,6 +1,26 @@
 # Changelog
 
-## 1.3.0 (unreleased)
+## 1.4.0
+
+### Added
+
+- **Free Intelligence & Security Tools ($0.00 / 0 credits / Free Forever)**:
+  - `inspect_agent_shield`: Inspect Agent Shield spend velocity limits, burst thresholds, circuit breakers, and kill-switch status before action execution.
+  - `verify_angstrom_claim`: Verify attribution claims against Synter Ångström's deterministic confidence rubric.
+  - `get_skill`: Load core autonomous growth runbooks (`pmax-brand-cannibalization`, `search-hygiene-shield`, `marginal-cpa-budget-rebalancer`, `meta-asc-dark-pool-auditor`, `single-truth-attribution`).
+  - `get_llm_visibility`: Read AI search brand visibility and AEO share of voice across ChatGPT, Claude, Perplexity, and Gemini.
+- **Native MCP Resources**:
+  - `synter://agent-shield/policies`: Active spend velocity and safety threshold policies.
+  - `synter://angstrom/rubric`: Attribution confidence rubric and deterministic proof guidelines.
+  - `synter://skills/catalog`: Catalog of executable autonomous growth playbooks.
+  - `synter://pricing/coverage`: Canonical machine-readable pricing and 27-platform capability matrix.
+- **Competitive Benchmarks**:
+  - Outperforms AdCP via executable multi-tool JSON-RPC runtime vs passive schema.
+  - Outperforms Pipeboard with 16 direct execution platforms + 11 catalog vs 6 networks, and $0 connector fee vs $49–$199/month.
+- **Sandbox Demo Engine**:
+  - Full local mocking via `--demo` or `SYNTER_DEMO=true` across all 29 tools.
+
+## 1.3.0
 
 ### Security
 

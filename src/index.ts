@@ -72,7 +72,7 @@ Environment Variables:
 }
 
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  console.log("1.3.0");
+  console.log("1.4.0");
   process.exit(0);
 }
 
@@ -1557,7 +1557,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.3.0",
+      version: "1.4.0",
     },
     {
       capabilities: {

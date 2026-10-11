@@ -275,5 +275,5 @@ test("--help CLI argument displays help and exits with code 0", async () => {
 test("--version CLI argument displays version and exits with code 0", async () => {
   const binaryPath = new URL("../dist/index.js", import.meta.url).pathname;
   const { stdout } = await execFileAsync(process.execPath, [binaryPath, "--version"]);
-  assert.equal(stdout.trim(), "1.3.0");
+  assert.equal(stdout.trim(), "1.4.0");
 });
