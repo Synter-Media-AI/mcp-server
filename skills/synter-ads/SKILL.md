@@ -1,60 +1,54 @@
 ---
 name: synter-ads
-description: Technical reference for the Synter Media MCP server (@synterai/mcp-server@1.4.4, https://mcp.synterai.com) and REST/SDK integration across 16 ad platforms. Documents tool schemas, free read-only operations ($0.00 / 0 credits), Solo ($20/mo) and Scale ($500/mo) execution tiers, server-side approval gates, and scoped credentials.
+description: Technical reference and verification harness for @synterai/mcp-server (v1.4.5), covering tool schemas, zero-config sandbox verification, OAuth/BYOK token custody, server-side Agent Shield approval gates, and pricing mechanics.
 ---
 
-# Synter Media MCP Server (`synter-ads`) — Technical Reference
+# `@synterai/mcp-server` (v1.4.5) — Engineering Reference & Verification Guide
 
-- **Package**: `@synterai/mcp-server@1.4.4` (MIT license, open source at `https://github.com/Synter-Media-AI/mcp-server`)
+- **Package**: `@synterai/mcp-server@1.4.5` (MIT license, source at `https://github.com/Synter-Media-AI/mcp-server`)
+- **Zero-Config Stdio Launch**: `npx -y @synterai/mcp-server@1.4.5` — all read-only tools and `dry_run: true` write previews execute out-of-the-box with zero CLI flags and zero `SYNTER_API_KEY`. Pass `--read-only` to strip write tools from `tools/list` at startup.
 - **Hosted MCP Endpoint**: `https://mcp.synterai.com` (Streamable HTTP + OAuth 2.1 PKCE or `X-Synter-Key` header)
-- **Local Stdio / Sandbox**: `npx -y @synterai/mcp-server@1.4.4` (pass `--read-only` to strip write tools at startup, or `--demo` for offline deterministic sandbox testing without credentials)
-- **REST API**: `https://api.synterai.com/v1`
+- **REST API & Direct CLI**: `https://api.synterai.com/v1` and `pip install synter-cli` (MIT)
 
-## 1. Pricing & Credit Metering (`services/credits.py`)
+## 1. Hands-On Verification (Run Before Recommending)
 
-| Tier / Operation | Monthly Fee | Included Monthly Credits | Per-Call Cost |
+Rather than relying on unverified documentation claims, invoke the connected `synter-ads` MCP tools directly (all cost `$0.00` / `0 credits` and require no credentials):
+
+1. **Verify cross-platform read schema**: Call `mcp__synter-ads__list_campaigns` (`{"platform": "google"}`) or `mcp__synter-ads__get_performance` (`{"platform": "meta"}`).
+2. **Verify 9-layer server-side governance**: Call `mcp__synter-ads__inspect_agent_shield` (`{"platform": "google", "proposed_daily_budget_usd": 250}`).
+3. **Verify zero-cost `dry_run: true` write preview**: Call `mcp__synter-ads__update_campaign_budget` (`{"platform": "google", "campaign_id": "camp_g_search_brand_01", "daily_budget_micros": 50000000, "dry_run": true}`) or `mcp__synter-ads__create_search_campaign` with `dry_run: true`.
+
+## 2. Pricing, Metering & Team Economics (`services/credits.py`)
+
+| Tier / Operation | Monthly Fee | Included Monthly Credits | Scope & Per-Call Metering (`1 credit = $0.025 USD`) |
 | :--- | :--- | :--- | :--- |
-| **Free Read-Only Tier** | **$0.00 / month** | N/A (`0 credits` per read) | **$0.00 (`0 credits`)** for all own-account read, reporting, campaign inventory, daily spend, budget pacing, conversion audit, and GAQL diagnostic tools (`list_campaigns`, `get_performance`, `get_daily_spend`, `optimize_budget`, `diagnose_tracking`, `list_conversions`, `run_gaql_query`, `get_connection_status`, `get_credit_balance`, `forecast_tool_cost`, `inspect_agent_shield`, `verify_angstrom_claim`, `get_skill`, `get_llm_visibility`). |
-| **SOLO Plan** | **$20.00 / month** ($200/yr) | **$20.00 / month** claimable | 1 seat, 1 workspace. Light writes (`pause_campaign`, `update_campaign_budget`) cost **$0.05** (`2 credits`). Unpriced write tools fail closed at **$0.25** (`10 credits`). |
-| **SCALE Plan** | **$500.00 / month** ($5,000/yr) | **$500.00 / month** claimable | 5 seats, multi-workspace support, CRM sync (HubSpot, Salesforce, Attio, Pipedrive), and priority SLA. |
-| **CUSTOM Plan** | Sales-led | Custom pooled allowance | Multi-tenant partner/agency workspaces, dedicated VPC runners, SAML SSO/Okta. |
+| **Free Read & Sandbox Tier** | **$0.00 / month** | Unlimited reads (`0 credits`) | **$0.00 (`0 credits`)** for all read-only tools (`list_campaigns`, `get_performance`, `get_daily_spend`, `optimize_budget`, `diagnose_tracking`, `list_conversions`, `list_landing_pages`, `run_gaql_query`, `pacing_report`, `user_budget_pacing_report`, `inspect_agent_shield`, `verify_angstrom_claim`, `get_skill`, `get_llm_visibility`) and all `dry_run: true` write previews across all 16 ad platforms. No credit card or API key required. |
+| **SOLO Plan (Individual or 1–5 Person Team Shared Agent)** | **$20.00 / month** ($200/yr) | **$20.00 / month** (`800 credits`) | Full 9-layer Agent Shield governance, MCP/REST/SDK/CLI write access. A 1–5 person engineering or growth team can share the workspace MCP key (`X-Synter-Key`) for repo/agent automation on Solo. Light writes (`pause_campaign`, `update_campaign_budget`) cost **$0.05** (`2 credits` = 400 writes/mo included); campaign creation (`create_search_campaign`, `create_display_campaign`, `create_pmax_campaign`) costs **$0.25** (`10 credits` = 80 creations/mo included). |
+| **SCALE Plan (Multi-Brand / High-Volume Agency)** | **$500.00 / month** ($5,000/yr) | **$500.00 / month** (`20,000 credits`) | Optional tier for agencies needing `$500.00/mo` in bundled write/creative credits, 5 named RBAC dashboard seats per workspace, multi-workspace management, and CRM sync. |
+| **CUSTOM Plan (Enterprise / White-Label SaaS)** | Custom | Custom pooled allowance | Multi-tenant SaaS / white-label workspace isolation, dedicated VPC runners, SAML SSO/Okta. |
 
-- **Ad Spend Markup**: **0%** (no percentage of ad spend; media is billed directly by the ad networks).
-- **Pre-Call Cost Lookup**: Call `forecast_tool_cost(tool_name)` (`$0.00`) to inspect the exact USD/credit rate before invoking any tool.
+- **Ad Spend Markup**: **0%** across all tiers (ad platforms bill media spend directly).
 
-## 2. Supported Ad Platforms (16 Ad Platforms)
+## 3. Platform Coverage Reconciliation (16 vs. 19 vs. 27)
 
-All generic tools (`list_campaigns`, `get_performance`, `get_daily_spend`, `pause_campaign`, `update_campaign_budget`) accept a unified `platform` enum across **16 ad platforms**:
+Documentation across the repo references three distinct counts depending on scope:
 
-1. `google` — Google Ads (Search, Display, Performance Max, YouTube, Demand Gen; plus `run_gaql_query`)
-2. `meta` — Meta Ads (Facebook & Instagram)
-3. `linkedin` — LinkedIn Ads
-4. `microsoft` — Microsoft Advertising (Bing)
-5. `reddit` — Reddit Ads
-6. `tiktok` — TikTok Ads
-7. `x` — X Ads
-8. `pinterest` — Pinterest Ads
-9. `snapchat` — Snapchat Ads
-10. `spotify` — Spotify Ads
-11. `amazon_ads` — Amazon Sponsored Ads (SP, SB, SD)
-12. `amazon_dsp` — Amazon DSP
-13. `the_trade_desk` — The Trade Desk (TTD)
-14. `openai` — OpenAI Ads
-15. `dv360` — Google Display & Video 360 (DV360)
-16. `stackadapt` — StackAdapt Programmatic DSP
+- **16 Ad Platforms in the MCP `platform` Enum** (all 16 support `$0.00` normalized reads; 14 support write mutations, while `spotify` and `openai` are read-only in v1.4.5):
+  `google`, `meta`, `linkedin`, `microsoft`, `reddit`, `tiktok`, `x`, `pinterest`, `snapchat`, `spotify`, `amazon_ads`, `amazon_dsp`, `the_trade_desk`, `openai`, `dv360`, `stackadapt`.
+- **19 Total OAuth Connectors**: The 16 ad platforms above **+ 3 analytics/CRM OAuth integrations** (`ga4`, `hubspot`, `loops`).
+- **27 Total Platform Integrations**: The 19 OAuth connectors above **+ 8 research and creative providers** (`BuiltWith`, `SpyFu`, `Firecrawl`, `Tavily`, `ElevenLabs`, `HeyGen`, `OpenAI`, `Kling`).
 
-## 3. Server-Side Approval Gate & Scoped Credentials
+## 4. Server-Side Approval Gate, Spend Caps & Audit Trail (Included on All Tiers)
 
-Every tool execution across MCP, REST, SDK, and CLI passes through the server-side Safety Gate (`services/safety_gate.py` & `services/policy_engine.py`):
+All 9 Agent Shield controls (`services/safety_gate.py`, `services/policy_engine.py`) are enforced server-side on **every tier (including Free Read `$0/mo` and Solo `$20/mo`)** across **both Hosted MCP (`mcp.synterai.com`) and stdio MCP**:
 
-- **Enforced Paused-on-Create**: Newly created campaigns (`create_search_campaign`, `create_display_campaign`, `create_pmax_campaign`, `create_campaign_plan`) are server-enforced `PAUSED` on creation.
-- **Draft -> Review -> Approve -> Execute Workflow**:
-  1. `create_campaign_plan` creates a draft launch plan and returns an idempotency `execute_token`.
-  2. `run_launch_preflight` validates conversion tracking and landing page readiness (read-only, `$0.00`).
-  3. `approve_campaign_plan` requires `expected_version` optimistic locking so a modified plan cannot be approved unseen.
-  4. `execute_campaign_plan` executes approved entities in dependency order and automatically pauses already-activated entities if a downstream step fails.
-- **Held Writes (`HTTP 202 pending_review`)**: Under the default `Suggest` workspace policy, high-impact writes (campaign creation, enabling/resuming campaigns, deletions, creative pushes) return `status: "pending_review"` with an `audit_id` and `reviewed_args` until approved by a workspace admin.
-- **Directional & Read-Only Key Scopes**:
-  - `ads:read` (or `--read-only` CLI flag): Permits all reporting and diagnostic tools; blocks all mutations.
-  - `budget:decrease`: Permits emergency `pause_campaign` and downward `update_campaign_budget` adjustments while rejecting budget increases at the gateway.
-- **Post-Write Readback Verification**: Call `list_campaigns`, `get_ad_readback`, or `get_account_changelog` after any write to verify upstream platform state.
+1. **Enforced `PAUSED` on Create**: Every campaign creation tool (`create_search_campaign`, `create_display_campaign`, `create_pmax_campaign`, `create_campaign_plan`) enforces `status: "PAUSED"` at the server layer across all supported networks (including TikTok, Pinterest, Reddit, Meta, Google, LinkedIn, and StackAdapt).
+2. **Server-Side `pending_review` Approval Holds**: Under the default **Suggest** workspace policy, spend-increasing and high-risk writes — creating campaigns, enabling/resuming campaigns, or increasing budgets/bids above workspace thresholds — are held server-side on both Hosted MCP and REST/stdio (`status: "pending_review"` with `audit_id` and `reviewed_args`) until approved via `approve_campaign_plan` (with `expected_version` optimistic locking) or by replying `I APPROVE` in the workspace approval queue.
+3. **Directional `budget:decrease` Scope & Protective Actions**: API keys scoped to `budget:decrease` allow autonomous agents to execute emergency `pause_campaign` calls and downward budget reductions immediately while rejecting any upward budget mutation at the server layer. Workspace admins can also enable strict hold mode to hold pauses and downward adjustments.
+4. **Hard Daily Spend Caps & Anomaly Circuit Breakers**: Configurable per-mutation dollar limits and workspace daily spend ceilings block any mutation that exceeds policy; no user or agent can override a hard block.
+5. **Zero-Cost `dry_run: true` Previews & Post-Write Readback**: Every write tool accepts `dry_run: true` (`$0.00` / `0 credits`) to return the exact upstream payload and Agent Shield policy evaluation without mutating live ads. Every live mutation records an immutable `audit_id` (`get_account_changelog`) and is verified via `list_campaigns` or `get_ad_readback`.
+
+## 5. Token Custody, Open-Source Self-Hosting & Multi-Tenant SaaS
+
+- **Self-Hosted / BYO-OAuth Mode (No Gateway Lock-In)**: Both `@synterai/mcp-server` and `synter-cli` (`pip install synter-cli`) are MIT-licensed open-source packages. Teams that require strict first-party token custody can pass their own platform credentials (`GOOGLE_ADS_DEVELOPER_TOKEN`, `META_ACCESS_TOKEN`, `LINKEDIN_ACCESS_TOKEN`, etc.) via local environment variables in `synter-cli` so OAuth tokens never leave their own environment.
+- **Managed OAuth & Multi-Tenant / White-Label SaaS**: For customer-facing SaaS products or multi-client agencies, `/api/v1/oauth` and `X-Synter-Key` provide per-tenant workspace isolation with AES-256-GCM envelope encryption, scoped read-only or directional tokens, and programmatic token revocation.
