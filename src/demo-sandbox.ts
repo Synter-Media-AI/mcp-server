@@ -184,6 +184,155 @@ const DEMO_CAMPAIGNS: Record<string, Array<Record<string, unknown>>> = {
       cpa: 10.77,
     },
   ],
+  pinterest: [
+    {
+      campaign_id: "demo-pin-801",
+      campaign_name: "Pinterest - Visual Discovery & Commerce",
+      status: "ENABLED",
+      daily_budget: 90.0,
+      impressions: 64000,
+      clicks: 1280,
+      conversions: 41,
+      cost: 540.0,
+      ctr: 0.02,
+      cpc: 0.42,
+      cpa: 13.17,
+    },
+  ],
+  snapchat: [
+    {
+      campaign_id: "demo-snap-901",
+      campaign_name: "Snapchat - Story Ads & Dynamic Product",
+      status: "ENABLED",
+      daily_budget: 85.0,
+      impressions: 92000,
+      clicks: 1750,
+      conversions: 48,
+      cost: 595.0,
+      ctr: 0.019,
+      cpc: 0.34,
+      cpa: 12.4,
+    },
+  ],
+  spotify: [
+    {
+      campaign_id: "demo-spotify-1001",
+      campaign_name: "Spotify Audio & Podcast Host-Read",
+      status: "ENABLED",
+      daily_budget: 110.0,
+      impressions: 51000,
+      clicks: 620,
+      conversions: 24,
+      cost: 770.0,
+      ctr: 0.0122,
+      cpc: 1.24,
+      cpa: 32.08,
+    },
+  ],
+  amazon_ads: [
+    {
+      campaign_id: "demo-amz-1101",
+      campaign_name: "Sponsored Products - Category Leaders",
+      status: "ENABLED",
+      daily_budget: 160.0,
+      impressions: 74000,
+      clicks: 2220,
+      conversions: 185,
+      cost: 1120.0,
+      ctr: 0.03,
+      cpc: 0.5,
+      cpa: 6.05,
+      roas: 4.85,
+    },
+  ],
+  amazon_dsp: [
+    {
+      campaign_id: "demo-amzdsp-1201",
+      campaign_name: "Amazon DSP - In-Market Audience Retargeting",
+      status: "ENABLED",
+      daily_budget: 240.0,
+      impressions: 180000,
+      clicks: 1980,
+      conversions: 76,
+      cost: 1680.0,
+      ctr: 0.011,
+      cpc: 0.85,
+      cpa: 22.11,
+    },
+  ],
+  the_trade_desk: [
+    {
+      campaign_id: "demo-ttd-1301",
+      campaign_name: "The Trade Desk - CTV & Kokai Open Web",
+      status: "ENABLED",
+      daily_budget: 320.0,
+      impressions: 210000,
+      clicks: 2520,
+      conversions: 92,
+      cost: 2240.0,
+      ctr: 0.012,
+      cpc: 0.89,
+      cpa: 24.35,
+    },
+  ],
+  openai: [
+    {
+      campaign_id: "demo-openai-1401",
+      campaign_name: "OpenAI Search & Conversational Sponsored Placement",
+      status: "ENABLED",
+      daily_budget: 150.0,
+      impressions: 38000,
+      clicks: 1520,
+      conversions: 68,
+      cost: 1050.0,
+      ctr: 0.04,
+      cpc: 0.69,
+      cpa: 15.44,
+    },
+  ],
+  dv360: [
+    {
+      campaign_id: "demo-dv360-1501",
+      campaign_name: "DV360 - Programmatic Guaranteed & YouTube Reserve",
+      status: "ENABLED",
+      daily_budget: 280.0,
+      impressions: 195000,
+      clicks: 2340,
+      conversions: 84,
+      cost: 1960.0,
+      ctr: 0.012,
+      cpc: 0.84,
+      cpa: 23.33,
+    },
+  ],
+  stackadapt: [
+    {
+      campaign_id: "demo-stackadapt-1601",
+      campaign_name: "StackAdapt - B2B ABM Native & CTV Programmatic",
+      status: "ENABLED",
+      daily_budget: 220.0,
+      impressions: 165000,
+      clicks: 2145,
+      conversions: 79,
+      cost: 1540.0,
+      ctr: 0.013,
+      cpc: 0.72,
+      cpa: 19.49,
+    },
+  ],
+};
+
+const DEMO_PLATFORM_SYNONYMS: Record<string, string> = {
+  facebook: "meta",
+  instagram: "meta",
+  bing: "microsoft",
+  twitter: "x",
+  snap: "snapchat",
+  amazon: "amazon_ads",
+  trade_desk: "the_trade_desk",
+  ttd: "the_trade_desk",
+  thetradedesk: "the_trade_desk",
+  openai_ads: "openai",
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -197,7 +346,8 @@ export function getSandboxToolResult(
   name: string,
   args: Record<string, unknown>
 ): SandboxResponse {
-  const platform = String(args.platform || "google").toLowerCase();
+  const rawPlatform = String(args.platform || "google").trim().toLowerCase().replace(/-/g, "_");
+  const platform = DEMO_PLATFORM_SYNONYMS[rawPlatform] || rawPlatform;
 
   switch (name) {
     case "list_campaigns": {
@@ -265,6 +415,114 @@ export function getSandboxToolResult(
         period: "LAST_7_DAYS",
         daily_records: days,
         total_period_spend: 3254.0,
+      };
+    }
+
+    case "pacing_report": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        ok: true,
+        pacing: {
+          period: "2026-10",
+          daysElapsed: 14,
+          daysInMonth: 31,
+          portfolio: {
+            monthlyBudgetUsd: 15000,
+            mtdSpendUsd: 6820.5,
+            todaySpendUsd: 485.0,
+            expectedToDateUsd: 6774.19,
+            projectedEndOfMonthUsd: 15102.54,
+            pacingPercent: 100.68,
+            status: "on_track",
+            budgetSource: "configured",
+          },
+          platforms: [
+            {
+              platform: "google",
+              monthlyBudgetUsd: 7500,
+              mtdSpendUsd: 3490.0,
+              expectedToDateUsd: 3387.1,
+              projectedEndOfMonthUsd: 7727.86,
+              pacingPercent: 103.04,
+              status: "on_track",
+            },
+            {
+              platform: "meta",
+              monthlyBudgetUsd: 4500,
+              mtdSpendUsd: 1980.5,
+              expectedToDateUsd: 2032.26,
+              projectedEndOfMonthUsd: 4385.39,
+              pacingPercent: 97.45,
+              status: "on_track",
+            },
+            {
+              platform: "linkedin",
+              monthlyBudgetUsd: 3000,
+              mtdSpendUsd: 1350.0,
+              expectedToDateUsd: 1354.84,
+              projectedEndOfMonthUsd: 2989.29,
+              pacingPercent: 99.64,
+              status: "on_track",
+            },
+          ],
+          warnings: [],
+        },
+      };
+    }
+
+    case "user_budget_pacing_report": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        ok: true,
+        userBudgetPacing: {
+          includeArchived: Boolean(args.include_archived),
+          assignees: [
+            {
+              userName: "Growth Lead",
+              targetBudgetUsd: 15000,
+              actualSpendUsd: 6820.5,
+              expectedSpendUsd: 6774.19,
+              projectedSpendUsd: 15102.54,
+              pacingPercent: 100.68,
+              status: "on_track",
+            },
+          ],
+          warnings: [],
+        },
+      };
+    }
+
+    case "optimize_budget": {
+      const totalBudget = Number(args.total_budget) || 1000;
+      const target = String(args.target || "conversions");
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        success: true,
+        mode: "recommend_only",
+        dry_run: true,
+        applied: false,
+        total_budget: totalBudget,
+        target,
+        allocations: [
+          {
+            platform: "google",
+            recommended_daily_budget_usd: Number((totalBudget * 0.5).toFixed(2)),
+            expected_roas: 3.8,
+          },
+          {
+            platform: "meta",
+            recommended_daily_budget_usd: Number((totalBudget * 0.3).toFixed(2)),
+            expected_roas: 3.1,
+          },
+          {
+            platform: "linkedin",
+            recommended_daily_budget_usd: Number((totalBudget * 0.2).toFixed(2)),
+            expected_roas: 2.6,
+          },
+        ],
       };
     }
 
@@ -659,7 +917,7 @@ export function getSandboxToolResult(
         asset_id: "asset_demo_vid_202",
         duration_seconds: 15,
         format: "9:16",
-        caption: "AI Agent Ad Management across 27 Platforms",
+        caption: "AI Agent Ad Management across 16 Platforms",
       };
     }
 

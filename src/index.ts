@@ -21,6 +21,7 @@ import {
   type Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 import {
+  ADVERTISED_PLATFORMS,
   LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM,
   GET_PERFORMANCE_SCRIPT_BY_PLATFORM,
   PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS,
@@ -50,7 +51,7 @@ if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(`Synter MCP Server (@synterai/mcp-server)
 
 Official MCP server connecting AI agents to 16 ad platforms:
-Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, and more.
+Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt.
 
 Usage:
   synter-mcp [options]
@@ -72,7 +73,7 @@ Environment Variables:
 }
 
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  console.log("1.4.0");
+  console.log("1.4.4");
   process.exit(0);
 }
 
@@ -87,14 +88,14 @@ const tools: Tool[] = [
   {
     name: "list_campaigns",
     description:
-      "List campaigns for ONE ad platform. `platform` is required -- this tool does not aggregate across platforms. Returns campaign name, status, budget, and performance metrics.",
+      "List campaigns for ONE ad platform across all 16 ad platforms. `platform` is required -- this tool does not aggregate across platforms. Returns campaign name, status, budget, and performance metrics. Free read-only tool ($0.00 / 0 credits — free to read without a paid subscription; live write execution starts on the $20/month Solo plan).",
     annotations: { readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
         platform: {
           type: "string",
-          enum: ["google", "meta", "linkedin", "microsoft", "reddit", "tiktok", "x"],
+          enum: [...ADVERTISED_PLATFORMS],
           description: "Ad platform to list campaigns for (required)",
         },
         status: {
@@ -291,7 +292,7 @@ const tools: Tool[] = [
         },
         platform: {
           type: "string",
-          enum: ["google", "meta", "linkedin", "microsoft", "reddit", "tiktok", "x"],
+          enum: [...ADVERTISED_PLATFORMS],
           description: "Ad platform",
         },
       },
@@ -311,7 +312,7 @@ const tools: Tool[] = [
         },
         platform: {
           type: "string",
-          enum: ["google", "meta", "linkedin", "microsoft", "reddit", "tiktok", "x"],
+          enum: [...ADVERTISED_PLATFORMS],
           description: "Ad platform",
         },
         daily_budget: {
@@ -329,14 +330,14 @@ const tools: Tool[] = [
   {
     name: "get_performance",
     description:
-      "Get performance metrics (impressions, clicks, spend, conversions, ROAS) for campaigns.",
+      "Get performance metrics (impressions, clicks, spend, conversions, ROAS) for campaigns across any of the 16 ad platforms. Free read-only tool ($0.00 / 0 credits).",
     annotations: { readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
         platform: {
           type: "string",
-          enum: ["google", "meta", "linkedin", "microsoft", "reddit", "tiktok", "x"],
+          enum: [...ADVERTISED_PLATFORMS],
           description: "Ad platform to report on (required)",
         },
         campaign_id: {
@@ -354,7 +355,7 @@ const tools: Tool[] = [
   },
   {
     name: "get_daily_spend",
-    description: "Get daily spend breakdown for ONE ad platform. `platform` is required -- this tool does not aggregate across platforms.",
+    description: "Get daily spend breakdown for ONE ad platform across any of the 16 ad platforms. `platform` is required -- this tool does not aggregate across platforms. Free read-only tool ($0.00 / 0 credits).",
     annotations: { readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
@@ -365,11 +366,66 @@ const tools: Tool[] = [
         },
         platform: {
           type: "string",
-          enum: ["google", "meta", "linkedin", "microsoft", "reddit", "tiktok", "x"],
+          enum: [...ADVERTISED_PLATFORMS],
           description: "Ad platform to report on (required)",
         },
       },
       required: ["platform"],
+    },
+  },
+  {
+    name: "pacing_report",
+    description:
+      "Return a deterministic budget-pacing snapshot for the current workspace across every connected ad platform and the overall portfolio (month-to-date spend, today's spend, expected spend to date, pacing percent, projected end-of-period spend, on_track/underspending/overspending/critical status, and off-pace warnings). Free read-only tool ($0.00 / 0 credits).",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {},
+    },
+  },
+  {
+    name: "user_budget_pacing_report",
+    description:
+      "Return a deterministic per-user/trader budget ownership and pacing snapshot from saved workspace assignments (target budget, actual spend, expected spend, projected spend, variance, and pacing status). Free read-only tool ($0.00 / 0 credits).",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        include_archived: {
+          type: "boolean",
+          description: "Include archived assignments in the snapshot.",
+        },
+      },
+    },
+  },
+  {
+    name: "optimize_budget",
+    description:
+      "Recommend a cross-channel budget allocation across connected ad platforms using diminishing-returns modeling. Recommend-only (dry_run defaults to true); apply approved changes with update_campaign_budget. Free read-only recommendation tool ($0.00 / 0 credits).",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        total_budget: {
+          type: "number",
+          description: "Total daily budget in USD to allocate across channels",
+        },
+        target: {
+          type: "string",
+          enum: ["conversions", "roas"],
+          description: "Optimization objective (default: conversions)",
+        },
+        constraints: {
+          type: "string",
+          description:
+            "Optional JSON string with per-channel USD/day min/max bounds (e.g. '{\"google\": {\"min\": 500, \"max\": 2500}}')",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Recommend-only mode (default: true)",
+        },
+      },
+      required: ["total_budget"],
     },
   },
 
@@ -457,7 +513,7 @@ const tools: Tool[] = [
   },
   {
     name: "list_conversions",
-    description: "List all conversion actions configured in Google Ads.",
+    description: "List all conversion actions configured in Google Ads. Free read-only tool ($0.00 / 0 credits).",
     annotations: { readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
@@ -467,7 +523,7 @@ const tools: Tool[] = [
   {
     name: "diagnose_tracking",
     description:
-      "Check if conversion tracking is properly set up on a website. Verifies gtag.js, GTM, and pixel installation.",
+      "Check if conversion tracking is properly set up on a website. Verifies gtag.js, GTM, and pixel installation. Free read-only tool ($0.00 / 0 credits).",
     annotations: { readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
@@ -720,7 +776,7 @@ const tools: Tool[] = [
   {
     name: "sync_audience",
     description:
-      "Upload an audience to an ad platform (Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X). " +
+      "Upload an audience to an ad platform (Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, StackAdapt). " +
       "Accepts inline hashed identifiers (hashed_emails, hashed_phones), raw mobile_ids (IDFA/GAID), " +
       "company_domains, a public csv_url, or *_artifact_id references staged via stage_audience_artifact. " +
       "Costs 10 credits on success.",
@@ -730,7 +786,7 @@ const tools: Tool[] = [
       properties: {
         platform: {
           type: "string",
-          enum: ["google", "meta", "linkedin", "microsoft", "reddit", "tiktok", "x"],
+          enum: ["google", "meta", "linkedin", "microsoft", "reddit", "tiktok", "x", "stackadapt"],
           description: "Ad platform to upload to.",
         },
         audience_name: {
@@ -997,6 +1053,17 @@ async function callSynterAPI(
   const data = await response.json() as Record<string, unknown>;
 
   if (!response.ok) {
+    if (response.status === 402 || data.error === "INSUFFICIENT_CREDITS") {
+      return {
+        success: false,
+        ...data,
+        checkoutUrls: {
+          solo: `${SYNTER_API_URL}/sign-up?plan=developer&billing=monthly&source=mcp_low_balance`,
+          scale: `${SYNTER_API_URL}/sign-up?plan=synter&billing=monthly&source=mcp_low_balance`,
+        },
+        upgradeHint: `Solo ($20/mo — $20.00 monthly credits): ${SYNTER_API_URL}/sign-up?plan=developer&billing=monthly&source=mcp_low_balance | Scale ($500/mo — $500.00 monthly credits): ${SYNTER_API_URL}/sign-up?plan=synter&billing=monthly&source=mcp_low_balance`,
+      };
+    }
     const errorMsg = (data.error as string) || (data.message as string) || `API error: ${response.status}`;
     throw new Error(errorMsg);
   }
@@ -1024,6 +1091,17 @@ async function callSynterAPIGet(
   const data = await response.json() as Record<string, unknown>;
 
   if (!response.ok) {
+    if (response.status === 402 || data.error === "INSUFFICIENT_CREDITS") {
+      return {
+        success: false,
+        ...data,
+        checkoutUrls: {
+          solo: `${SYNTER_API_URL}/sign-up?plan=developer&billing=monthly&source=mcp_low_balance`,
+          scale: `${SYNTER_API_URL}/sign-up?plan=synter&billing=monthly&source=mcp_low_balance`,
+        },
+        upgradeHint: `Solo ($20/mo — $20.00 monthly credits): ${SYNTER_API_URL}/sign-up?plan=developer&billing=monthly&source=mcp_low_balance | Scale ($500/mo — $500.00 monthly credits): ${SYNTER_API_URL}/sign-up?plan=synter&billing=monthly&source=mcp_low_balance`,
+      };
+    }
     const errorMsg = (data.error as string) || (data.message as string) || `API error: ${response.status}`;
     throw new Error(errorMsg);
   }
@@ -1088,14 +1166,19 @@ export const SYNC_AUDIENCE_SCRIPT_BY_PLATFORM: Record<string, string> = {
   reddit: "reddit_ads_create_audience",
   tiktok: "tiktok_ads_create_audience",
   x: "x_ads_create_audience",
+  stackadapt: "stackadapt_create_audience",
 };
 
 function buildSyncAudienceArgs(args: Record<string, unknown>): string[] {
   const platform = String(args.platform || "").toLowerCase();
   const cliArgs: string[] = [];
   if (args.audience_name) cliArgs.push("--name", String(args.audience_name));
-  if (args.account_id) cliArgs.push("--account-id", String(args.account_id));
-  if (args.hashed_emails) cliArgs.push("--hashed-emails", String(args.hashed_emails));
+  if (args.account_id) {
+    cliArgs.push(platform === "stackadapt" ? "--advertiser-id" : "--account-id", String(args.account_id));
+  }
+  if (args.hashed_emails) {
+    cliArgs.push(platform === "stackadapt" ? "--emails" : "--hashed-emails", String(args.hashed_emails));
+  }
   if (args.hashed_emails_artifact_id) cliArgs.push("--hashed-emails-artifact-id", String(args.hashed_emails_artifact_id));
   if (args.hashed_phones) cliArgs.push("--hashed-phones", String(args.hashed_phones));
   if (args.hashed_phones_artifact_id) cliArgs.push("--hashed-phones-artifact-id", String(args.hashed_phones_artifact_id));
@@ -1223,10 +1306,6 @@ async function handleTool(
     );
     const script = GET_PERFORMANCE_SCRIPT_BY_PLATFORM[platform];
     const cliArgs: string[] = [];
-    // Only pull_google_ads and pull_x_ads declare --campaign-id. Previously a
-    // campaign_id passed for any other platform was silently dropped and the
-    // caller got account-wide totals back as if they were one campaign's.
-    // Refuse instead: a wrong number that looks right is worse than an error.
     if (args.campaign_id) {
       if (!PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS.has(platform)) {
         throw new Error(
@@ -1238,7 +1317,7 @@ async function handleTool(
       cliArgs.push("--campaign-id", args.campaign_id as string);
     }
     if (args.date_range) {
-      cliArgs.push(...resolveDateRangeArgs(args.date_range as string));
+      cliArgs.push(...resolveDateRangeArgs(args.date_range as string, new Date(), platform));
     }
     return callSynterAPI("tools/run", {
       script_name: script,
@@ -1269,28 +1348,26 @@ async function handleTool(
   }
 
   if (name === "pause_campaign" || name === "update_campaign_budget") {
-    // Both tools require `platform` and advertise all 7, but used to hardcode
-    // the Google script and discard the caller's value — so "pause this Reddit
-    // campaign" issued a Google pause. platform is REQUIRED in both schemas,
-    // so there is no legacy default to preserve here: an omitted or unknown
-    // platform is a caller error, not a reason to guess Google.
-    const platform = ((args.platform as string) || "").toLowerCase();
     const table =
       name === "pause_campaign"
         ? PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM
         : UPDATE_BUDGET_SCRIPT_BY_PLATFORM;
-    const script = own(table, platform);
-    if (!script) {
+    const rawPlatform = typeof args.platform === "string" ? args.platform.trim().toLowerCase().replace(/-/g, "_") : "";
+    let platform = rawPlatform;
+    try {
+      platform = requirePlatform(name, args.platform, table);
+    } catch {
       throw new Error(
         `${name}: platform is required and must be one of ${Object.keys(table).join(", ")}` +
-        (platform ? ` (got "${platform}")` : "")
+        (rawPlatform ? ` (got "${rawPlatform}")` : "")
       );
     }
+    const script = own(table, platform)!;
     const campaignId = args.campaign_id as string;
     const cliArgs =
       name === "pause_campaign"
         ? pauseCampaignArgs(platform, campaignId)
-        : updateBudgetArgs(campaignId, args.daily_budget as number);
+        : updateBudgetArgs(campaignId, args.daily_budget as number, platform);
     return callSynterAPI("tools/run", {
       script_name: script,
       args: cliArgs,
@@ -1356,7 +1433,28 @@ async function handleTool(
         return cliArgs;
       },
     },
-    // Performance
+    // Performance & Budget Pacing
+    pacing_report: {
+      script: "pacing_report",
+      argMapper: () => [],
+    },
+    user_budget_pacing_report: {
+      script: "user_budget_pacing_report",
+      argMapper: (a) => (a.include_archived ? ["--include-archived"] : []),
+    },
+    optimize_budget: {
+      script: "optimize_budget",
+      argMapper: (a) => {
+        const cliArgs: string[] = [
+          "--total-budget",
+          String(a.total_budget),
+          "--target",
+          String(a.target || "conversions"),
+        ];
+        if (a.constraints) cliArgs.push("--constraints", String(a.constraints));
+        return cliArgs;
+      },
+    },
 
     // Keywords
     add_keywords: {
@@ -1557,7 +1655,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.4.0",
+      version: "1.4.4",
     },
     {
       capabilities: {
@@ -1570,7 +1668,7 @@ async function main() {
   // List available tools (filtered to read-only tools when read-only mode is active)
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: IS_READ_ONLY
-      ? tools.filter((t) => t.annotations?.readOnlyHint === true)
+      ? tools.filter((t) => (t.annotations as any)?.readOnlyHint === true)
       : tools,
   }));
 
@@ -1598,7 +1696,7 @@ async function main() {
       {
         uri: "synter://pricing/coverage",
         name: "Verified Pricing and Platform Coverage Reference",
-        description: "Canonical pricing tiers ($0.00 free read diagnostics, SOLO $20/mo, SCALE $500/mo, 3% spend fee) and 27-platform matrix.",
+        description: "Canonical pricing tiers ($0.00 free to read across all 16 ad platforms, then SOLO $20/mo with $20.00 claimable monthly credits, SCALE $500/mo, 0% ad spend fee) and 16-platform matrix.",
         mimeType: "text/markdown",
       },
     ],
@@ -1683,24 +1781,26 @@ async function main() {
           {
             uri,
             mimeType: "text/markdown",
-            text: `# Synter Verified Pricing & 27-Platform Matrix
+            text: `# Synter Verified Pricing & 16-Platform Matrix
 
-## 100% Free Read-Only Access ($0.00 / 0 credits)
-- Performance metrics across all 16 direct execution platforms
+## 100% Free to Read ($0.00 / month — 0 credits)
+- Campaign listing across all 16 ad platforms (list_campaigns)
+- Performance metrics across all 16 ad platforms (get_performance)
 - Daily spend time-series breakdown (get_daily_spend)
-- Conversion tracking diagnostics (diagnose_tracking)
+- Cross-channel budget pacing and trader ownership (pacing_report, user_budget_pacing_report, optimize_budget)
+- Conversion tracking diagnostics (diagnose_tracking, list_conversions)
 - Agent Shield security inspection (inspect_agent_shield)
 - Synter Ångström claim verification (verify_angstrom_claim)
 - Agent skills catalog and execution runbooks (get_skill)
 - LLM visibility and AEO ranking reads (get_llm_visibility)
 
-## Subscription Plans
-- SOLO: $20/month ($200/year), 1 seat, includes $20.00/mo claimable credits
-- SCALE: $500/month ($5,000/year), 5 seats, includes $500.00/mo claimable credits
-- CUSTOM: Enterprise, custom seats and credit allocations
-- Autonomous Ad Spend Fee: Flat 3% (0% markup on media spend)
+## Subscription Plans for Write Execution ($20 / month Solo)
+- SOLO: $20/month ($200/year), 1 seat, includes $20.00/mo claimable credits for live campaign creation, budget updates, pausing, and audience sync across all 16 ad platforms
+- SCALE: $500/month ($5,000/year), 5 seats, includes $500.00/mo claimable credits for teams and agencies
+- CUSTOM: Sales-led enterprise contracts with custom seats and credit allocations
+- Media Spend Markup: 0% (Synter does not charge a percentage of your ad spend)
 
-## Platform Matrix
+## Platform Matrix (16 Ad Platforms)
 - 16 Direct Execution: Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, StackAdapt
 - 11 Extended Catalog: FreeWheel, CM360, Walmart Connect, Instacart, Target Roundel, Criteo, SA360, Samsung Ads, Taboola, Outbrain, Apple Search Ads`,
           },
@@ -1716,7 +1816,7 @@ async function main() {
 
     if (IS_READ_ONLY) {
       const toolDef = tools.find((t) => t.name === name);
-      if (!toolDef || toolDef.annotations?.readOnlyHint !== true) {
+      if (!toolDef || (toolDef.annotations as any)?.readOnlyHint !== true) {
         return {
           content: [
             {

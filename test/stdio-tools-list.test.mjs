@@ -19,6 +19,9 @@ const EXPECTED_TOOLS = [
   "update_campaign_budget",
   "get_performance",
   "get_daily_spend",
+  "pacing_report",
+  "user_budget_pacing_report",
+  "optimize_budget",
   "add_keywords",
   "add_negative_keywords",
   "create_conversion",
@@ -54,7 +57,10 @@ async function withClient(fn) {
     env,
     stderr: "ignore",
   });
-  const client = new Client({ name: "stdio-tools-list-test", version: "0.0.0" });
+  const client = new Client(
+    { name: "stdio-tools-list-test", version: "0.0.0" },
+    { capabilities: {} }
+  );
   await client.connect(transport);
   try {
     return await fn(client);
@@ -70,7 +76,7 @@ test("server boots over stdio and reports name and package version", async () =>
   });
 });
 
-test("tools/list returns all 29 tools including 4 free intelligence/security tools", async () => {
+test("tools/list returns all 32 tools including pacing, budget optimization, and 4 free intelligence/security tools", async () => {
   await withClient(async (client) => {
     const { tools } = await client.listTools();
     assert.deepEqual(

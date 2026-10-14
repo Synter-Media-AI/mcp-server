@@ -1,8 +1,8 @@
 {
   "name": "@synterai/mcp-server",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "mcpName": "io.github.Synter-Media-AI/synter-ads",
-  "description": "Official Synter MCP server: AI agents run ads across 16 ad platforms, including Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X and Amazon. Create campaigns, adjust budgets, generate creatives, and pull performance data.",
+  "description": "Official Synter MCP server: AI agents run ads across 16 ad platforms, including Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Amazon, and StackAdapt. Free to read ($0/mo), then $20/month Solo for campaign creation, budget updates, creatives, and audience sync.",
   "author": "Synter <hello@synterai.com>",
   "license": "MIT",
   "repository": {
@@ -28,6 +28,7 @@
     "microsoft-ads",
     "reddit-ads",
     "tiktok-ads",
+    "stackadapt",
     "campaign-management",
     "ppc",
     "ppc-automation",
@@ -70,7 +71,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.1"
+    "@modelcontextprotocol/sdk": "^0.6.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

@@ -15,14 +15,24 @@ export const LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM: Record<string, string> = {
   reddit: "reddit_ads_list_campaigns",
   tiktok: "tiktok_ads_list_campaigns",
   x: "x_ads_list_campaigns",
+  pinterest: "pinterest_ads_get_campaigns",
+  snapchat: "snap_ads_list_campaigns",
+  spotify: "spotify_ads_get_campaigns",
+  amazon_ads: "amazon_ads_get_campaigns",
+  amazon_dsp: "amazon_dsp_list_orders",
+  the_trade_desk: "trade_desk_list_campaigns",
+  openai: "openai_ads_get_campaigns",
+  dv360: "dv360_list_campaigns",
+  stackadapt: "stackadapt_get_campaigns",
 };
 
 // get_performance had the SAME hardcoded-to-Google bug as list_campaigns
 // (always dispatched to Google regardless of `platform`), plus a second,
 // independent bug: it forwarded a `--date-range` flag that NONE of the
-// underlying scripts actually define (every one of the 7 confirmed real
-// scripts below takes --days / --start-date / --end-date instead — the
-// date_range enum was silently dropped by argparse on every prior call).
+// underlying scripts actually define (every one of the real scripts below
+// takes --days / --start-date / --end-date / --from / --to / --since / --until
+// instead — the date_range enum was silently dropped by argparse on every
+// prior call).
 //
 // The "_data" suffix note that used to sit here was WRONG, and it is the
 // reason google and linkedin shipped broken. These values are backend SCRIPT
@@ -42,6 +52,15 @@ export const GET_PERFORMANCE_SCRIPT_BY_PLATFORM: Record<string, string> = {
   reddit: "pull_reddit_ads",
   tiktok: "pull_tiktok_ads",
   x: "pull_x_ads",
+  pinterest: "pull_pinterest_ads",
+  snapchat: "snap_ads_get_report",
+  spotify: "spotify_ads_get_performance",
+  amazon_ads: "pull_amazon_ads",
+  amazon_dsp: "amazon_dsp_pull_metrics",
+  the_trade_desk: "trade_desk_pull_metrics",
+  openai: "pull_openai_ads",
+  dv360: "pull_dv360",
+  stackadapt: "stackadapt_pull_metrics",
 };
 
 // Date-range resolution.
@@ -53,8 +72,9 @@ export const GET_PERFORMANCE_SCRIPT_BY_PLATFORM: Record<string, string> = {
 // `--days 1`, which is TODAY — a partial, still-accumulating day reported as
 // a closed one.
 //
-// Every one of the 7 confirmed pull_* scripts declares --start-date and
-// --end-date (verified against apps/ppc-backend/script_catalog.json), so the
+// Every one of the confirmed pull_* scripts declares explicit start/end flags
+// (--start-date/--end-date, or --from/--to on stackadapt, or --since/--until
+// on openai; verified against apps/ppc-backend/script_catalog.json), so the
 // calendar-anchored ranges are now emitted as explicit boundaries. The two
 // genuinely rolling ranges keep --days, because that is what they mean.
 //
@@ -99,6 +119,12 @@ function utcDate(year: number, month: number, day: number): Date {
   return new Date(Date.UTC(year, month, day));
 }
 
+function dateBoundaryFlags(platform?: string): [string, string] {
+  if (platform === "stackadapt") return ["--from", "--to"];
+  if (platform === "openai") return ["--since", "--until"];
+  return ["--start-date", "--end-date"];
+}
+
 /**
  * Resolve a named date_range to the CLI flags the backend scripts accept.
  *
@@ -112,37 +138,50 @@ function utcDate(year: number, month: number, day: number): Date {
 export function resolveDateRangeArgs(
   range: string,
   now: Date = new Date(),
+  platform?: string,
 ): string[] {
   const rollingDays = own(ROLLING_DATE_RANGE_DAYS, range);
-  if (rollingDays) return ["--days", String(rollingDays)];
+  if (rollingDays) {
+    if (platform === "the_trade_desk" || platform === "spotify") {
+      // trade_desk_pull_metrics and spotify_ads_get_performance require explicit --start-date/--end-date
+      const year = now.getUTCFullYear();
+      const month = now.getUTCMonth();
+      const day = now.getUTCDate();
+      const end = utcDay(utcDate(year, month, day));
+      const start = utcDay(utcDate(year, month, day - rollingDays));
+      return ["--start-date", start, "--end-date", end];
+    }
+    return ["--days", String(rollingDays)];
+  }
 
   const year = now.getUTCFullYear();
   const month = now.getUTCMonth();
   const day = now.getUTCDate();
+  const [startFlag, endFlag] = dateBoundaryFlags(platform);
 
   switch (range) {
     case "TODAY": {
       const today = utcDay(utcDate(year, month, day));
-      return ["--start-date", today, "--end-date", today];
+      return [startFlag, today, endFlag, today];
     }
     case "YESTERDAY": {
       // day - 1 rolls back across month and year boundaries on its own.
       const yesterday = utcDay(utcDate(year, month, day - 1));
-      return ["--start-date", yesterday, "--end-date", yesterday];
+      return [startFlag, yesterday, endFlag, yesterday];
     }
     case "THIS_MONTH": {
       // First of this month through today. The month is still open, so the
       // end is today, not the last day of the month.
       return [
-        "--start-date", utcDay(utcDate(year, month, 1)),
-        "--end-date", utcDay(utcDate(year, month, day)),
+        startFlag, utcDay(utcDate(year, month, 1)),
+        endFlag, utcDay(utcDate(year, month, day)),
       ];
     }
     case "LAST_MONTH": {
       // Day 0 of this month is the last day of the previous month.
       return [
-        "--start-date", utcDay(utcDate(year, month - 1, 1)),
-        "--end-date", utcDay(utcDate(year, month, 0)),
+        startFlag, utcDay(utcDate(year, month - 1, 1)),
+        endFlag, utcDay(utcDate(year, month, 0)),
       ];
     }
     default:
@@ -150,29 +189,15 @@ export function resolveDateRangeArgs(
   }
 }
 
-// get_performance exposes a `campaign_id` filter, but only two of the seven
-// pull_* scripts declare --campaign-id (google and x; verified against
-// script_catalog.json). The previous code forwarded the flag for google and
-// SILENTLY DROPPED it for the other five, so a caller filtering to one
-// campaign got whole-account totals back with nothing to indicate the filter
-// had been ignored — a wrong number that looks right. Unsupported platforms
-// now fail loudly instead.
+// get_performance exposes a `campaign_id` filter, but only scripts that
+// declare --campaign-id in script_catalog.json accept it. Unsupported platforms
+// fail loudly rather than silently dropping the filter and returning whole-account totals.
 export const PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS: ReadonlySet<string> =
-  new Set(["google", "x"]);
+  new Set(["google", "x", "amazon_dsp", "openai", "stackadapt"]);
 
-// Write routes. pause_campaign and update_campaign_budget both advertise the
-// full 7-platform enum as a REQUIRED argument and describe themselves as
-// working "across all connected platforms", while hardcoding platform:
-// "google" and discarding the caller's value. An agent asked to pause a
-// Reddit campaign therefore issued a GOOGLE pause carrying a Reddit campaign
-// id. Script names and flags below are read from
-// apps/ppc-backend/script_catalog.json, not guessed.
-//
-// Note google's own pause script is `google_ads_pause_campaign`; the
-// unqualified `pause_campaign` is the same Google-only tool under its legacy
-// name, and `update_campaign_budget` is likewise Google-only. Neither accepts
-// a --platform flag, which is why per-platform routing is required rather
-// than forwarding a platform argument.
+// Write routes. pause_campaign and update_campaign_budget route each
+// advertised platform to its verified backend script and CLI flags from
+// apps/ppc-backend/script_catalog.json.
 export const PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM: Record<string, string> = {
   google: "google_ads_pause_campaign",
   meta: "meta_ads_update_campaign",
@@ -181,20 +206,31 @@ export const PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM: Record<string, string> = {
   reddit: "reddit_ads_update_campaign",
   tiktok: "tiktok_ads_update_campaign",
   x: "x_ads_update_campaign",
+  pinterest: "pinterest_ads_update_campaign_status",
+  snapchat: "snap_ads_pause_campaign",
+  spotify: "spotify_ads_update_campaign_status",
+  amazon_ads: "amazon_ads_update_campaign",
+  amazon_dsp: "amazon_dsp_pause_order",
+  the_trade_desk: "trade_desk_pause_campaign",
+  openai: "openai_ads_update_campaign",
+  dv360: "dv360_pause_campaign",
+  stackadapt: "stackadapt_pause_campaign",
 };
-
-// x_ads_update_campaign declares --status (ACTIVE/PAUSED) and no --action;
-// the other six declare --action with a "pause" choice.
-const PAUSE_VIA_STATUS_FLAG: ReadonlySet<string> = new Set(["x"]);
 
 export function pauseCampaignArgs(platform: string, campaignId: string): string[] {
   const args = ["--campaign-id", campaignId];
-  return PAUSE_VIA_STATUS_FLAG.has(platform)
-    ? [...args, "--status", "PAUSED"]
-    : [...args, "--action", "pause"];
+  if (platform === "x") {
+    return [...args, "--status", "PAUSED"];
+  }
+  if (platform === "openai") {
+    return [...args, "--status", "paused"];
+  }
+  if (platform === "stackadapt") {
+    return [...args, "--state", "PAUSED"];
+  }
+  return [...args, "--action", "pause"];
 }
 
-// All seven budget scripts declare --campaign-id and --daily-budget.
 export const UPDATE_BUDGET_SCRIPT_BY_PLATFORM: Record<string, string> = {
   google: "update_campaign_budget",
   meta: "meta_ads_update_campaign",
@@ -203,9 +239,37 @@ export const UPDATE_BUDGET_SCRIPT_BY_PLATFORM: Record<string, string> = {
   reddit: "reddit_ads_update_campaign",
   tiktok: "tiktok_ads_update_campaign",
   x: "x_ads_update_campaign",
+  pinterest: "pinterest_ads_update_budget",
+  snapchat: "snapchat_ads_update_campaign",
+  spotify: "spotify_ads_update_budget",
+  amazon_ads: "amazon_ads_update_campaign",
+  amazon_dsp: "amazon_dsp_update_order_budget",
+  the_trade_desk: "trade_desk_update_campaign_budget",
+  openai: "openai_ads_update_campaign",
+  dv360: "dv360_update_io_budget",
+  stackadapt: "stackadapt_update_campaign_budget",
 };
 
-export function updateBudgetArgs(campaignId: string, dailyBudget: number | string): string[] {
+export function updateBudgetArgs(
+  campaignId: string,
+  dailyBudget: number | string,
+  platform: string = "google",
+): string[] {
+  if (platform === "stackadapt") {
+    return ["--campaign-id", campaignId, "--budget", String(dailyBudget), "--budget-type", "DAILY"];
+  }
+  if (platform === "amazon_ads" || platform === "amazon_dsp" || platform === "the_trade_desk") {
+    return ["--campaign-id", campaignId, "--budget", String(dailyBudget)];
+  }
+  if (platform === "openai") {
+    return ["--campaign-id", campaignId, "--budget-usd", String(dailyBudget)];
+  }
+  if (platform === "dv360") {
+    return ["--io-id", campaignId, "--total-budget", String(dailyBudget)];
+  }
+  if (platform === "spotify") {
+    return ["--ad-set-id", campaignId, "--daily-budget", String(dailyBudget)];
+  }
   return ["--campaign-id", campaignId, "--daily-budget", String(dailyBudget)];
 }
 
@@ -219,25 +283,32 @@ export const ADVERTISED_PLATFORMS = [
   "reddit",
   "tiktok",
   "x",
+  "pinterest",
+  "snapchat",
+  "spotify",
+  "amazon_ads",
+  "amazon_dsp",
+  "the_trade_desk",
+  "openai",
+  "dv360",
+  "stackadapt",
 ] as const;
+
+export const PLATFORM_SYNONYMS: Record<string, string> = {
+  facebook: "meta",
+  instagram: "meta",
+  bing: "microsoft",
+  twitter: "x",
+  snap: "snapchat",
+  amazon: "amazon_ads",
+  trade_desk: "the_trade_desk",
+  ttd: "the_trade_desk",
+  thetradedesk: "the_trade_desk",
+  openai_ads: "openai",
+};
 
 /**
  * Resolve the caller's `platform` argument, or refuse.
- *
- * list_campaigns, get_performance and get_daily_spend all declared `platform`
- * OPTIONAL and silently fell back to Google when it was omitted -- while their
- * own descriptions promised the opposite ("List all campaigns across connected
- * ad platforms", "lists all if not specified", "across all connected ad
- * accounts"). An advertiser running six platforms asked for everything, got
- * Google, and had no way to tell from the response. That is a wrong number
- * that looks right, which is the worst failure mode a reporting tool has.
- *
- * True cross-platform aggregation is a real feature and a larger change: it
- * means fanning out to every connected platform and merging currencies,
- * timezones and differing conversion semantics, which is not something to
- * fake. Until it exists, the honest behavior is to make the caller name the
- * platform. An agent that gets this error re-calls correctly; an agent that
- * got Google silently never knew to.
  */
 export function requirePlatform(
   toolName: string,
@@ -253,10 +324,11 @@ export function requirePlatform(
       `which platforms this workspace has connected.`,
     );
   }
-  const normalized = platform.trim().toLowerCase();
+  const rawNormalized = platform.trim().toLowerCase().replace(/-/g, "_");
+  const normalized = own(PLATFORM_SYNONYMS, rawNormalized) ?? rawNormalized;
   if (own(table, normalized) === undefined) {
     throw new Error(
-      `${toolName}: unsupported platform "${normalized}". Supported: ${supported.join(", ")}.`,
+      `${toolName}: unsupported platform "${rawNormalized}". Supported: ${supported.join(", ")}.`,
     );
   }
   return normalized;

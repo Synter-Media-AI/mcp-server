@@ -29,7 +29,10 @@ async function withDemoClient(options, fn) {
     env,
     stderr: "ignore",
   });
-  const client = new Client({ name: "demo-mode-test", version: "0.0.0" });
+  const client = new Client(
+    { name: "demo-mode-test", version: "0.0.0" },
+    { capabilities: {} }
+  );
   await client.connect(transport);
   try {
     return await fn(client);
@@ -38,17 +41,17 @@ async function withDemoClient(options, fn) {
   }
 }
 
-test("demo mode via --demo flag lists all 29 tools without API key", async () => {
+test("demo mode via --demo flag lists all 32 tools without API key", async () => {
   await withDemoClient({ args: ["--demo"] }, async (client) => {
     const { tools } = await client.listTools();
-    assert.equal(tools.length, 29, "all 29 tools should be available in demo mode");
+    assert.equal(tools.length, 32, "all 32 tools should be available in demo mode");
   });
 });
 
-test("demo mode via SYNTER_DEMO=true lists all 29 tools without API key", async () => {
+test("demo mode via SYNTER_DEMO=true lists all 32 tools without API key", async () => {
   await withDemoClient({ env: { SYNTER_DEMO: "true" } }, async (client) => {
     const { tools } = await client.listTools();
-    assert.equal(tools.length, 29, "all 29 tools should be available in demo mode");
+    assert.equal(tools.length, 32, "all 32 tools should be available in demo mode");
   });
 });
 
@@ -145,6 +148,15 @@ test("demo mode returns rich sandbox data for list_campaigns across platforms", 
     const dataLi = JSON.parse(resLi.content[0].text);
     assert.equal(dataLi.platform, "linkedin");
     assert.ok(dataLi.campaigns[0].campaign_id.startsWith("demo-li"));
+
+    // StackAdapt
+    const resSa = await client.callTool({
+      name: "list_campaigns",
+      arguments: { platform: "stackadapt" },
+    });
+    const dataSa = JSON.parse(resSa.content[0].text);
+    assert.equal(dataSa.platform, "stackadapt");
+    assert.ok(dataSa.campaigns[0].campaign_id.startsWith("demo-stackadapt"));
   });
 });
 
@@ -275,5 +287,5 @@ test("--help CLI argument displays help and exits with code 0", async () => {
 test("--version CLI argument displays version and exits with code 0", async () => {
   const binaryPath = new URL("../dist/index.js", import.meta.url).pathname;
   const { stdout } = await execFileAsync(process.execPath, [binaryPath, "--version"]);
-  assert.equal(stdout.trim(), "1.4.0");
+  assert.equal(stdout.trim(), "1.4.4");
 });

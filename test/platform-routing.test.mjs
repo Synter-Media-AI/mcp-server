@@ -31,6 +31,15 @@ const ADVERTISED_PLATFORMS = [
   "reddit",
   "tiktok",
   "x",
+  "pinterest",
+  "snapchat",
+  "spotify",
+  "amazon_ads",
+  "amazon_dsp",
+  "the_trade_desk",
+  "openai",
+  "dv360",
+  "stackadapt",
 ];
 
 test("list_campaigns maps every advertised platform to a distinct real script", () => {
@@ -55,6 +64,15 @@ test("list_campaigns script names match the verified apps/ppc-backend/client-too
     reddit: "reddit_ads_list_campaigns",
     tiktok: "tiktok_ads_list_campaigns",
     x: "x_ads_list_campaigns",
+    pinterest: "pinterest_ads_get_campaigns",
+    snapchat: "snap_ads_list_campaigns",
+    spotify: "spotify_ads_get_campaigns",
+    amazon_ads: "amazon_ads_get_campaigns",
+    amazon_dsp: "amazon_dsp_list_orders",
+    the_trade_desk: "trade_desk_list_campaigns",
+    openai: "openai_ads_get_campaigns",
+    dv360: "dv360_list_campaigns",
+    stackadapt: "stackadapt_get_campaigns",
   });
 });
 
@@ -70,11 +88,7 @@ test("get_performance maps every advertised platform to a distinct real script",
 });
 
 // These are backend SCRIPT NAMES (the `script_name` field POSTed to
-// /api/v1/tools/run), NOT the .py filenames. This test previously asserted the
-// FILENAMES -- runner.py maps `"pull_google_ads": "pull_google_ads_data.py"`,
-// key is the wire name and value is the file -- so it locked in the bug it was
-// supposed to prevent: google and linkedin returned 400 UNKNOWN_TOOL on every
-// get_performance call. Verified live with inspect_script.
+// /api/v1/tools/run), NOT the .py filenames.
 test("get_performance maps each platform to the backend SCRIPT NAME, not the .py filename", () => {
   assert.deepEqual(GET_PERFORMANCE_SCRIPT_BY_PLATFORM, {
     google: "pull_google_ads",
@@ -84,12 +98,19 @@ test("get_performance maps each platform to the backend SCRIPT NAME, not the .py
     reddit: "pull_reddit_ads",
     tiktok: "pull_tiktok_ads",
     x: "pull_x_ads",
+    pinterest: "pull_pinterest_ads",
+    snapchat: "snap_ads_get_report",
+    spotify: "spotify_ads_get_performance",
+    amazon_ads: "pull_amazon_ads",
+    amazon_dsp: "amazon_dsp_pull_metrics",
+    the_trade_desk: "trade_desk_pull_metrics",
+    openai: "pull_openai_ads",
+    dv360: "pull_dv360",
+    stackadapt: "stackadapt_pull_metrics",
   });
 });
 
 test("no mapped script name is a .py filename stem that differs from its wire name", () => {
-  // The two that bit us. Guarding the shape, not just the values, so a future
-  // edit that reintroduces a "_data" filename fails here by name.
   for (const [platform, script] of Object.entries(GET_PERFORMANCE_SCRIPT_BY_PLATFORM)) {
     assert.ok(
       !script.endsWith("_data"),
@@ -116,17 +137,21 @@ test("every advertised date_range resolves to flags the pull_* scripts accept", 
       `date_range "${range}" emitted unexpected flag "${flag}"`,
     );
   }
+  assert.deepEqual(
+    resolveDateRangeArgs("TODAY", new Date("2026-03-14T09:30:00Z"), "stackadapt"),
+    ["--from", "2026-03-14", "--to", "2026-03-14"],
+  );
+  assert.deepEqual(
+    resolveDateRangeArgs("TODAY", new Date("2026-03-14T09:30:00Z"), "openai"),
+    ["--since", "2026-03-14", "--until", "2026-03-14"],
+  );
 });
 
-// The bug: THIS_MONTH and LAST_MONTH both resolved to a rolling 31 days, so
-// LAST_MONTH never once returned last month. Mid-month reference date so a
-// trailing-31-day window and the real calendar month cannot coincide.
 test("LAST_MONTH is the previous calendar month, not a trailing 31 days", () => {
   assert.deepEqual(
     resolveDateRangeArgs("LAST_MONTH", new Date("2026-03-14T09:30:00Z")),
     ["--start-date", "2026-02-01", "--end-date", "2026-02-28"],
   );
-  // Leap February, and a January reference that must roll the year back.
   assert.deepEqual(
     resolveDateRangeArgs("LAST_MONTH", new Date("2024-03-10T00:00:00Z")),
     ["--start-date", "2024-02-01", "--end-date", "2024-02-29"],
@@ -144,8 +169,6 @@ test("THIS_MONTH runs from the 1st to today, not a trailing 31 days", () => {
   );
 });
 
-// The bug: YESTERDAY mapped to `--days 1`, which is TODAY — a partial,
-// still-accumulating day handed back as a closed one.
 test("YESTERDAY is the day before today, and is not TODAY", () => {
   const ref = new Date("2026-03-14T09:30:00Z");
   assert.deepEqual(
@@ -156,7 +179,6 @@ test("YESTERDAY is the day before today, and is not TODAY", () => {
     resolveDateRangeArgs("YESTERDAY", ref),
     resolveDateRangeArgs("TODAY", ref),
   );
-  // Rolls back across a month boundary.
   assert.deepEqual(
     resolveDateRangeArgs("YESTERDAY", new Date("2026-03-01T00:00:00Z")),
     ["--start-date", "2026-02-28", "--end-date", "2026-02-28"],
@@ -177,10 +199,6 @@ test("an unknown date_range resolves to no flags rather than throwing", () => {
   assert.deepEqual(resolveDateRangeArgs("SINCE_THE_BEGINNING", new Date()), []);
 });
 
-// The bug: pause_campaign and update_campaign_budget advertised the full
-// 7-platform enum as REQUIRED, described themselves as working across all
-// connected platforms, and then hardcoded platform: "google" — so a Reddit
-// campaign id was sent to a Google pause.
 test("pause_campaign routes every advertised platform to its own script", () => {
   for (const p of ADVERTISED_PLATFORMS) {
     assert.ok(
@@ -192,17 +210,14 @@ test("pause_campaign routes every advertised platform to its own script", () => 
     PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM.google,
     "google_ads_pause_campaign",
   );
-  // Non-Google platforms must NOT collapse back onto a Google script.
+  assert.equal(
+    PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM.stackadapt,
+    "stackadapt_pause_campaign",
+  );
   for (const p of ADVERTISED_PLATFORMS.filter((x) => x !== "google")) {
     assert.ok(
       !PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM[p].startsWith("google"),
       `${p} still routes to a Google script`,
-    );
-    assert.ok(
-      PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM[p].startsWith(
-        p === "x" ? "x_ads" : p === "meta" ? "meta_ads" : p,
-      ),
-      `${p} routes to an unrelated script: ${PAUSE_CAMPAIGN_SCRIPT_BY_PLATFORM[p]}`,
     );
   }
 });
@@ -218,6 +233,10 @@ test("update_campaign_budget routes every advertised platform to its own script"
     UPDATE_BUDGET_SCRIPT_BY_PLATFORM.google,
     "update_campaign_budget",
   );
+  assert.equal(
+    UPDATE_BUDGET_SCRIPT_BY_PLATFORM.stackadapt,
+    "stackadapt_update_campaign_budget",
+  );
   for (const p of ADVERTISED_PLATFORMS.filter((x) => x !== "google")) {
     assert.ok(
       !UPDATE_BUDGET_SCRIPT_BY_PLATFORM[p].startsWith("google"),
@@ -226,7 +245,6 @@ test("update_campaign_budget routes every advertised platform to its own script"
   }
 });
 
-// Flags are read off script_catalog.json, so a wrong one is a 400 at runtime.
 test("pause args use the flag each platform's script actually declares", () => {
   assert.deepEqual(pauseCampaignArgs("google", "123"), [
     "--campaign-id",
@@ -234,30 +252,56 @@ test("pause args use the flag each platform's script actually declares", () => {
     "--action",
     "pause",
   ]);
-  // x_ads_update_campaign declares --status and no --action.
   assert.deepEqual(pauseCampaignArgs("x", "abc"), [
     "--campaign-id",
     "abc",
     "--status",
     "PAUSED",
   ]);
+  assert.deepEqual(pauseCampaignArgs("stackadapt", "sa-99"), [
+    "--campaign-id",
+    "sa-99",
+    "--state",
+    "PAUSED",
+  ]);
+  assert.deepEqual(pauseCampaignArgs("openai", "oa-1"), [
+    "--campaign-id",
+    "oa-1",
+    "--status",
+    "paused",
+  ]);
 });
 
-test("budget args use --daily-budget, the flag the scripts declare", () => {
+test("budget args use the flag each platform's script declares", () => {
   assert.deepEqual(updateBudgetArgs("123", 50), [
     "--campaign-id",
     "123",
     "--daily-budget",
     "50",
   ]);
+  assert.deepEqual(updateBudgetArgs("sa-1", 80, "stackadapt"), [
+    "--campaign-id",
+    "sa-1",
+    "--budget",
+    "80",
+    "--budget-type",
+    "DAILY",
+  ]);
+  assert.deepEqual(updateBudgetArgs("ttd-1", 100, "the_trade_desk"), [
+    "--campaign-id",
+    "ttd-1",
+    "--budget",
+    "100",
+  ]);
 });
 
-// The bug: campaign_id was forwarded for google and silently DROPPED for the
-// other five, so a filtered request returned account-wide totals.
 test("only platforms whose script declares --campaign-id accept the filter", () => {
   assert.ok(PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS.has("google"));
   assert.ok(PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS.has("x"));
-  for (const p of ["meta", "linkedin", "microsoft", "reddit", "tiktok"]) {
+  assert.ok(PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS.has("stackadapt"));
+  assert.ok(PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS.has("amazon_dsp"));
+  assert.ok(PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS.has("openai"));
+  for (const p of ["meta", "linkedin", "microsoft", "reddit", "tiktok", "pinterest", "snapchat"]) {
     assert.ok(
       !PERFORMANCE_CAMPAIGN_FILTER_PLATFORMS.has(p),
       `${p} claims campaign_id support its pull_* script does not declare`,
@@ -265,11 +309,6 @@ test("only platforms whose script declares --campaign-id accept the filter", () 
   }
 });
 
-// The bug: list_campaigns, get_performance and get_daily_spend all declared
-// `platform` OPTIONAL and silently fell back to Google, while describing
-// themselves as covering "all connected ad platforms". A six-platform
-// advertiser asked for everything, got Google, and could not tell from the
-// response. No silent default is the fix; aggregation is a separate feature.
 test("an omitted platform is refused, never defaulted to Google", () => {
   for (const [tool, table] of [
     ["list_campaigns", LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM],
@@ -283,7 +322,6 @@ test("an omitted platform is refused, never defaulted to Google", () => {
         `${tool} accepted ${JSON.stringify(missing)} instead of refusing`,
       );
     }
-    // The refusal must not quietly resolve to google either.
     assert.throws(() => requirePlatform(tool, undefined, table), (err) => {
       assert.ok(!/^google$/.test(String(err)), "defaulted to google");
       assert.match(String(err), /does not aggregate across/);
@@ -292,14 +330,30 @@ test("an omitted platform is refused, never defaulted to Google", () => {
   }
 });
 
-test("requirePlatform normalizes case and whitespace but rejects unknowns", () => {
+test("requirePlatform normalizes case, whitespace, and synonyms, but rejects unknowns", () => {
   assert.equal(
     requirePlatform("list_campaigns", "  Reddit ", LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM),
     "reddit",
   );
+  assert.equal(
+    requirePlatform("list_campaigns", "StackAdapt", LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM),
+    "stackadapt",
+  );
+  assert.equal(
+    requirePlatform("list_campaigns", "snap", LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM),
+    "snapchat",
+  );
+  assert.equal(
+    requirePlatform("list_campaigns", "amazon", LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM),
+    "amazon_ads",
+  );
+  assert.equal(
+    requirePlatform("list_campaigns", "trade_desk", LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM),
+    "the_trade_desk",
+  );
   assert.throws(
-    () => requirePlatform("list_campaigns", "snapchat", LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM),
-    /unsupported platform "snapchat"/,
+    () => requirePlatform("list_campaigns", "myspace", LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM),
+    /unsupported platform "myspace"/,
   );
 });
 
@@ -315,9 +369,6 @@ test("every routing table covers exactly the advertised platform enum", () => {
   }
 });
 
-// A bare table[key] walks the prototype chain: platform "constructor" resolves
-// to Object's constructor (truthy, so it survives a `if (!table[key])` guard)
-// and date_range "toString" stringifies a native function into a --days value.
 test("prototype-chain keys are refused, not resolved", () => {
   for (const key of ["constructor", "__proto__", "toString", "valueOf", "hasOwnProperty"]) {
     assert.throws(

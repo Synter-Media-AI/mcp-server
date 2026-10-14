@@ -36,7 +36,10 @@ async function withMcpClient(options, fn) {
     env,
     stderr: "ignore",
   });
-  const client = new Client({ name: "competitive-benchmark-test", version: "1.3.0" });
+  const client = new Client(
+    { name: "competitive-benchmark-test", version: "1.3.0" },
+    { capabilities: {} }
+  );
   await client.connect(transport);
   try {
     return await fn(client);
@@ -54,7 +57,7 @@ test("BEATS AdCP: Executable multi-tool server with live JSON-RPC vs passive sch
   // Synter is a production MCP server with 29 executable tools operating over JSON-RPC stdio.
   await withMcpClient({ args: ["--demo"] }, async (client) => {
     const { tools } = await client.listTools();
-    assert.equal(tools.length, 29, "Synter provides 29 live tools; AdCP provides 0 executable tools");
+    assert.equal(tools.length, 32, "Synter provides 32 live tools; AdCP provides 0 executable tools");
 
     const reportingTools = tools.filter((t) =>
       [

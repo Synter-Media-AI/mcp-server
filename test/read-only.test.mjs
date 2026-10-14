@@ -31,7 +31,10 @@ async function withClient(options, fn) {
     env,
     stderr: "ignore",
   });
-  const client = new Client({ name: "read-only-test", version: "0.0.0" });
+  const client = new Client(
+    { name: "read-only-test", version: "0.0.0" },
+    { capabilities: {} }
+  );
   await client.connect(transport);
   try {
     return await fn(client);
