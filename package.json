@@ -1,6 +1,6 @@
 {
   "name": "@synterai/mcp-server",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "mcpName": "io.github.Synter-Media-AI/synter-ads",
   "description": "Official Synter MCP server: AI agents run ads across 16 ad platforms, including Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Amazon, and StackAdapt. Free to read ($0/mo), then $20/month Solo for campaign creation, budget updates, creatives, and audience sync.",
   "author": "Synter <hello@synterai.com>",

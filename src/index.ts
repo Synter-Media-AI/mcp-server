@@ -73,7 +73,7 @@ Environment Variables:
 }
 
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  console.log("1.4.4");
+  console.log("1.4.5");
   process.exit(0);
 }
 
@@ -88,7 +88,7 @@ const tools: Tool[] = [
   {
     name: "list_campaigns",
     description:
-      "List campaigns for ONE ad platform across all 16 ad platforms. `platform` is required -- this tool does not aggregate across platforms. Returns campaign name, status, budget, and performance metrics. Free read-only tool ($0.00 / 0 credits — free to read without a paid subscription; live write execution starts on the $20/month Solo plan).",
+      "List campaigns for ONE ad platform across all 16 ad platforms. `platform` is required -- this tool does not aggregate across platforms. Returns campaign name, status, budget, and performance metrics. 100% Free to Read ($0.00 / 0 credits — works out-of-the-box with zero configuration or API key; live write execution starts on the $20/month Solo plan).",
     annotations: { readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
@@ -115,6 +115,8 @@ const tools: Tool[] = [
     name: "create_search_campaign",
     description:
       "Create a Google Ads Search campaign with an ad group, responsive search ad, and keywords — all in one atomic request. " +
+      "Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required) to preview payload and policy checks. " +
+      "Live execution passes the server-side Agent Shield safety gate (daily spend caps, paused-on-create default, human approval mode, and immutable workspace audit log) on the $20/month Solo plan ($20.00 included monthly credits, 0% ad-spend markup). " +
       "IMPORTANT — creative floor: supply 11-15 headlines (15 recommended, max 30 chars each) and 4 descriptions (max 90 chars each), " +
       "echoing your target keywords across at least 5 headlines. The API accepts as few as 3 headlines / 2 descriptions, but ads built " +
       "near that minimum score 'Poor' on Google Ad Strength, get throttled in the auction, and may be rejected by the platform — " +
@@ -161,6 +163,10 @@ const tools: Tool[] = [
           items: { type: "string" },
           description: "Geo target codes (e.g., '2840' for US, '2826' for UK)",
         },
+        dry_run: {
+          type: "boolean",
+          description: "Preview the campaign payload and safety-gate validation without modifying live ad spend ($0.00 / 0 credits; works with zero credentials).",
+        },
       },
       required: ["campaign_name", "daily_budget", "keywords", "headlines", "descriptions", "final_url"],
     },
@@ -168,7 +174,7 @@ const tools: Tool[] = [
   {
     name: "create_display_campaign",
     description:
-      "Create a Google Ads Display campaign with responsive display ads. Supports image uploads from URLs.",
+      "Create a Google Ads Display campaign with responsive display ads. Supports image uploads from URLs, `dry_run: true` ($0.00 / 0 credits, zero credentials required), and server-side safety gates (daily spend caps, paused-on-create default, approval mode, and audit log).",
     annotations: { destructiveHint: true },
     inputSchema: {
       type: "object" as const,
@@ -212,6 +218,10 @@ const tools: Tool[] = [
           items: { type: "string" },
           description: "Geo target codes",
         },
+        dry_run: {
+          type: "boolean",
+          description: "Preview the campaign payload and safety-gate validation without modifying live ad spend ($0.00 / 0 credits; works with zero credentials).",
+        },
       },
       required: ["campaign_name", "daily_budget", "headlines", "descriptions", "business_name", "final_url"],
     },
@@ -219,7 +229,7 @@ const tools: Tool[] = [
   {
     name: "create_pmax_campaign",
     description:
-      "Create a Google Ads Performance Max campaign. Requires images, headlines, descriptions, and a business name.",
+      "Create a Google Ads Performance Max campaign. Requires images, headlines, descriptions, and a business name. Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required) and server-side safety gates (daily spend caps, paused-on-create default, approval mode, and audit log).",
     annotations: { destructiveHint: true },
     inputSchema: {
       type: "object" as const,
@@ -275,13 +285,18 @@ const tools: Tool[] = [
           type: "number",
           description: "Target CPA in USD (optional)",
         },
+        dry_run: {
+          type: "boolean",
+          description: "Preview the campaign payload and safety-gate validation without modifying live ad spend ($0.00 / 0 credits; works with zero credentials).",
+        },
       },
       required: ["campaign_name", "daily_budget", "headlines", "long_headline", "descriptions", "business_name", "final_url"],
     },
   },
   {
     name: "pause_campaign",
-    description: "Pause a campaign by ID. Works across all connected platforms.",
+    description:
+      "Pause a campaign by ID across all 16 connected ad platforms. Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required). Live execution is audited in the workspace audit log ($0.05 / 2 credits on Solo $20/mo plan).",
     annotations: { destructiveHint: true },
     inputSchema: {
       type: "object" as const,
@@ -295,13 +310,18 @@ const tools: Tool[] = [
           enum: [...ADVERTISED_PLATFORMS],
           description: "Ad platform",
         },
+        dry_run: {
+          type: "boolean",
+          description: "Preview the pause operation without modifying live ad spend ($0.00 / 0 credits; works with zero credentials).",
+        },
       },
       required: ["campaign_id", "platform"],
     },
   },
   {
     name: "update_campaign_budget",
-    description: "Update the daily budget for a campaign.",
+    description:
+      "Update the daily budget for a campaign across all 16 connected ad platforms. Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required). Live execution passes the server-side Agent Shield safety gate (daily spend ceiling, max 2x budget-change multiplier, approval mode, and immutable audit log).",
     annotations: { destructiveHint: true },
     inputSchema: {
       type: "object" as const,
@@ -318,6 +338,10 @@ const tools: Tool[] = [
         daily_budget: {
           type: "number",
           description: "New daily budget in USD",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Preview the budget update and spend-cap check without modifying live ad spend ($0.00 / 0 credits; works with zero credentials).",
         },
       },
       required: ["campaign_id", "platform", "daily_budget"],
@@ -1213,9 +1237,14 @@ async function handleTool(
     throw new Error(`Unknown tool: ${name}`);
   }
 
-  if (IS_DEMO) {
-    return getSandboxToolResult(name, args);
+  if (IS_DEMO || args.dry_run === true) {
+    return {
+      ...getSandboxToolResult(name, args),
+      ...(args.dry_run === true ? { dry_run: true, cost_credits: 0, cost_usd: "$0.00" } : {}),
+    };
   }
+
+  const isReadOnlyTool = (toolDef.annotations as any)?.readOnlyHint === true;
 
   // Free zero-credential read/audit tools: work even when SYNTER_API_KEY is not set
   if (
@@ -1273,6 +1302,9 @@ async function handleTool(
   }
 
   if (name === "list_landing_pages") {
+    if (!SYNTER_API_KEY) {
+      return getSandboxToolResult(name, args);
+    }
     return callSynterAPIGet("landing-pages");
   }
 
@@ -1284,6 +1316,9 @@ async function handleTool(
       args.platform,
       LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM,
     );
+    if (!SYNTER_API_KEY) {
+      return getSandboxToolResult(name, args);
+    }
     const script = LIST_CAMPAIGNS_SCRIPT_BY_PLATFORM[platform];
     const cliArgs: string[] = [];
     if (args.status) cliArgs.push("--status", args.status as string);
@@ -1319,6 +1354,9 @@ async function handleTool(
     if (args.date_range) {
       cliArgs.push(...resolveDateRangeArgs(args.date_range as string, new Date(), platform));
     }
+    if (!SYNTER_API_KEY) {
+      return getSandboxToolResult(name, args);
+    }
     return callSynterAPI("tools/run", {
       script_name: script,
       args: cliArgs,
@@ -1338,6 +1376,9 @@ async function handleTool(
       args.platform,
       DAILY_SPEND_SCRIPT_BY_PLATFORM,
     );
+    if (!SYNTER_API_KEY) {
+      return getSandboxToolResult(name, args);
+    }
     const cliArgs: string[] = ["--platform", platform.toUpperCase()];
     if (args.days) cliArgs.push("--days", String(args.days));
     return callSynterAPI("tools/run", {
@@ -1637,6 +1678,10 @@ async function handleTool(
   }
 
   const scriptArgs = mapping.argMapper ? mapping.argMapper(args) : [];
+
+  if (!SYNTER_API_KEY && isReadOnlyTool && !(name === "list_ad_accounts" && Object.keys(args).length === 0)) {
+    return getSandboxToolResult(name, args);
+  }
   
   return callSynterAPI("tools/run", {
     script_name: mapping.script,
@@ -1655,7 +1700,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.4.4",
+      version: "1.4.5",
     },
     {
       capabilities: {

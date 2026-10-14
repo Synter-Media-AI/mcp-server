@@ -287,5 +287,33 @@ test("--help CLI argument displays help and exits with code 0", async () => {
 test("--version CLI argument displays version and exits with code 0", async () => {
   const binaryPath = new URL("../dist/index.js", import.meta.url).pathname;
   const { stdout } = await execFileAsync(process.execPath, [binaryPath, "--version"]);
-  assert.equal(stdout.trim(), "1.4.4");
+  assert.equal(stdout.trim(), "1.4.5");
+});
+
+test("zero-friction install-and-go: read tools and dry_run mutations succeed with zero flags and zero API key", async () => {
+  await withDemoClient({ args: [] }, async (client) => {
+    const campRes = await client.callTool({
+      name: "list_campaigns",
+      arguments: { platform: "google" },
+    });
+    assert.ok(!campRes.isError, "list_campaigns should succeed with zero flags and no API key");
+    const campData = JSON.parse(campRes.content[0].text);
+    assert.equal(campData.platform, "google");
+    assert.ok(campData.campaigns.length > 0);
+
+    const perfRes = await client.callTool({
+      name: "get_performance",
+      arguments: { platform: "meta", date_range: "LAST_7_DAYS" },
+    });
+    assert.ok(!perfRes.isError, "get_performance should succeed with zero flags and no API key");
+
+    const dryRunRes = await client.callTool({
+      name: "update_campaign_budget",
+      arguments: { platform: "google", campaign_id: "demo-google-101", daily_budget: 200, dry_run: true },
+    });
+    assert.ok(!dryRunRes.isError, "dry_run mutation should succeed with zero flags and no API key");
+    const dryRunData = JSON.parse(dryRunRes.content[0].text);
+    assert.equal(dryRunData.dry_run, true);
+    assert.equal(dryRunData.cost_credits, 0);
+  });
 });
