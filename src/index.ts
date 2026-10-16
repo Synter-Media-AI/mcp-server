@@ -73,7 +73,7 @@ Environment Variables:
 }
 
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  console.log("1.4.5");
+  console.log("1.4.6");
   process.exit(0);
 }
 
@@ -483,27 +483,98 @@ const tools: Tool[] = [
   },
   {
     name: "add_negative_keywords",
-    description: "Add negative keywords to block unwanted search terms.",
+    description:
+      "Manage negative keywords in Google Ads across campaign, ad-group, shared negative list (create, add/remove terms, attach/detach campaigns), and account levels, with full post-change readback.",
     annotations: { destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
         campaign_id: {
           type: "string",
-          description: "Campaign ID",
+          description: "Campaign ID (or comma-separated campaign IDs)",
+        },
+        campaign_ids: {
+          type: "array",
+          items: { type: "string" },
+          description: "Multiple Campaign IDs to apply negatives to",
+        },
+        all_enabled: {
+          type: "boolean",
+          description: "Apply to all enabled Search/Display campaigns",
+        },
+        ad_group_id: {
+          type: "string",
+          description: "Ad group ID for AD_GROUP level negatives",
+        },
+        level: {
+          type: "string",
+          enum: ["CAMPAIGN", "AD_GROUP", "SHARED_LIST", "ACCOUNT"],
+          description: "Level to apply negatives (default: CAMPAIGN)",
+        },
+        shared_set_id: {
+          type: "string",
+          description: "Shared negative keyword list ID (SharedSet ID)",
+        },
+        shared_set_name: {
+          type: "string",
+          description: "Shared negative keyword list name (to create or look up by name)",
+        },
+        create_shared_set: {
+          type: "boolean",
+          description: "Create the shared negative keyword list if it does not already exist",
+        },
+        attach_campaign_ids: {
+          type: "array",
+          items: { type: "string" },
+          description: "Campaign IDs to attach the shared negative list to",
+        },
+        detach_campaign_ids: {
+          type: "array",
+          items: { type: "string" },
+          description: "Campaign IDs to detach the shared negative list from",
+        },
+        account_level: {
+          type: "boolean",
+          description: "Apply negative keywords at the Google Ads account (customer) level",
         },
         keywords: {
           type: "array",
           items: { type: "string" },
           description: "Negative keywords to add",
         },
-        level: {
+        remove_keywords: {
+          type: "array",
+          items: { type: "string" },
+          description: "Negative keywords to remove",
+        },
+        remove_criterion_ids: {
+          type: "array",
+          items: { type: "string" },
+          description: "Negative keyword criterion IDs to remove",
+        },
+        match_type: {
           type: "string",
-          enum: ["CAMPAIGN", "AD_GROUP"],
-          description: "Level to apply negatives (default: CAMPAIGN)",
+          enum: ["BROAD", "PHRASE", "EXACT"],
+          description: "Negative keyword match type (default: BROAD)",
+        },
+        readback_only: {
+          type: "boolean",
+          description: "Read back all negative keywords (including shared-list attachments and account-level negatives) without mutating",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Preview changes without applying them",
+        },
+        account_id: {
+          type: "string",
+          description: "Optional Google Ads customer ID",
+        },
+        customer_id: {
+          type: "string",
+          description: "Optional Google Ads customer ID (alias of account_id)",
         },
       },
-      required: ["campaign_id", "keywords"],
+      required: [],
     },
   },
 
@@ -1049,6 +1120,544 @@ const tools: Tool[] = [
       },
     },
   },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ORGANIC SOCIAL PUBLISHING (Native Synter OAuth — LinkedIn, X, Reddit, Meta, TikTok, YouTube)
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    name: "get_organic_publishing_readiness",
+    description:
+      "Check organic social publishing readiness and connected OAuth accounts across LinkedIn (personal & organization pages), X, Reddit, Meta, TikTok, and YouTube.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {},
+    },
+  },
+  {
+    name: "draft_organic_post",
+    description:
+      "Create an organic social media post draft for LinkedIn, X, Reddit, Meta, TikTok, or YouTube with optional media attachments and first-comment link.",
+    annotations: { readOnlyHint: false },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        platform: {
+          type: "string",
+          enum: ["linkedin", "x", "reddit", "meta", "tiktok", "youtube"],
+          description: "Target social platform",
+        },
+        body: {
+          type: "string",
+          description: "Post body copy",
+        },
+        title: {
+          type: "string",
+          description: "Optional post title (used by Reddit, YouTube, and LinkedIn articles/documents)",
+        },
+        first_comment: {
+          type: "string",
+          description: "Optional first comment to post immediately after publishing (e.g. link comment on LinkedIn)",
+        },
+        media_urls: {
+          type: "array",
+          items: { type: "string" },
+          description: "Optional media URLs (images, video, or PDF document)",
+        },
+        author_type: {
+          type: "string",
+          enum: ["person", "organization"],
+          description: "LinkedIn author type: 'person' (personal profile) or 'organization' (company page)",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Simulate without persisting draft",
+        },
+      },
+      required: ["platform", "body"],
+    },
+  },
+  {
+    name: "validate_organic_post",
+    description:
+      "Validate an organic social post draft against platform character limits, media requirements, and content policies.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        post_id: {
+          type: "string",
+          description: "Organic post draft ID",
+        },
+      },
+      required: ["post_id"],
+    },
+  },
+  {
+    name: "approve_organic_post",
+    description:
+      "Approve a validated organic social post draft so it can be scheduled or published.",
+    annotations: { readOnlyHint: false },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        post_id: {
+          type: "string",
+          description: "Organic post draft ID",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Preview approval without mutating state",
+        },
+      },
+      required: ["post_id"],
+    },
+  },
+  {
+    name: "schedule_organic_post",
+    description:
+      "Schedule an approved organic social post for future publication.",
+    annotations: { readOnlyHint: false },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        post_id: {
+          type: "string",
+          description: "Approved organic post ID",
+        },
+        scheduled_for: {
+          type: "string",
+          description: "ISO-8601 UTC timestamp for publication (e.g. '2026-10-15T15:00:00Z')",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Preview schedule without mutating state",
+        },
+      },
+      required: ["post_id", "scheduled_for"],
+    },
+  },
+  {
+    name: "publish_organic_post",
+    description:
+      "Immediately publish an approved organic social post to LinkedIn, X, Reddit, Meta, TikTok, or YouTube via Synter native OAuth.",
+    annotations: { destructiveHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        post_id: {
+          type: "string",
+          description: "Approved organic post ID to publish now",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Simulate publish without posting live",
+        },
+      },
+      required: ["post_id"],
+    },
+  },
+  {
+    name: "cancel_scheduled_post",
+    description:
+      "Cancel a scheduled organic social post before it is published.",
+    annotations: { destructiveHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        post_id: {
+          type: "string",
+          description: "Scheduled organic post ID",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Simulate cancellation",
+        },
+      },
+      required: ["post_id"],
+    },
+  },
+  {
+    name: "list_scheduled_posts",
+    description:
+      "List organic social posts across platforms filtered by lifecycle status.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        platform: {
+          type: "string",
+          enum: ["linkedin", "x", "reddit", "meta", "tiktok", "youtube"],
+          description: "Optional platform filter",
+        },
+        status: {
+          type: "string",
+          enum: ["draft", "validated", "approved", "scheduled", "published", "failed", "cancelled"],
+          description: "Optional status filter",
+        },
+        limit: {
+          type: "number",
+          description: "Maximum number of posts to return (default: 25)",
+        },
+      },
+    },
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // OUTBOUND EMAIL, WARM INTROS & LINKEDIN OUTREACH
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    name: "prospector_get_pipeline_summary",
+    description:
+      "Get an overview of outbound outreach health: active campaigns, total leads, emails sent, replies, and inbox warmup status.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {},
+    },
+  },
+  {
+    name: "prospector_get_campaigns",
+    description:
+      "List outbound email outreach campaigns with status and volume metrics.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        status: {
+          type: "string",
+          description: "Optional status filter (e.g. 'active', 'draft', 'paused')",
+        },
+      },
+    },
+  },
+  {
+    name: "prospector_get_campaign",
+    description:
+      "Get full details and sequence configuration for a specific outbound outreach campaign.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        campaign_id: {
+          type: "string",
+          description: "Outbound campaign ID",
+        },
+      },
+      required: ["campaign_id"],
+    },
+  },
+  {
+    name: "prospector_get_campaign_performance",
+    description:
+      "Get performance metrics (sent, opened, replied, bounced, interested) for an outbound campaign.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        campaign_id: {
+          type: "string",
+          description: "Outbound campaign ID",
+        },
+        start_date: {
+          type: "string",
+          description: "Optional start date YYYY-MM-DD",
+        },
+        end_date: {
+          type: "string",
+          description: "Optional end date YYYY-MM-DD",
+        },
+      },
+      required: ["campaign_id"],
+    },
+  },
+  {
+    name: "prospector_get_leads",
+    description:
+      "Search or list prospects and leads in the outbound outreach database.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        search: {
+          type: "string",
+          description: "Optional search query (name, email, or company domain)",
+        },
+        page: {
+          type: "number",
+          description: "Page number (default: 1)",
+        },
+      },
+    },
+  },
+  {
+    name: "prospector_get_inbox_health",
+    description:
+      "Check sending email accounts, warmup scores, deliverability health, and daily send limits.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {},
+    },
+  },
+  {
+    name: "prospector_get_pending_replies",
+    description:
+      "List pending inbound prospect replies with AI classification and draft responses awaiting approval.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        status: {
+          type: "string",
+          description: "Reply status filter (default: 'pending')",
+        },
+        limit: {
+          type: "number",
+          description: "Max replies to return (default: 25)",
+        },
+      },
+    },
+  },
+  {
+    name: "prospector_get_intro_paths",
+    description:
+      "Find warm introduction paths to a target company or domain through your 1st-degree LinkedIn connections.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        company_or_domain: {
+          type: "string",
+          description: "Target company name or domain (e.g. 'Rippling' or 'rippling.com')",
+        },
+      },
+      required: ["company_or_domain"],
+    },
+  },
+  {
+    name: "prospector_get_warm_intros",
+    description:
+      "Discover ICP target prospects (CMOs, VPs Growth, CEOs, Hiring Managers) reachable via warm introductions from your 1st-degree LinkedIn network.",
+    annotations: { readOnlyHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        limit: {
+          type: "number",
+          description: "Maximum warm intro targets to return (default: 20)",
+        },
+        min_strength: {
+          type: "number",
+          description: "Minimum connection strength score 0-100 (default: 35)",
+        },
+      },
+    },
+  },
+  {
+    name: "prospector_create_campaign",
+    description:
+      "Create a new outbound email outreach campaign.",
+    annotations: { destructiveHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        name: {
+          type: "string",
+          description: "Campaign name",
+        },
+        max_emails_per_day: {
+          type: "number",
+          description: "Daily send cap (default: 50)",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Simulate campaign creation without mutating live state",
+        },
+      },
+      required: ["name"],
+    },
+  },
+  {
+    name: "prospector_update_campaign_sequence",
+    description:
+      "Set or replace the multi-step email sequence templates on an outbound outreach campaign.",
+    annotations: { destructiveHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        campaign_id: {
+          type: "string",
+          description: "Outbound campaign ID",
+        },
+        title: {
+          type: "string",
+          description: "Sequence title",
+        },
+        steps: {
+          type: "array",
+          description: "Ordered list of sequence steps ({ email_subject, email_body, wait_in_days, order })",
+          items: { type: "object" },
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Simulate sequence update without mutating live state",
+        },
+      },
+      required: ["campaign_id", "title", "steps"],
+    },
+  },
+  {
+    name: "prospector_add_leads",
+    description:
+      "Add one or more leads to the outbound outreach database (and optionally assign to a campaign).",
+    annotations: { destructiveHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        leads: {
+          type: "array",
+          description: "Array of lead objects ({ email, first_name, last_name, company_name, job_title })",
+          items: { type: "object" },
+        },
+        campaign_id: {
+          type: "string",
+          description: "Optional campaign ID to attach leads to",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Simulate lead import without mutating live state",
+        },
+      },
+      required: ["leads"],
+    },
+  },
+  {
+    name: "prospector_create_reply",
+    description:
+      "Approve and send a reply to an inbound prospect email thread.",
+    annotations: { destructiveHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        reply_id: {
+          type: "string",
+          description: "Pending reply ID to approve and send",
+        },
+        edited_text: {
+          type: "string",
+          description: "Optional edited reply body (uses AI draft if omitted)",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Simulate sending reply without dispatching email",
+        },
+      },
+      required: ["reply_id"],
+    },
+  },
+  {
+    name: "prospector_send_outreach_email",
+    description:
+      "Send a 1:1 outreach or warm-introduction request email via native Microsoft 365 Exchange or Resend.",
+    annotations: { destructiveHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        to_email: {
+          type: "string",
+          description: "Recipient email address",
+        },
+        to_name: {
+          type: "string",
+          description: "Optional recipient display name",
+        },
+        subject: {
+          type: "string",
+          description: "Email subject line",
+        },
+        body_text: {
+          type: "string",
+          description: "Plain-text email body",
+        },
+        body_html: {
+          type: "string",
+          description: "Optional HTML email body",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Preview email without sending (default: false)",
+        },
+      },
+      required: ["to_email", "subject", "body_text"],
+    },
+  },
+  {
+    name: "prospector_post_linkedin_document",
+    description:
+      "Publish a native LinkedIn PDF carousel / document post via Synter LinkedIn OAuth (supports personal profile or organization page and optional first comment).",
+    annotations: { destructiveHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        text: {
+          type: "string",
+          description: "LinkedIn post commentary text",
+        },
+        document_url: {
+          type: "string",
+          description: "Public URL to the PDF document",
+        },
+        document_title: {
+          type: "string",
+          description: "Carousel / document title shown in the LinkedIn viewer",
+        },
+        author_type: {
+          type: "string",
+          enum: ["person", "organization"],
+          description: "Publish as 'person' or 'organization' (default: 'person')",
+        },
+        first_comment: {
+          type: "string",
+          description: "Optional first comment to post immediately after publishing",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Validate and preview without publishing live",
+        },
+      },
+      required: ["text", "document_url"],
+    },
+  },
+  {
+    name: "prospector_post_linkedin_comment",
+    description:
+      "Post a comment on a LinkedIn post (urn:li:share:... or urn:li:ugcPost:...) via Synter LinkedIn OAuth.",
+    annotations: { destructiveHint: true },
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        post_id: {
+          type: "string",
+          description: "Target LinkedIn post URN (e.g. 'urn:li:share:7450034974610948096')",
+        },
+        text: {
+          type: "string",
+          description: "Comment text to publish",
+        },
+        author_type: {
+          type: "string",
+          enum: ["person", "organization"],
+          description: "Comment as 'person' or 'organization' (default: 'person')",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Preview comment without posting live",
+        },
+      },
+      required: ["post_id", "text"],
+    },
+  },
 ];
 
 // =============================================================================
@@ -1132,6 +1741,188 @@ async function callSynterAPIGet(
 
   return data;
 }
+
+async function callSynterMcpTool(
+  toolName: string,
+  body: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  if (!SYNTER_API_KEY) {
+    throw new Error(
+      "SYNTER_API_KEY not set. Get your API key at https://synterai.com/developer or run with --demo for zero-credential sandbox mode."
+    );
+  }
+
+  const response = await fetch(`${SYNTER_API_URL}/api/mcp/tools/${toolName}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${SYNTER_API_KEY}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  const data = (await response.json()) as Record<string, unknown>;
+  if (!response.ok) {
+    const errorMsg =
+      (data.error as string) ||
+      (data.message as string) ||
+      `MCP tool error: ${response.status}`;
+    throw new Error(errorMsg);
+  }
+  return data;
+}
+
+async function callSynterProspectorTool(
+  backendToolName: string,
+  toolArgs: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  if (!SYNTER_API_KEY) {
+    throw new Error(
+      "SYNTER_API_KEY not set. Get your API key at https://synterai.com/developer or run with --demo for zero-credential sandbox mode."
+    );
+  }
+
+  const endpoint = `${SYNTER_API_URL}/api/mcp/prospector`;
+  const baseHeaders: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json, text/event-stream",
+    Authorization: `Bearer ${SYNTER_API_KEY}`,
+  };
+
+  const initRes = await fetch(endpoint, {
+    method: "POST",
+    headers: baseHeaders,
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "initialize",
+      params: {
+        protocolVersion: "2024-11-05",
+        capabilities: {},
+        clientInfo: { name: "synter-mcp-stdio", version: "1.4.6" },
+      },
+    }),
+  });
+
+  const sessionId = initRes.headers.get("mcp-session-id");
+  const sessionHeaders: Record<string, string> = sessionId
+    ? { ...baseHeaders, "mcp-session-id": sessionId }
+    : baseHeaders;
+
+  await fetch(endpoint, {
+    method: "POST",
+    headers: sessionHeaders,
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      method: "notifications/initialized",
+      params: {},
+    }),
+  }).catch(() => undefined);
+
+  const callRes = await fetch(endpoint, {
+    method: "POST",
+    headers: sessionHeaders,
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 2,
+      method: "tools/call",
+      params: {
+        name: backendToolName,
+        arguments: toolArgs,
+      },
+    }),
+  });
+
+  const rawText = await callRes.text();
+  let rpcPayload: Record<string, any> | null = null;
+  for (const line of rawText.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("data:")) {
+      const dataStr = trimmed.slice(5).trim();
+      if (dataStr) {
+        try {
+          rpcPayload = JSON.parse(dataStr);
+        } catch {
+          // ignore non-JSON SSE lines
+        }
+      }
+    }
+  }
+  if (!rpcPayload) {
+    try {
+      rpcPayload = JSON.parse(rawText);
+    } catch {
+      throw new Error(`Prospector MCP error (${callRes.status}): ${rawText.slice(0, 200)}`);
+    }
+  }
+
+  if (!callRes.ok || rpcPayload?.error) {
+    const msg =
+      rpcPayload?.error?.message ||
+      rpcPayload?.error ||
+      rpcPayload?.message ||
+      `Prospector MCP error: ${callRes.status}`;
+    throw new Error(typeof msg === "string" ? msg : JSON.stringify(msg));
+  }
+
+  const contentBlocks = rpcPayload?.result?.content;
+  if (Array.isArray(contentBlocks) && contentBlocks[0]?.text) {
+    try {
+      return JSON.parse(contentBlocks[0].text) as Record<string, unknown>;
+    } catch {
+      return { result: contentBlocks[0].text };
+    }
+  }
+
+  return (rpcPayload?.result as Record<string, unknown>) || { ok: true };
+}
+
+const ORGANIC_MCP_TOOLS = new Set([
+  "get_organic_publishing_readiness",
+  "draft_organic_post",
+  "validate_organic_post",
+  "approve_organic_post",
+  "schedule_organic_post",
+  "publish_organic_post",
+  "cancel_scheduled_post",
+  "list_scheduled_posts",
+]);
+
+const PROSPECTOR_MCP_TOOL_MAP: Record<
+  string,
+  { backendTool: string; mapArgs?: (args: Record<string, unknown>) => Record<string, unknown> }
+> = {
+  prospector_get_pipeline_summary: { backendTool: "get_pipeline_summary" },
+  prospector_get_campaigns: { backendTool: "list_campaigns" },
+  prospector_get_campaign: { backendTool: "get_campaign" },
+  prospector_get_campaign_performance: { backendTool: "get_campaign_stats" },
+  prospector_get_leads: { backendTool: "list_leads" },
+  prospector_get_inbox_health: { backendTool: "get_inbox_health" },
+  prospector_get_pending_replies: { backendTool: "get_pending_replies" },
+  prospector_get_intro_paths: { backendTool: "get_intro_paths_for_company" },
+  prospector_get_warm_intros: { backendTool: "find_warm_intros_to_icp" },
+  prospector_create_campaign: { backendTool: "create_campaign" },
+  prospector_update_campaign_sequence: { backendTool: "create_sequence_steps" },
+  prospector_add_leads: {
+    backendTool: "create_lead",
+    mapArgs: (a) => {
+      const leads = Array.isArray(a.leads) ? (a.leads as Record<string, unknown>[]) : [];
+      const first = leads[0] || {};
+      return {
+        email: first.email || a.email,
+        first_name: first.first_name || a.first_name,
+        last_name: first.last_name || a.last_name,
+        company_name: first.company_name || a.company_name,
+        job_title: first.job_title || a.job_title,
+        campaign_id: a.campaign_id,
+      };
+    },
+  },
+  prospector_create_reply: { backendTool: "approve_and_send_reply" },
+  prospector_send_outreach_email: { backendTool: "send_outreach_email" },
+  prospector_post_linkedin_document: { backendTool: "post_linkedin_document" },
+  prospector_post_linkedin_comment: { backendTool: "post_linkedin_comment" },
+};
 
 async function stageAudienceArtifact(
   body: string,
@@ -1306,6 +2097,22 @@ async function handleTool(
       return getSandboxToolResult(name, args);
     }
     return callSynterAPIGet("landing-pages");
+  }
+
+  if (ORGANIC_MCP_TOOLS.has(name)) {
+    if (!SYNTER_API_KEY && isReadOnlyTool) {
+      return getSandboxToolResult(name, args);
+    }
+    return callSynterMcpTool(name, args);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(PROSPECTOR_MCP_TOOL_MAP, name)) {
+    if (!SYNTER_API_KEY && isReadOnlyTool) {
+      return getSandboxToolResult(name, args);
+    }
+    const spec = PROSPECTOR_MCP_TOOL_MAP[name];
+    const mappedArgs = spec.mapArgs ? spec.mapArgs(args) : args;
+    return callSynterProspectorTool(spec.backendTool, mappedArgs);
   }
 
   if (name === "list_campaigns") {
@@ -1512,12 +2319,32 @@ async function handleTool(
       script: "google_ads_add_negative_keywords",
       platform: "google",
       argMapper: (a) => {
-        // google_ads_add_negative_keywords takes ONE comma-separated
-        // --keywords (unlike the create-campaign scripts' repeated --keyword)
-        // and has no --level at all.
-        const cliArgs: string[] = ["--campaign-id", a.campaign_id as string];
+        const cliArgs: string[] = [];
+        if (a.campaign_id) cliArgs.push("--campaign-id", String(a.campaign_id));
+        const campaignIds = (a.campaign_ids as string[]) || [];
+        if (campaignIds.length) cliArgs.push("--campaign-ids", campaignIds.join(","));
+        if (a.all_enabled) cliArgs.push("--all-enabled");
+        if (a.ad_group_id) cliArgs.push("--ad-group-id", String(a.ad_group_id));
+        if (a.level) cliArgs.push("--level", String(a.level));
+        if (a.shared_set_id) cliArgs.push("--shared-set-id", String(a.shared_set_id));
+        if (a.shared_set_name) cliArgs.push("--shared-set-name", String(a.shared_set_name));
+        if (a.create_shared_set) cliArgs.push("--create-shared-set");
+        const attachIds = (a.attach_campaign_ids as string[]) || [];
+        if (attachIds.length) cliArgs.push("--attach-campaign-ids", attachIds.join(","));
+        const detachIds = (a.detach_campaign_ids as string[]) || [];
+        if (detachIds.length) cliArgs.push("--detach-campaign-ids", detachIds.join(","));
+        if (a.account_level) cliArgs.push("--account-level");
         const keywords = (a.keywords as string[]) || [];
         if (keywords.length) cliArgs.push("--keywords", keywords.join(","));
+        const removeKeywords = (a.remove_keywords as string[]) || [];
+        if (removeKeywords.length) cliArgs.push("--remove-keywords", removeKeywords.join(","));
+        const removeCriterionIds = (a.remove_criterion_ids as string[]) || [];
+        if (removeCriterionIds.length) cliArgs.push("--remove-criterion-ids", removeCriterionIds.join(","));
+        if (a.match_type) cliArgs.push("--match-type", String(a.match_type));
+        if (a.readback_only) cliArgs.push("--readback-only");
+        if (a.dry_run) cliArgs.push("--dry-run");
+        const cid = a.customer_id || a.account_id;
+        if (cid) cliArgs.push("--customer-id", String(cid));
         return cliArgs;
       },
     },
@@ -1700,7 +2527,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.4.5",
+      version: "1.4.6",
     },
     {
       capabilities: {
@@ -1811,6 +2638,9 @@ async function main() {
                   { id: "marginal-cpa-budget-rebalancer", name: "Marginal CPA Cross-Channel Budget Rebalancer" },
                   { id: "meta-asc-dark-pool-auditor", name: "Meta Advantage+ Shopping Dark Pool Auditor" },
                   { id: "single-truth-attribution", name: "Single-Truth Multi-Touch Attribution" },
+                  { id: "executive-media-plan", name: "Executive Multi-Tab Media Plan" },
+                  { id: "campaign-trafficking-inputs", name: "Campaign Trafficking & Ad Copy Workbook" },
+                  { id: "digital-media-strategy-sow", name: "Digital Media & GTM Campaign Strategy SOW" },
                 ],
               },
               null,

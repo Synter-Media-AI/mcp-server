@@ -41,17 +41,17 @@ async function withDemoClient(options, fn) {
   }
 }
 
-test("demo mode via --demo flag lists all 32 tools without API key", async () => {
+test("demo mode via --demo flag lists all 56 tools without API key", async () => {
   await withDemoClient({ args: ["--demo"] }, async (client) => {
     const { tools } = await client.listTools();
-    assert.equal(tools.length, 32, "all 32 tools should be available in demo mode");
+    assert.equal(tools.length, 56, "all 56 tools should be available in demo mode");
   });
 });
 
-test("demo mode via SYNTER_DEMO=true lists all 32 tools without API key", async () => {
+test("demo mode via SYNTER_DEMO=true lists all 56 tools without API key", async () => {
   await withDemoClient({ env: { SYNTER_DEMO: "true" } }, async (client) => {
     const { tools } = await client.listTools();
-    assert.equal(tools.length, 32, "all 32 tools should be available in demo mode");
+    assert.equal(tools.length, 56, "all 56 tools should be available in demo mode");
   });
 });
 
@@ -287,7 +287,7 @@ test("--help CLI argument displays help and exits with code 0", async () => {
 test("--version CLI argument displays version and exits with code 0", async () => {
   const binaryPath = new URL("../dist/index.js", import.meta.url).pathname;
   const { stdout } = await execFileAsync(process.execPath, [binaryPath, "--version"]);
-  assert.equal(stdout.trim(), "1.4.5");
+  assert.equal(stdout.trim(), "1.4.6");
 });
 
 test("zero-friction install-and-go: read tools and dry_run mutations succeed with zero flags and zero API key", async () => {
@@ -317,3 +317,74 @@ test("zero-friction install-and-go: read tools and dry_run mutations succeed wit
     assert.equal(dryRunData.cost_credits, 0);
   });
 });
+
+test("demo mode supports organic publishing, warm intro discovery, email outreach, and LinkedIn tools", async () => {
+  await withDemoClient({ args: ["--demo"] }, async (client) => {
+    // 1. Organic readiness
+    const orgReady = await client.callTool({
+      name: "get_organic_publishing_readiness",
+      arguments: {},
+    });
+    assert.ok(!orgReady.isError);
+    const orgData = JSON.parse(orgReady.content[0].text);
+    assert.equal(orgData.ready, true);
+    assert.equal(orgData.platforms.linkedin.provider, "synter_nango_oauth");
+
+    // 2. Warm intros discovery
+    const warmIntros = await client.callTool({
+      name: "prospector_get_warm_intros",
+      arguments: { limit: 10 },
+    });
+    assert.ok(!warmIntros.isError);
+    const warmData = JSON.parse(warmIntros.content[0].text);
+    assert.ok(Array.isArray(warmData.warm_intro_paths));
+    assert.ok(warmData.warm_intro_paths.length > 0);
+
+    // 3. 1:1 outreach email via native Exchange
+    const emailRes = await client.callTool({
+      name: "prospector_send_outreach_email",
+      arguments: {
+        to_email: "david@example.com",
+        subject: "Quick intro to Alex?",
+        body_text: "Hey David, hope all is well!",
+      },
+    });
+    assert.ok(!emailRes.isError);
+    const emailData = JSON.parse(emailRes.content[0].text);
+    assert.equal(emailData.provider, "microsoft_exchange_native");
+
+    // 4. Native LinkedIn PDF document post
+    const docRes = await client.callTool({
+      name: "prospector_post_linkedin_document",
+      arguments: {
+        text: "Our Q4 AI Ad Infrastructure Benchmark",
+        document_url: "https://synterai.com/reports/q4-benchmark.pdf",
+      },
+    });
+    assert.ok(!docRes.isError);
+    const docData = JSON.parse(docRes.content[0].text);
+    assert.equal(docData.provider, "synter_linkedin_native");
+  });
+});
+
+test("update_campaign_budget correctly parses daily_budget_micros in dry_run mode", async () => {
+  await withDemoClient({ args: ["--demo"] }, async (client) => {
+    const res = await client.callTool({
+      name: "update_campaign_budget",
+      arguments: {
+        platform: "google",
+        campaign_id: "camp_g_search_brand_01",
+        daily_budget_micros: 50000000,
+        dry_run: true,
+      },
+    });
+    assert.ok(!res.isError);
+    const data = JSON.parse(res.content[0].text);
+    assert.equal(data.new_daily_budget, 50.0);
+    assert.equal(data.new_daily_budget_micros, 50000000);
+    assert.equal(data.dry_run, true);
+    assert.equal(data.verified, true);
+    assert.equal(data.agent_shield_verdict.status, "PASSED");
+  });
+});
+

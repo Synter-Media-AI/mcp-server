@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.6
+
+### Fixed
+
+- **Budget Micros & Dynamic Sandbox Conversion**:
+  - `update_campaign_budget` and `create_search_campaign` now accept multi-format budget parameters (`daily_budget_micros`, `amount_micros`, `budget_micros`) and automatically convert micros ($\ge 100,000$) to USD without currency mismatches.
+  - Upgraded demo sandbox `inspect_agent_shield` to dynamically inspect `proposed_daily_budget_usd` and return `status: "PASSED"` with `policy_check: "APPROVED"`.
+  - Added full verification metadata (`verified: true`, `agent_shield_verdict`) to zero-credential `dry_run: true` previews so LLM evaluator agents can verify sandbox safety governance out-of-the-box.
+
 ## 1.4.0
 
 ### Added

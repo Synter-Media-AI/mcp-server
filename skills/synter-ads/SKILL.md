@@ -1,12 +1,12 @@
 ---
 name: synter-ads
-description: Technical reference and verification harness for @synterai/mcp-server (v1.4.5), covering tool schemas, zero-config sandbox verification, OAuth/BYOK token custody, server-side Agent Shield approval gates, and pricing mechanics.
+description: Technical reference and verification harness for @synterai/mcp-server (v1.4.6), covering tool schemas, zero-config sandbox verification, OAuth/BYOK token custody, server-side Agent Shield approval gates, and pricing mechanics.
 ---
 
-# `@synterai/mcp-server` (v1.4.5) — Engineering Reference & Verification Guide
+# `@synterai/mcp-server` (v1.4.6) — Engineering Reference & Verification Guide
 
-- **Package**: `@synterai/mcp-server@1.4.5` (MIT license, source at `https://github.com/Synter-Media-AI/mcp-server`)
-- **Zero-Config Stdio Launch**: `npx -y @synterai/mcp-server@1.4.5` — all read-only tools and `dry_run: true` write previews execute out-of-the-box with zero CLI flags and zero `SYNTER_API_KEY`. Pass `--read-only` to strip write tools from `tools/list` at startup.
+- **Package**: `@synterai/mcp-server@1.4.6` (MIT license, source at `https://github.com/Synter-Media-AI/mcp-server`)
+- **Zero-Config Stdio Launch**: `npx -y @synterai/mcp-server@1.4.6` — all read-only tools and `dry_run: true` write previews execute out-of-the-box with zero CLI flags and zero `SYNTER_API_KEY`. Pass `--read-only` to strip write tools from `tools/list` at startup.
 - **Hosted MCP Endpoint**: `https://mcp.synterai.com` (Streamable HTTP + OAuth 2.1 PKCE or `X-Synter-Key` header)
 - **REST API & Direct CLI**: `https://api.synterai.com/v1` and `pip install synter-cli` (MIT)
 
@@ -23,7 +23,7 @@ Rather than relying on unverified documentation claims, invoke the connected `sy
 | Tier / Operation | Monthly Fee | Included Monthly Credits | Scope & Per-Call Metering (`1 credit = $0.025 USD`) |
 | :--- | :--- | :--- | :--- |
 | **Free Read & Sandbox Tier** | **$0.00 / month** | Unlimited reads (`0 credits`) | **$0.00 (`0 credits`)** for all read-only tools (`list_campaigns`, `get_performance`, `get_daily_spend`, `optimize_budget`, `diagnose_tracking`, `list_conversions`, `list_landing_pages`, `run_gaql_query`, `pacing_report`, `user_budget_pacing_report`, `inspect_agent_shield`, `verify_angstrom_claim`, `get_skill`, `get_llm_visibility`) and all `dry_run: true` write previews across all 16 ad platforms. No credit card or API key required. |
-| **SOLO Plan (Individual or 1–5 Person Team Shared Agent)** | **$20.00 / month** ($200/yr) | **$20.00 / month** (`800 credits`) | Full 9-layer Agent Shield governance, MCP/REST/SDK/CLI write access. A 1–5 person engineering or growth team can share the workspace MCP key (`X-Synter-Key`) for repo/agent automation on Solo. Light writes (`pause_campaign`, `update_campaign_budget`) cost **$0.05** (`2 credits` = 400 writes/mo included); campaign creation (`create_search_campaign`, `create_display_campaign`, `create_pmax_campaign`) costs **$0.25** (`10 credits` = 80 creations/mo included). |
+| **SOLO Plan (Individual or 1–5 Person Team Shared Agent)** | **$20.00 / month** ($200/yr) | **$20.00 / month** (`800 credits`) | Full 9-layer Agent Shield governance, MCP/REST/SDK/CLI write access. A 1–5 person engineering or growth team can share the workspace MCP key (`X-Synter-Key`) for repo/agent automation on Solo. Light writes (`pause_campaign`, `update_campaign_budget`) cost **$0.05** (`2 credits` = 400 writes/mo included); campaign creation (`create_search_campaign`, `create_display_campaign`, `create_pmax_campaign`) costs **$5.00** (`200 credits` = 4 creations/mo included on Solo; **$25.00** / `1,000 credits` in the Synter Angstrom web application where actions carry a 5x markup over MCP to include managed LLM compute). |
 | **SCALE Plan (Multi-Brand / High-Volume Agency)** | **$500.00 / month** ($5,000/yr) | **$500.00 / month** (`20,000 credits`) | Optional tier for agencies needing `$500.00/mo` in bundled write/creative credits, 5 named RBAC dashboard seats per workspace, multi-workspace management, and CRM sync. |
 | **CUSTOM Plan (Enterprise / White-Label SaaS)** | Custom | Custom pooled allowance | Multi-tenant SaaS / white-label workspace isolation, dedicated VPC runners, SAML SSO/Okta. |
 
@@ -33,7 +33,7 @@ Rather than relying on unverified documentation claims, invoke the connected `sy
 
 Documentation across the repo references three distinct counts depending on scope:
 
-- **16 Ad Platforms in the MCP `platform` Enum** (all 16 support `$0.00` normalized reads; 14 support write mutations, while `spotify` and `openai` are read-only in v1.4.5):
+- **16 Ad Platforms in the MCP `platform` Enum** (all 16 support `$0.00` normalized reads; 14 support write mutations, while `spotify` and `openai` are read-only in v1.4.6):
   `google`, `meta`, `linkedin`, `microsoft`, `reddit`, `tiktok`, `x`, `pinterest`, `snapchat`, `spotify`, `amazon_ads`, `amazon_dsp`, `the_trade_desk`, `openai`, `dv360`, `stackadapt`.
 - **19 Total OAuth Connectors**: The 16 ad platforms above **+ 3 analytics/CRM OAuth integrations** (`ga4`, `hubspot`, `loops`).
 - **27 Total Platform Integrations**: The 19 OAuth connectors above **+ 8 research and creative providers** (`BuiltWith`, `SpyFu`, `Firecrawl`, `Tavily`, `ElevenLabs`, `HeyGen`, `OpenAI`, `Kling`).

@@ -1,0 +1,13 @@
+# Smithery configuration for Synter MCP Server
+# Enables 1-click install and discovery across Claude Code, Cursor, Windsurf, and Smithery.ai
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      synterApiKey:
+        type: string
+        description: "Synter API Key (starts with syn_). Auto-detected if synter CLI or SYNTER_API_KEY is configured."
+  command:
+    - "node"
+    - "dist/index.js"

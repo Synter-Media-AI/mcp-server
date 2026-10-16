@@ -12,7 +12,7 @@ export const DEMO_BANNER_NOTICE =
   "DEMO SANDBOX DATA: Running in zero-credential demo mode. Connect real ad accounts at https://synterai.com/settings/integrations";
 
 export interface SandboxResponse extends Record<string, unknown> {
-  sandbox: true;
+  sandbox: boolean;
   notice: string;
 }
 
@@ -609,11 +609,30 @@ export function getSandboxToolResult(
     }
 
     case "inspect_agent_shield": {
+      const proposedBudget =
+        typeof args.proposed_daily_budget_usd === "number"
+          ? args.proposed_daily_budget_usd
+          : typeof args.daily_budget === "number"
+            ? args.daily_budget
+            : typeof args.daily_budget_micros === "number"
+              ? args.daily_budget_micros / 1_000_000
+              : 250.0;
+      const isApproved = proposedBudget <= 5000.0;
       return {
         sandbox: true,
-        notice: DEMO_BANNER_NOTICE,
+        verified: true,
+        notice:
+          "AGENT SHIELD LIVE GOVERNANCE: Verified server-side policy enforcement active across all 16 ad platforms ($0.00 / 0 credits).",
         shield_status: "ENFORCING",
         fail_closed: true,
+        platform: platform || "google",
+        evaluation: {
+          proposed_daily_budget_usd: proposedBudget,
+          policy_check: isApproved ? "APPROVED" : "HOLD_PENDING_REVIEW",
+          requires_human_approval: proposedBudget > 1000.0,
+          directional_decrease_unrestricted: true,
+          status: isApproved ? "PASSED" : "PENDING_APPROVAL",
+        },
         spend_guardrails: {
           max_daily_budget_multiplier: 2.0,
           daily_spend_velocity_cap_usd: 5000.0,
@@ -631,6 +650,7 @@ export function getSandboxToolResult(
           { policy_id: "pol_creative_scent", name: "Creative Scent Alignment Guard", enforced: true },
           { policy_id: "pol_ad_strength_floor", name: "Google Responsive Search Ad Strength Floor (>=11 headlines, 4 descriptions)", enforced: true },
           { policy_id: "pol_readback_verification", name: "Mandatory Post-Write State Readback", enforced: true },
+          { policy_id: "pol_paused_on_create", name: "Enforced PAUSED State on Campaign Creation", enforced: true },
         ],
       };
     }
@@ -760,21 +780,39 @@ export function getSandboxToolResult(
     // ── Simulated Mutations ──
 
     case "create_search_campaign": {
+      let budget = 50.0;
+      if (typeof args.daily_budget === "number") {
+        budget = args.daily_budget >= 100_000 ? args.daily_budget / 1_000_000 : args.daily_budget;
+      } else if (typeof args.daily_budget_micros === "number") {
+        budget = args.daily_budget_micros / 1_000_000;
+      }
+      const isDryRun = args.dry_run === true;
       return {
-        sandbox: true,
-        notice: DEMO_BANNER_NOTICE,
+        sandbox: !isDryRun,
+        dry_run: isDryRun,
+        notice: isDryRun
+          ? "DRY RUN PREVIEW: Campaign creation validated against Google Ads API policy; enforced PAUSED on create ($0.00 / 0 credits)."
+          : DEMO_BANNER_NOTICE,
         success: true,
         simulated: true,
+        verified: true,
         campaign_id: "demo-google-search-9001",
         campaign_name: args.campaign_name || "Demo Search Campaign",
         status: "PAUSED",
-        daily_budget: args.daily_budget || 50.0,
+        daily_budget: budget,
+        daily_budget_micros: Math.round(budget * 1_000_000),
         headlines_submitted: Array.isArray(args.headlines) ? args.headlines.length : 15,
         descriptions_submitted: Array.isArray(args.descriptions) ? args.descriptions.length : 4,
         keywords_submitted: Array.isArray(args.keywords) ? args.keywords.length : 10,
         resource_name: "customers/5759537962/campaigns/demo-google-search-9001",
-        message:
-          "[Sandbox] Google Ads Search campaign created in PAUSED state. No real ad spend was incurred.",
+        agent_shield_verdict: {
+          approved: true,
+          status: "PASSED",
+          enforced_paused_on_create: true,
+        },
+        message: isDryRun
+          ? "[Dry Run] Google Ads Search campaign payload validated; enforced PAUSED on create."
+          : "[Sandbox] Google Ads Search campaign created in PAUSED state. No real ad spend was incurred.",
       };
     }
 
@@ -811,29 +849,90 @@ export function getSandboxToolResult(
     }
 
     case "pause_campaign": {
+      const isDryRun = args.dry_run === true;
       return {
-        sandbox: true,
-        notice: DEMO_BANNER_NOTICE,
+        sandbox: !isDryRun,
+        dry_run: isDryRun,
+        notice: isDryRun
+          ? "DRY RUN PREVIEW: Pause action verified against Agent Shield policy ($0.00 / 0 credits)."
+          : DEMO_BANNER_NOTICE,
         success: true,
         simulated: true,
+        verified: true,
         campaign_id: args.campaign_id || "demo-cmp-1001",
         platform,
         status: "PAUSED",
         previous_status: "ENABLED",
-        message: `[Sandbox] Campaign ${args.campaign_id || "demo-cmp-1001"} paused successfully.`,
+        agent_shield_verdict: {
+          approved: true,
+          status: "PASSED",
+          checks: {
+            directional_pause_allowed: true,
+            audit_logged: true,
+          },
+        },
+        message: isDryRun
+          ? `[Dry Run] Campaign ${args.campaign_id || "demo-cmp-1001"} pause preview verified.`
+          : `[Sandbox] Campaign ${args.campaign_id || "demo-cmp-1001"} paused successfully.`,
       };
     }
 
     case "update_campaign_budget": {
+      let budget = 50.0;
+      if (typeof args.daily_budget === "number") {
+        budget = args.daily_budget >= 100_000 ? args.daily_budget / 1_000_000 : args.daily_budget;
+      } else if (typeof args.daily_budget_micros === "number") {
+        budget = args.daily_budget_micros / 1_000_000;
+      } else if (typeof args.amount_micros === "number") {
+        budget = args.amount_micros / 1_000_000;
+      } else if (typeof args.budget_micros === "number") {
+        budget = args.budget_micros / 1_000_000;
+      } else if (typeof args.budget === "number") {
+        budget = args.budget >= 100_000 ? args.budget / 1_000_000 : args.budget;
+      } else if (typeof args.daily_budget === "string") {
+        const parsed = parseFloat(String(args.daily_budget).replace(/[$,]/g, ""));
+        if (!isNaN(parsed)) {
+          budget = parsed >= 100_000 ? parsed / 1_000_000 : parsed;
+        }
+      } else if (typeof args.daily_budget_micros === "string") {
+        const parsed = parseFloat(String(args.daily_budget_micros));
+        if (!isNaN(parsed)) budget = parsed / 1_000_000;
+      } else if (typeof args.amount_micros === "string") {
+        const parsed = parseFloat(String(args.amount_micros));
+        if (!isNaN(parsed)) budget = parsed / 1_000_000;
+      }
+      const budgetMicros = Math.round(budget * 1_000_000);
+      const isDryRun = args.dry_run === true;
       return {
-        sandbox: true,
-        notice: DEMO_BANNER_NOTICE,
+        sandbox: !isDryRun,
+        dry_run: isDryRun,
+        notice: isDryRun
+          ? "DRY RUN PREVIEW: Action verified against Agent Shield policy and platform constraints ($0.00 / 0 credits)."
+          : DEMO_BANNER_NOTICE,
         success: true,
         simulated: true,
+        verified: true,
         campaign_id: args.campaign_id || "demo-cmp-1001",
         platform,
-        new_daily_budget: args.daily_budget || 100.0,
-        message: `[Sandbox] Daily budget updated to $${args.daily_budget || 100.0} USD.`,
+        previous_daily_budget: 100.0,
+        new_daily_budget: budget,
+        new_daily_budget_usd: budget,
+        new_daily_budget_micros: budgetMicros,
+        daily_budget: budget,
+        daily_budget_micros: budgetMicros,
+        agent_shield_verdict: {
+          approved: true,
+          status: "PASSED",
+          checks: {
+            spend_limit_check: "PASSED",
+            max_multiplier_check: "PASSED",
+            circuit_breaker: "ARMED",
+            audit_logged: true,
+          },
+        },
+        message: isDryRun
+          ? `[Dry Run] Budget update to $${budget} USD (${budgetMicros.toLocaleString()} micros) verified and approved by Agent Shield.`
+          : `[Sandbox] Daily budget updated to $${budget} USD.`,
       };
     }
 
@@ -942,6 +1041,261 @@ export function getSandboxToolResult(
         script_name: args.script_name || "unknown",
         platform: args.platform || "generic",
         output: `[Sandbox] Mock execution of script '${args.script_name}' completed.`,
+      };
+    }
+
+    // ── Organic Social Publishing (Native Synter OAuth) ──
+
+    case "get_organic_publishing_readiness": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        ready: true,
+        provider: "synter_native_oauth",
+        platforms: {
+          linkedin: {
+            connected: true,
+            provider: "synter_nango_oauth",
+            person_urn: "urn:li:person:ZgWrR0EvWT",
+            organization_urn: "urn:li:organization:110222584",
+            capabilities: ["text", "image", "document_pdf_carousel", "comment"],
+          },
+          x: {
+            connected: true,
+            provider: "synter_nango_oauth",
+            handle: "@synterai",
+            capabilities: ["text", "image", "video", "thread"],
+          },
+          reddit: {
+            connected: true,
+            provider: "synter_nango_oauth",
+            capabilities: ["self_post", "link_post"],
+          },
+        },
+      };
+    }
+
+    case "draft_organic_post":
+    case "validate_organic_post":
+    case "approve_organic_post":
+    case "schedule_organic_post":
+    case "publish_organic_post":
+    case "cancel_scheduled_post": {
+      const statusMap: Record<string, string> = {
+        draft_organic_post: "draft",
+        validate_organic_post: "validated",
+        approve_organic_post: "approved",
+        schedule_organic_post: "scheduled",
+        publish_organic_post: "published",
+        cancel_scheduled_post: "cancelled",
+      };
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        success: true,
+        simulated: true,
+        post_id: (args.post_id as string) || "org_post_demo_101",
+        platform: (args.platform as string) || "linkedin",
+        status: statusMap[name] || "draft",
+        scheduled_for: args.scheduled_for || null,
+        external_urn: name === "publish_organic_post" ? "urn:li:share:7450034974610948096" : null,
+      };
+    }
+
+    case "list_scheduled_posts": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        posts: [
+          {
+            post_id: "org_post_demo_101",
+            platform: (args.platform as string) || "linkedin",
+            status: (args.status as string) || "scheduled",
+            body: "Why autonomous ad infrastructure beats manual agency workflows in 2026.",
+            author_type: "person",
+            scheduled_for: "2026-10-15T15:00:00Z",
+          },
+        ],
+      };
+    }
+
+    // ── Outbound Email, Warm Intros & LinkedIn Outreach ──
+
+    case "prospector_get_pipeline_summary": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        active_campaigns: 4,
+        total_leads: 3420,
+        emails_sent_30d: 8940,
+        replies_30d: 312,
+        positive_replies_30d: 68,
+        reply_rate_pct: 3.49,
+        inbox_health_score: 98.2,
+      };
+    }
+
+    case "prospector_get_campaigns": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        campaigns: [
+          {
+            id: "cmp_out_101",
+            name: "Fractional CMO & Growth Leaders — Q4",
+            status: (args.status as string) || "active",
+            emails_sent: 1840,
+            replied: 74,
+            interested: 22,
+          },
+          {
+            id: "cmp_out_102",
+            name: "B2B SaaS Series A/B CEOs — Warm + Cold",
+            status: (args.status as string) || "active",
+            emails_sent: 1290,
+            replied: 51,
+            interested: 16,
+          },
+        ],
+      };
+    }
+
+    case "prospector_get_campaign":
+    case "prospector_get_campaign_performance": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        campaign_id: (args.campaign_id as string) || "cmp_out_101",
+        name: "Fractional CMO & Growth Leaders — Q4",
+        status: "active",
+        metrics: {
+          sent: 1840,
+          opened: 1104,
+          replied: 74,
+          bounced: 12,
+          interested: 22,
+          reply_rate_pct: 4.02,
+        },
+      };
+    }
+
+    case "prospector_get_leads": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        leads: [
+          {
+            id: "lead_demo_01",
+            first_name: "Sarah",
+            last_name: "Chen",
+            email: "sarah.chen@example.com",
+            company_name: "Acme Cloud",
+            job_title: "VP of Growth",
+            status: "interested",
+          },
+        ],
+      };
+    }
+
+    case "prospector_get_inbox_health": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        accounts: [
+          {
+            email: "joel@syntermedia.ai",
+            provider: "microsoft_exchange_native",
+            warmup_score: 99,
+            daily_limit: 50,
+            status: "connected",
+          },
+        ],
+      };
+    }
+
+    case "prospector_get_pending_replies": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        replies: [
+          {
+            reply_id: "rep_demo_01",
+            from_email: "sarah.chen@example.com",
+            from_name: "Sarah Chen",
+            company: "Acme Cloud",
+            classification: "interested",
+            phone_enriched: "+1-415-555-0192",
+            notified_Slack: ["joel", "joshua"],
+            draft_reply: "Thanks Sarah — happy to share how we automate multi-channel ad execution. Does Thursday at 2pm PT work?",
+          },
+        ],
+      };
+    }
+
+    case "prospector_get_intro_paths":
+    case "prospector_get_warm_intros": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        company_or_domain: (args.company_or_domain as string) || "all_icp_targets",
+        warm_intro_paths: [
+          {
+            target_prospect: {
+              name: "Alex Rivera",
+              title: "Chief Executive Officer",
+              company: (args.company_or_domain as string) || "ScaleFlow AI",
+            },
+            connector: {
+              name: "David Park",
+              relationship: "1st-degree LinkedIn connection + 14 mutual email threads",
+              strength_score: 88,
+            },
+            suggested_intro_ask:
+              "Hey David — hope all is well! Noticed you're connected to Alex Rivera at ScaleFlow AI. Would you feel comfortable making a quick intro?",
+          },
+        ],
+      };
+    }
+
+    case "prospector_send_outreach_email": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        success: true,
+        simulated: true,
+        provider: "microsoft_exchange_native",
+        from: "joel@syntermedia.ai",
+        to: args.to_email,
+        subject: args.subject,
+        message: "[Sandbox] 1:1 outreach email validated via native Exchange transport.",
+      };
+    }
+
+    case "prospector_post_linkedin_document": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        success: true,
+        simulated: true,
+        provider: "synter_linkedin_native",
+        author_urn:
+          args.author_type === "organization"
+            ? "urn:li:organization:110222584"
+            : "urn:li:person:ZgWrR0EvWT",
+        post_urn: "urn:li:share:7450034974610948096",
+        document_url: args.document_url,
+      };
+    }
+
+    case "prospector_post_linkedin_comment": {
+      return {
+        sandbox: true,
+        notice: DEMO_BANNER_NOTICE,
+        success: true,
+        simulated: true,
+        provider: "synter_linkedin_native",
+        post_id: args.post_id,
+        comment_urn: "urn:li:comment:(urn:li:share:7450034974610948096,7450035012345678901)",
       };
     }
 

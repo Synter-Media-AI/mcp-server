@@ -5,6 +5,4 @@ dist/
 .env
 .env.local
 *.mcpb
-CLAUDE.md
-.worktrees/
-package-lock.json
+.mcpregistry_*

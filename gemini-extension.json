@@ -1,6 +1,6 @@
 {
   "name": "synter-ads",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "Run ads across 16 ad platforms from Gemini CLI (hosted Synter MCP, browser OAuth).",
   "mcpServers": {
     "synter-ads": {
