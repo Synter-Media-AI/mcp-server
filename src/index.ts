@@ -73,7 +73,7 @@ Environment Variables:
 }
 
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  console.log("1.4.6");
+  console.log("1.4.7");
   process.exit(0);
 }
 
@@ -1799,7 +1799,7 @@ async function callSynterProspectorTool(
       params: {
         protocolVersion: "2024-11-05",
         capabilities: {},
-        clientInfo: { name: "synter-mcp-stdio", version: "1.4.6" },
+        clientInfo: { name: "synter-mcp-stdio", version: "1.4.7" },
       },
     }),
   });
@@ -2527,7 +2527,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.4.6",
+      version: "1.4.7",
     },
     {
       capabilities: {

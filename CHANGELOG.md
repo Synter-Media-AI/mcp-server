@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.7
+
+Docs/metadata only: platform coverage copy (reads across 43 ad platforms, 16 with verified write and create), synterai.com links, registry websiteUrl. No tool changes.
+
 ## 1.4.6
 
 ### Fixed

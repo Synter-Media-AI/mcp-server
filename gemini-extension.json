@@ -1,7 +1,7 @@
 {
   "name": "synter-ads",
-  "version": "1.4.6",
-  "description": "Run ads across 16 ad platforms from Gemini CLI (hosted Synter MCP, browser OAuth).",
+  "version": "1.4.7",
+  "description": "Reads across 43 ad platforms; 16 with verified write and create. Write/create depth varies by platform API. Free to read; writes from $20/mo (Solo). Hosted OAuth at https://mcp.synterai.com.",
   "mcpServers": {
     "synter-ads": {
       "httpUrl": "https://mcp.synterai.com"

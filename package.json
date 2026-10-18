@@ -1,8 +1,8 @@
 {
   "name": "@synterai/mcp-server",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "mcpName": "io.github.Synter-Media-AI/synter-ads",
-  "description": "Official Synter MCP server: AI agents run ads across 16 ad platforms, including Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Amazon, and StackAdapt. Free to read ($0/mo), then $20/month Solo for campaign creation, budget updates, creatives, and audience sync.",
+  "description": "Official Synter MCP server: hosted Ads MCP for Claude, ChatGPT, Cursor and Codex. Reads across 43 ad platforms (16 with verified write and create), including Google, Meta, LinkedIn, TikTok, Amazon, Microsoft, Reddit, Snapchat, Pinterest, X and OpenAI Ads. Free to read; writes from $20/mo. Hosted OAuth at https://mcp.synterai.com.",
   "author": "Synter <hello@synterai.com>",
   "license": "MIT",
   "repository": {
@@ -38,7 +38,19 @@
     "claude",
     "cursor",
     "amp",
-    "chatgpt"
+    "chatgpt",
+    "ads",
+    "paid-media",
+    "marketing",
+    "amazon-ads",
+    "snapchat-ads",
+    "pinterest-ads",
+    "x-ads",
+    "openai-ads",
+    "trade-desk",
+    "dv360",
+    "retail-media",
+    "ctv"
   ],
   "type": "module",
   "main": "dist/index.js",
