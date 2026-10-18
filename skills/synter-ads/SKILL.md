@@ -35,6 +35,6 @@ Use `tools/list` to inspect the available tool names and schemas. Pass `--read-o
 
 ## Safety and readback
 
-Synter provides workspace spend limits, launch preflight, readback, and an audit log. Client confirmations depend on the MCP client and its configuration. There is no server-side approval hold on the MCP surface.
+Synter provides workspace spend limits, launch preflight, readback, and an audit log. Client confirmations depend on the MCP client and its configuration.
 
 Before a live write, verify the workspace, ad account, platform, destination, and budget. Run launch preflight, then read back the result and report the observed provider state. Keep sandbox previews distinct from live verification.

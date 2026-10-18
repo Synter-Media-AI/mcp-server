@@ -184,7 +184,7 @@ See [integrations](https://synterai.com/integrations) for platform details. For 
 
 Free to read; writes from $20/mo (Solo). See [pricing](https://synterai.com/pricing) for plan details.
 
-Synter provides workspace spend limits, launch preflight, readback, and an audit log. Review the intended account, budget, and action before a live write. Client confirmation behavior depends on the MCP client and its configuration; there is no server-side approval hold on the MCP surface.
+Synter provides workspace spend limits, launch preflight, readback, and an audit log. Review the intended account, budget, and action before a live write. Client confirmation behavior depends on the MCP client and its configuration.
 
 For local read-only access, pass `--read-only` or set `SYNTER_READ_ONLY=true` to remove mutating tools and block write calls locally. Use `--demo` to explore mock data without an account or API key.
 
@@ -540,7 +540,7 @@ See the full tool list at [docs.synterai.com/mcp/tools](https://docs.synterai.co
 
 ### Safety and live writes
 
-Client confirmations depend on the client's handling of tool annotations and its settings. The MCP surface has no server-side approval hold. Use launch preflight, check workspace spend limits, and verify live changes with readback and the audit log. Use `dry_run: true` where the tool schema supports it to preview a request before execution.
+Client confirmations depend on the client's handling of tool annotations and its settings. Use launch preflight, check workspace spend limits, and verify live changes with readback and the audit log. Use `dry_run: true` where the tool schema supports it to preview a request before execution.
 
 ---
 
