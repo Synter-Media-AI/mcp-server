@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.2",
   "name": "synter",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "display_name": "Synter",
-  "description": "Open-source MCP server for running ads with AI agents across 16 ad platforms: reporting, campaigns, budgets, and creatives. Destructive tools are flagged so your MCP client asks before running them.",
+  "description": "Reads across 43 ad platforms; 16 with verified write and create. Write/create depth varies by platform API. Free to read; writes from $20/mo (Solo). Hosted OAuth at https://mcp.synterai.com.",
   "author": {
     "name": "Synter",
     "email": "hello@synterai.com",

@@ -22,7 +22,7 @@ async function withSynterMcp(args, fn) {
     stderr: "ignore",
   });
   const client = new Client(
-    { name: "walled-garden-fiduciary-benchmark", version: "1.4.6" },
+    { name: "walled-garden-fiduciary-benchmark", version: "1.4.7" },
     { capabilities: {} }
   );
   await client.connect(transport);

@@ -24,6 +24,19 @@ const packageJson = readJson("package.json");
 const serverJson = readJson("server.json");
 const manifestJson = readJson("manifest.json");
 
+for (const relativePath of ["plugin.json", ".claude-plugin/plugin.json"]) {
+  invariant(
+    readJson(relativePath).version === packageJson.version,
+    `${relativePath} version must match package.json version ${packageJson.version}`,
+  );
+}
+
+const packageLock = readJson("package-lock.json");
+invariant(
+  packageLock.version === packageJson.version && packageLock.packages?.[""]?.version === packageJson.version,
+  "package-lock.json package versions must match package.json",
+);
+
 invariant(
   serverJson.name === packageJson.mcpName,
   `server.json name ${serverJson.name} must match package.json mcpName ${packageJson.mcpName}`,
@@ -100,22 +113,41 @@ for (const relativePath of publicDocs) {
 const readme = readText("README.md");
 
 invariant(
+  serverJson.websiteUrl === "https://synterai.com/mcp",
+  "server.json websiteUrl must point to https://synterai.com/mcp",
+);
+
+invariant(
   readme.includes(CANONICAL_REMOTE),
   `README.md must document the canonical hosted MCP endpoint ${CANONICAL_REMOTE}`,
 );
-// The canonical platform count is 16 (Growth, 2026-10-07). Stale counts from
-// earlier copy must not come back.
-invariant(readme.includes("16 ad platforms"), 'README.md must say "16 ad platforms"');
-for (const relativePath of ["README.md", "server.json", "gemini-extension.json", "manifest.json", "package.json"]) {
-  const match = readText(relativePath).match(/\b(14|19|21|27)\s+(ad\s+)?platforms\b/i);
-  invariant(!match, `${relativePath} has a stale platform count (${match?.[0]}); use "16 ad platforms"`);
+// Hosted reads cover 43; the local enum covers 16 core platforms. The 27
+// additional hosted read platforms are a valid subset, not a stale total.
+const discoveryFiles = [
+  "README.md", "server.json", "gemini-extension.json", "manifest.json", "package.json",
+  "plugin.json", ".claude-plugin/plugin.json", "glama.json", "smithery.yaml",
+];
+for (const relativePath of discoveryFiles) {
+  const text = readText(relativePath);
+  invariant(text.includes("43 ad platforms"), `${relativePath} must describe reads across 43 ad platforms`);
+  if (relativePath !== "server.json") {
+    invariant(
+      text.includes("16 with verified write and create"),
+      `${relativePath} must distinguish the 16 with verified write and create`,
+    );
+  }
+  const match = text.match(/\b(14|19|21)\s+(ad\s+)?platforms\b/i);
+  invariant(!match, `${relativePath} has a stale platform count (${match?.[0]})`);
+  invariant(
+    !/(?:new )?campaigns start paused|paused[- ]on[- ]create|(?:launches|budget increases).*wait for approval|approval[- ]gated writes|approved writes|under management/i.test(text),
+    `${relativePath} has an unsupported safety or usage claim`,
+  );
 }
 
 // syntermedia.ai still resolves but must not be advertised in public copy.
-for (const relativePath of ["README.md", "server.json", "gemini-extension.json"]) {
+for (const relativePath of discoveryFiles) {
   invariant(
-    // The About section's "formerly syntermedia.ai" disclosure is the one allowed mention.
-    !readText(relativePath).replaceAll("formerly syntermedia.ai", "").includes("syntermedia.ai"),
+    !readText(relativePath).includes("syntermedia.ai"),
     `${relativePath} must not reference syntermedia.ai; use synterai.com`,
   );
 }

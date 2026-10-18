@@ -1,0 +1,88 @@
+name: Update MCP Registry status
+
+on:
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: Space-separated registry versions to update
+        required: true
+        type: string
+      status:
+        description: Registry status to set
+        required: true
+        type: choice
+        options:
+          - deprecated
+          - active
+        default: deprecated
+      message:
+        description: Reason for the status change
+        type: string
+        default: ""
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    env:
+      VERSIONS: ${{ inputs.versions }}
+      STATUS: ${{ inputs.status }}
+      MESSAGE: ${{ inputs.message }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Validate the whole batch before authenticating or changing any version.
+      - name: Guard requested versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          CURRENT_VERSION="$(node -p "require('./server.json').version")"
+          if [[ "$STATUS" != "deprecated" && "$STATUS" != "active" ]]; then
+            echo "::error::Status must be deprecated or active."
+            exit 1
+          fi
+          if [[ "$VERSIONS" == *$'\n'* || "$VERSIONS" == *$'\r'* ]]; then
+            echo "::error::Provide versions on one line, separated by spaces."
+            exit 1
+          fi
+          read -r -a requested_versions <<< "$VERSIONS"
+          if [ "${#requested_versions[@]}" -eq 0 ]; then
+            echo "::error::At least one version is required."
+            exit 1
+          fi
+          for v in "${requested_versions[@]}"; do
+            if [[ ! "$v" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+              echo "::error::Each version must be a semantic version."
+              exit 1
+            fi
+            if [ "$v" = "$CURRENT_VERSION" ]; then
+              echo "::error::Refusing to change the current server.json version ($CURRENT_VERSION)."
+              exit 1
+            fi
+          done
+
+      - name: Install mcp-publisher
+        run: |
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher --version || true
+
+      - name: Authenticate to MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Update version status
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r -a requested_versions <<< "$VERSIONS"
+          for v in "${requested_versions[@]}"; do
+            ./mcp-publisher status --status "$STATUS" --message "$MESSAGE" "$(node -p "require('./server.json').name")" "$v"
+          done
+
+      - name: Confirm what the registry now serves
+        run: |
+          curl -fsS "https://registry.modelcontextprotocol.io/v0/servers?search=synter-ads" \
+            | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);for(const e of (j.servers||[])){const n=e.name||e.server?.name;const v=e.version||e.server?.version;const status=e._meta?.["io.modelcontextprotocol.registry/official"]?.status||e.status||e.server?.status||"unknown";console.log(n,v,status)}})'

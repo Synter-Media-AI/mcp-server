@@ -1,19 +1,19 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.Synter-Media-AI/synter-ads",
-  "description": "Run ads across 16 ad platforms from any MCP client. Hosted OAuth at mcp.synterai.com.",
+  "description": "Ads MCP: read across 43 ad platforms; write depth varies by API. Hosted OAuth at mcp.synterai.com",
   "status": "active",
   "repository": {
     "url": "https://github.com/Synter-Media-AI/mcp-server",
     "source": "github"
   },
-  "version": "1.4.6",
+  "version": "1.4.7",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@synterai/mcp-server",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "transport": {
         "type": "stdio"
       },
@@ -41,5 +41,6 @@
         }
       ]
     }
-  ]
+  ],
+  "websiteUrl": "https://synterai.com/mcp"
 }
