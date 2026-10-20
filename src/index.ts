@@ -715,7 +715,8 @@ const tools: Tool[] = [
   // ─────────────────────────────────────────────────────────────────────────
   {
     name: "create_meta_campaign",
-    description: "Create a Meta (Facebook/Instagram) advertising campaign.",
+    description:
+      "Create a Meta (Facebook/Instagram) advertising campaign. Supports `dry_run: true` ($0.00 / 0 credits) to preview the campaign payload and policy checks before execution.",
     annotations: { destructiveHint: true },
     inputSchema: {
       type: "object" as const,
@@ -733,6 +734,10 @@ const tools: Tool[] = [
           type: "number",
           description: "Daily budget in USD",
         },
+        dry_run: {
+          type: "boolean",
+          description: "Preview the campaign payload without creating a live campaign ($0.00 / 0 credits).",
+        },
       },
       required: ["name", "objective", "daily_budget"],
     },
@@ -743,7 +748,8 @@ const tools: Tool[] = [
   // ─────────────────────────────────────────────────────────────────────────
   {
     name: "create_linkedin_campaign",
-    description: "Create a LinkedIn Ads campaign for B2B advertising.",
+    description:
+      "Create a LinkedIn Ads campaign for B2B advertising. Supports `dry_run: true` ($0.00 / 0 credits) to preview the campaign payload and targeting before execution.",
     annotations: { destructiveHint: true },
     inputSchema: {
       type: "object" as const,
@@ -787,6 +793,10 @@ const tools: Tool[] = [
           description:
             "Matched-audience segment IDs. Must be the adSegment id (list_audiences 'destination_segment_id'), NOT the dmpSegment id — a dmpSegment id fails with a bare HTTP 500.",
         },
+        dry_run: {
+          type: "boolean",
+          description: "Preview the campaign payload without creating a live campaign ($0.00 / 0 credits).",
+        },
       },
       // company_size / industry / job_function were advertised here but the
       // backend script declares no such flags; group_id, which it REQUIRES,
@@ -800,7 +810,8 @@ const tools: Tool[] = [
   // ─────────────────────────────────────────────────────────────────────────
   {
     name: "create_reddit_campaign",
-    description: "Create a Reddit Ads campaign for community-based advertising.",
+    description:
+      "Create a Reddit Ads campaign for community-based advertising. Supports `dry_run: true` ($0.00 / 0 credits) to preview the campaign payload before execution.",
     annotations: { destructiveHint: true },
     inputSchema: {
       type: "object" as const,
@@ -821,6 +832,10 @@ const tools: Tool[] = [
         account_id: {
           type: "string",
           description: "Override the default Reddit ad account ID",
+        },
+        dry_run: {
+          type: "boolean",
+          description: "Preview the campaign payload without creating a live campaign ($0.00 / 0 credits).",
         },
       },
       // subreddits / interests / daily_budget were advertised here but Reddit
