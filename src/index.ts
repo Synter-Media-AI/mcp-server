@@ -35,6 +35,11 @@ import {
   own,
 } from "./platform-routing.js";
 import { isDemoMode, getSandboxToolResult } from "./demo-sandbox.js";
+import {
+  BillingRefusalError,
+  billingRefusalFromResponse,
+  formatBillingRefusalText,
+} from "./billing-refusal.js";
 
 const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
 const SYNTER_API_URL = process.env.SYNTER_API_URL || "https://synterai.com";
@@ -1686,18 +1691,9 @@ async function callSynterAPI(
   const data = await response.json() as Record<string, unknown>;
 
   if (!response.ok) {
-    if (response.status === 402 || data.error === "INSUFFICIENT_CREDITS") {
-      return {
-        success: false,
-        ...data,
-        checkoutUrls: {
-          solo: `${SYNTER_API_URL}/sign-up?plan=developer&billing=monthly&source=mcp_low_balance`,
-          scale: `${SYNTER_API_URL}/sign-up?plan=synter&billing=monthly&source=mcp_low_balance`,
-        },
-        upgradeHint: `Solo ($20/mo — $20.00 monthly credits): ${SYNTER_API_URL}/sign-up?plan=developer&billing=monthly&source=mcp_low_balance | Scale ($500/mo — $500.00 monthly credits): ${SYNTER_API_URL}/sign-up?plan=synter&billing=monthly&source=mcp_low_balance`,
-      };
-    }
-    const errorMsg = (data.error as string) || (data.message as string) || `API error: ${response.status}`;
+    const refusal = billingRefusalFromResponse(response.status, data, SYNTER_API_URL);
+    if (refusal) throw new BillingRefusalError(refusal);
+    const errorMsg = (data.message as string) || (data.error as string) || `API error: ${response.status}`;
     throw new Error(errorMsg);
   }
 
@@ -1724,18 +1720,9 @@ async function callSynterAPIGet(
   const data = await response.json() as Record<string, unknown>;
 
   if (!response.ok) {
-    if (response.status === 402 || data.error === "INSUFFICIENT_CREDITS") {
-      return {
-        success: false,
-        ...data,
-        checkoutUrls: {
-          solo: `${SYNTER_API_URL}/sign-up?plan=developer&billing=monthly&source=mcp_low_balance`,
-          scale: `${SYNTER_API_URL}/sign-up?plan=synter&billing=monthly&source=mcp_low_balance`,
-        },
-        upgradeHint: `Solo ($20/mo — $20.00 monthly credits): ${SYNTER_API_URL}/sign-up?plan=developer&billing=monthly&source=mcp_low_balance | Scale ($500/mo — $500.00 monthly credits): ${SYNTER_API_URL}/sign-up?plan=synter&billing=monthly&source=mcp_low_balance`,
-      };
-    }
-    const errorMsg = (data.error as string) || (data.message as string) || `API error: ${response.status}`;
+    const refusal = billingRefusalFromResponse(response.status, data, SYNTER_API_URL);
+    if (refusal) throw new BillingRefusalError(refusal);
+    const errorMsg = (data.message as string) || (data.error as string) || `API error: ${response.status}`;
     throw new Error(errorMsg);
   }
 
@@ -1763,9 +1750,11 @@ async function callSynterMcpTool(
 
   const data = (await response.json()) as Record<string, unknown>;
   if (!response.ok) {
+    const refusal = billingRefusalFromResponse(response.status, data, SYNTER_API_URL);
+    if (refusal) throw new BillingRefusalError(refusal);
     const errorMsg =
-      (data.error as string) ||
       (data.message as string) ||
+      (data.error as string) ||
       `MCP tool error: ${response.status}`;
     throw new Error(errorMsg);
   }
@@ -1856,7 +1845,29 @@ async function callSynterProspectorTool(
     }
   }
 
+  if (
+    rpcPayload?.result?.isError &&
+    (rpcPayload.result.structuredContent as Record<string, unknown> | undefined)
+      ?.billing_refusal === true
+  ) {
+    const refusal = billingRefusalFromResponse(
+      402,
+      rpcPayload.result.structuredContent as Record<string, unknown>,
+      SYNTER_API_URL,
+    );
+    if (refusal) throw new BillingRefusalError(refusal);
+  }
   if (!callRes.ok || rpcPayload?.error) {
+    const errorData = rpcPayload?.error?.data as Record<string, unknown> | undefined;
+    const legacyRefusal = billingRefusalFromResponse(
+      callRes.status,
+      {
+        error: errorData?.errorCode,
+        message: rpcPayload?.error?.message,
+      },
+      SYNTER_API_URL,
+    );
+    if (legacyRefusal) throw new BillingRefusalError(legacyRefusal);
     const msg =
       rpcPayload?.error?.message ||
       rpcPayload?.error ||
@@ -2716,6 +2727,14 @@ async function main() {
         ],
       };
     } catch (error) {
+      if (error instanceof BillingRefusalError) {
+        // A tool RESULT (not a thrown protocol error) so the assistant reads
+        // the message and shows the user the fix link.
+        return {
+          content: [{ type: "text", text: formatBillingRefusalText(error.payload) }],
+          isError: true,
+        };
+      }
       return {
         content: [
           {
