@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- **Billing refusals are relayable upgrade prompts**: every billing refusal from the Synter API (402, `INSUFFICIENT_CREDITS`, `ON_DEMAND_CAP_REACHED`, `USAGE_BILLING_SETUP_REQUIRED`, `PAYMENT_METHOD_REQUIRED`, `ACCOUNT_READ_ONLY`, plan gates, …) now returns a tool result starting `BILLING ACTION REQUIRED (<CODE>)` with what was blocked, why, the synterai.com fix link (`source=mcp`), SOLO ($20/mo) / SCALE ($500/mo) / CUSTOM options, and an instruction for the assistant to show the link. Replaces the legacy `/sign-up?plan=developer` links and bare `Error: INSUFFICIENT_CREDITS`.
+
 ## 1.4.7
 
 Docs/metadata only: platform coverage copy (reads across 43 ad platforms, 16 with verified write and create), synterai.com links, registry websiteUrl. No tool changes.
