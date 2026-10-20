@@ -182,11 +182,46 @@ See [integrations](https://synterai.com/integrations) for platform details. For 
 
 ## Pricing and safety
 
-Free to read; writes from $20/mo (Solo). See [pricing](https://synterai.com/pricing) for plan details.
+- **Free Read Access ($0/mo):** Unlimited read, reporting, audit, and attribution queries across all connected ad platforms, plus 100 initial credits (`0%` ad spend markup on all tiers).
+- **Solo ($20/mo):** 1 workspace, 1 developer seat, $20.00/mo in claimable execution credits ($0.01/read, $0.05/light write = 400 budget/status/keyword writes/mo, $5.00/MCP campaign launch).
+- **Scale ($500/mo):** 5 seats, multi-workspace isolation, $500.00/mo in claimable credits, dedicated concurrency, and team governance. See [pricing](https://synterai.com/pricing) for full plan details.
 
-Synter provides workspace spend limits, launch preflight, readback, and an audit log. Review the intended account, budget, and action before a live write. Client confirmation behavior depends on the MCP client and its configuration.
+Synter provides workspace spend limits, launch preflight (`dry_run: true`), post-write readback, and an immutable audit log. Review the intended account, budget, and action before a live write. Client confirmation behavior depends on the MCP client and its configuration.
 
 For local read-only access, pass `--read-only` or set `SYNTER_READ_ONLY=true` to remove mutating tools and block write calls locally. Use `--demo` to explore mock data without an account or API key.
+
+---
+
+## Multi-Tenant Workspaces, Server-Side Scoped Keys, White-Label OAuth & SDKs
+
+For SaaS products, agencies, and engineering teams embedding ad operations across multiple customers or brands, Synter provides both **MCP** and a direct **REST API + native SDKs**:
+
+1. **Programmatic Tenant / Workspace Provisioning (`/api/v1/workspaces`):**
+   - Create and manage isolated tenant workspaces via REST (`POST https://synterai.com/api/v1/workspaces`) or target a specific tenant per request with `SYNTER_WORKSPACE_ID` / `X-Synter-Workspace: ws_...`. Each workspace maintains strict tenant isolation over OAuth token vaults, ad account IDs, daily spend caps, and audit logs.
+2. **Server-Side Scoped API Keys (`tools:read`, `budget:decrease`, `tools:write`):**
+   - In addition to client-side `--read-only` mode, Synter enforces **server-side API key scopes** minted via `POST /api/v1/workspaces/{id}/keys` or [synterai.com/developer](https://synterai.com/developer):
+     - `tools:read` — server-enforced read-only access (reporting, search term audits, attribution, diagnostics; all mutations rejected server-side with `403`).
+     - `budget:decrease` — allows agents to pause bleeding campaigns or lower budgets while blocking budget increases or new campaign launches.
+     - `tools:write` — full write and campaign creation access within workspace budget guardrails.
+3. **White-Label OAuth Link Flow & Bring-Your-Own (BYO) OAuth Apps (`/api/v1/oauth`):**
+   - **Embedded / White-Label OAuth:** Generate per-tenant authorization URLs (`POST https://synterai.com/api/v1/oauth/{platform}/authorize` with `workspace_id` and custom `redirect_uri`) so your end users connect Google, Meta, LinkedIn, Reddit, TikTok, or DSP accounts inside your app without visiting Synter's UI, with automatic token refresh and credential vaulting.
+   - **BYO OAuth App / Credentials:** Register your own platform OAuth client ID/secret and developer tokens per workspace, or pass credentials directly via the SDK/CLI (`SYNTER_BYO_CREDENTIALS=true`).
+4. **REST API & Official Multi-Language SDKs:**
+   - Call any tool over HTTP (`POST https://synterai.com/api/v1/tools/execute` with `Authorization: Bearer syn_...` or `X-Synter-Key: syn_...`) or via the official typed SDKs:
+     - **TypeScript / Node.js (`@synterai/sdk-js`):**
+       ```ts
+       import { SynterClient } from "@synterai/sdk-js";
+       const synter = new SynterClient({ apiKey: process.env.SYNTER_API_KEY, workspaceId: "ws_tenant_123" });
+       const campaigns = await synter.campaigns.list({ platform: "google", dateRange: "LAST_30_DAYS" });
+       const preview = await synter.campaigns.updateBudget({ platform: "linkedin", campaignId: "123", dailyBudget: 150, dryRun: true });
+       ```
+     - **Python (`pip install synter`):**
+       ```python
+       from synter import Synter
+       client = Synter(api_key=os.environ["SYNTER_API_KEY"], workspace_id="ws_tenant_123")
+       perf = client.performance.get(platform="meta", date_range="LAST_14_DAYS")
+       ```
+     - **Rust (`cargo add synter-sdk`)** & **Java (`ai.synter:synter-sdk` on Maven Central)**.
 
 ---
 
