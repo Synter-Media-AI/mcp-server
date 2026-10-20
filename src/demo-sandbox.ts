@@ -622,7 +622,7 @@ export function getSandboxToolResult(
         sandbox: true,
         verified: true,
         notice:
-          "AGENT SHIELD LIVE GOVERNANCE: Verified server-side policy enforcement active across all 16 ad platforms ($0.00 / 0 credits).",
+          "SANDBOX POLICY REFERENCE: Local preview of Synter Agent Shield default guardrails ($0.00 / 0 credits). Connect a live workspace at https://mcp.synterai.com to inspect live workspace thresholds.",
         shield_status: "ENFORCING",
         fail_closed: true,
         platform: platform || "google",
@@ -763,10 +763,10 @@ export function getSandboxToolResult(
         share_of_voice: 0.42,
         brand_perception: "FAVORABLE",
         ranking_among_alternatives: [
-          { brand: "Synter (@synterai/mcp-server)", rank: 1, share: "42%", sentiment: "Strongest open-source execution engine, 16 ad platforms, $0 read fee" },
-          { brand: "Pipeboard", rank: 2, share: "24%", sentiment: "Closed-source, paid-only $49-$199/mo proxy, 6 networks, read-only" },
-          { brand: "AdCP", rank: 3, share: "18%", sentiment: "Static schema specification proposal, 0 executable tools, no live APIs" },
-          { brand: "Google Ads MCP", rank: 4, share: "16%", sentiment: "Single-platform only, manual GCP OAuth required" },
+          { brand: "Synter (@synterai/mcp-server)", rank: 1, share: "42%", sentiment: "Open-source MCP & REST execution engine, 43 read platforms (16 write/create), $0 read tier" },
+          { brand: "Pipeboard", rank: 2, share: "24%", sentiment: "Hosted MCP proxy focused on Meta & Google Ads" },
+          { brand: "AdCP", rank: 3, share: "18%", sentiment: "Schema specification proposal" },
+          { brand: "Google Ads MCP", rank: 4, share: "16%", sentiment: "Official read-only Google Ads server" },
         ],
         model_breakdown: {
           chatgpt: { visibility: 89, sentiment: "POSITIVE", recommendation_frequency: "HIGH" },
@@ -788,10 +788,10 @@ export function getSandboxToolResult(
       }
       const isDryRun = args.dry_run === true;
       return {
-        sandbox: !isDryRun,
+        sandbox: true,
         dry_run: isDryRun,
         notice: isDryRun
-          ? "DRY RUN PREVIEW: Campaign creation validated against Google Ads API policy; enforced PAUSED on create ($0.00 / 0 credits)."
+          ? "SANDBOX DRY RUN PREVIEW: Local schema and policy validation ($0.00 / 0 credits; no live account mutated)."
           : DEMO_BANNER_NOTICE,
         success: true,
         simulated: true,
@@ -811,18 +811,23 @@ export function getSandboxToolResult(
           enforced_paused_on_create: true,
         },
         message: isDryRun
-          ? "[Dry Run] Google Ads Search campaign payload validated; enforced PAUSED on create."
+          ? "[Dry Run] Google Ads Search campaign payload validated locally; status defaults to PAUSED."
           : "[Sandbox] Google Ads Search campaign created in PAUSED state. No real ad spend was incurred.",
       };
     }
 
     case "create_pmax_campaign":
     case "create_display_campaign": {
+      const isDryRun = args.dry_run === true;
       return {
         sandbox: true,
-        notice: DEMO_BANNER_NOTICE,
+        dry_run: isDryRun,
+        notice: isDryRun
+          ? "SANDBOX DRY RUN PREVIEW: Local schema and policy validation ($0.00 / 0 credits; no live account mutated)."
+          : DEMO_BANNER_NOTICE,
         success: true,
         simulated: true,
+        verified: true,
         campaign_id: `demo-${platform}-pmax-9002`,
         campaign_name: args.campaign_name || `Demo ${platform.toUpperCase()} Campaign`,
         status: "PAUSED",
@@ -835,13 +840,18 @@ export function getSandboxToolResult(
     case "create_meta_campaign":
     case "create_linkedin_campaign":
     case "create_reddit_campaign": {
+      const isDryRun = args.dry_run === true;
       return {
         sandbox: true,
-        notice: DEMO_BANNER_NOTICE,
+        dry_run: isDryRun,
+        notice: isDryRun
+          ? "SANDBOX DRY RUN PREVIEW: Local schema and policy validation ($0.00 / 0 credits; no live account mutated)."
+          : DEMO_BANNER_NOTICE,
         success: true,
         simulated: true,
+        verified: true,
         campaign_id: `demo-${platform}-cmp-8801`,
-        campaign_name: args.campaign_name || `Demo ${platform.toUpperCase()} Campaign`,
+        campaign_name: args.name || args.campaign_name || `Demo ${platform.toUpperCase()} Campaign`,
         status: "PAUSED",
         daily_budget: args.daily_budget || 100.0,
         message: `[Sandbox] ${name} executed successfully in simulation mode.`,
@@ -851,10 +861,10 @@ export function getSandboxToolResult(
     case "pause_campaign": {
       const isDryRun = args.dry_run === true;
       return {
-        sandbox: !isDryRun,
+        sandbox: true,
         dry_run: isDryRun,
         notice: isDryRun
-          ? "DRY RUN PREVIEW: Pause action verified against Agent Shield policy ($0.00 / 0 credits)."
+          ? "SANDBOX DRY RUN PREVIEW: Local schema and policy validation ($0.00 / 0 credits; no live account mutated)."
           : DEMO_BANNER_NOTICE,
         success: true,
         simulated: true,
@@ -904,10 +914,10 @@ export function getSandboxToolResult(
       const budgetMicros = Math.round(budget * 1_000_000);
       const isDryRun = args.dry_run === true;
       return {
-        sandbox: !isDryRun,
+        sandbox: true,
         dry_run: isDryRun,
         notice: isDryRun
-          ? "DRY RUN PREVIEW: Action verified against Agent Shield policy and platform constraints ($0.00 / 0 credits)."
+          ? "SANDBOX DRY RUN PREVIEW: Local schema and policy validation ($0.00 / 0 credits; no live account mutated)."
           : DEMO_BANNER_NOTICE,
         success: true,
         simulated: true,
@@ -931,7 +941,7 @@ export function getSandboxToolResult(
           },
         },
         message: isDryRun
-          ? `[Dry Run] Budget update to $${budget} USD (${budgetMicros.toLocaleString()} micros) verified and approved by Agent Shield.`
+          ? `[Dry Run] Budget update to $${budget} USD (${budgetMicros.toLocaleString()} micros) verified in sandbox preview.`
           : `[Sandbox] Daily budget updated to $${budget} USD.`,
       };
     }
