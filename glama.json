@@ -3,5 +3,5 @@
   "maintainers": [
     "jshorwitz"
   ],
-  "description": "Reads across 43 ad platforms; 16 with verified write and create. Write/create depth varies by platform API. Free to read; writes from $20/mo (Solo). Hosted OAuth at https://mcp.synterai.com."
+  "description": "The only Agentic DSP: run ads across 43 ad platforms (16 with verified write and create). Free to read; writes from $20/mo (Solo). Hosted OAuth at https://mcp.synterai.com."
 }

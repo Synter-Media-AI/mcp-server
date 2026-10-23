@@ -1,6 +1,8 @@
 # Smithery configuration for Synter MCP Server
 # Enables 1-click install and discovery across Claude Code, Cursor, Windsurf, and Smithery.ai
-description: "Reads across 43 ad platforms; 16 with verified write and create. Write/create depth varies by platform API. Free to read; writes from $20/mo (Solo). Hosted OAuth at https://mcp.synterai.com."
+name: synter
+displayName: Synter (The Only Agentic DSP)
+description: "The only Agentic DSP: run ads across 43 ad platforms; 16 with verified write and create. Write/create depth varies by platform API. Free to read; writes from $20/mo (Solo). Hosted OAuth at https://mcp.synterai.com."
 startCommand:
   type: stdio
   configSchema:
@@ -8,7 +10,7 @@ startCommand:
     properties:
       synterApiKey:
         type: string
-        description: "Synter API Key (starts with syn_). Auto-detected if synter CLI or SYNTER_API_KEY is configured."
+        description: "Synter API Key (starts with syn_). Auto-detected if synter CLI or SYNTER_API_KEY is configured. Create one at https://synterai.com/developer"
   command:
     - "node"
     - "dist/index.js"

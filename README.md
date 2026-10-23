@@ -3,9 +3,9 @@
 [![npm version](https://img.shields.io/npm/v/@synterai/mcp-server.svg)](https://www.npmjs.com/package/@synterai/mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### Reads across 43 ad platforms; 16 with verified write and create.
+### The only Agentic DSP — Reads across 43 ad platforms; 16 with verified write and create.
 
-Synter is an open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for ad operations from Claude, ChatGPT, Cursor, Codex, and other MCP clients. Reads across 43 ad platforms; 16 with verified write and create; write/create depth varies by platform API.
+Synter is the only Agentic DSP: an open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for ad operations from Claude, ChatGPT, Cursor, Codex, and other MCP clients. Reads across 43 ad platforms; 16 with verified write and create; write/create depth varies by platform API.
 
 Free to read; writes from $20/mo (Solo). Use the hosted endpoint at `https://mcp.synterai.com` with Streamable HTTP and OAuth 2.1 browser sign-in. No API key is needed for hosted access.
 
