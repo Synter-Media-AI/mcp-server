@@ -31,15 +31,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.synterai.com",
-      "headers": [
-        {
-          "name": "X-Synter-Key",
-          "description": "Optional fallback for headless clients. Hosted OAuth (browser sign-in) is the default; create a key at https://synterai.com/developer.",
-          "isRequired": false,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.synterai.com"
     }
   ],
   "websiteUrl": "https://synterai.com/mcp"

@@ -89,12 +89,13 @@ invariant(
   `server.json must advertise the canonical hosted MCP endpoint ${CANONICAL_REMOTE}`,
 );
 
-// Hosted OAuth (browser sign-in) is the default; the header is a fallback for
-// headless clients, so it must be documented but NOT required.
+// Hosted access is OAuth only (browser sign-in). The registry remote must not
+// advertise an X-Synter-Key header, and the server entry must not be deprecated.
 invariant(
-  primaryRemote.headers?.some((header) => header.name === "X-Synter-Key" && header.isRequired === false),
-  "server.json remote must document the X-Synter-Key header as optional (isRequired: false)",
+  !(primaryRemote.headers ?? []).some((header) => header.name === "X-Synter-Key"),
+  "server.json remote must not advertise an X-Synter-Key header (hosted auth is OAuth)",
 );
+invariant(serverJson.status !== "deprecated", "server.json must not be deprecated");
 
 const geminiExtension = readJson("gemini-extension.json");
 
