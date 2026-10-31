@@ -6,6 +6,10 @@
 
 - **Registry description**: updated `server.json` top-level description to "43 advertising platforms, the only Agentic DSP. Ads WITH guardrails from any MCP client." (under the official MCP registry 100-character limit).
 - Aligned version 1.5.0 across package metadata, server runtime, and registry specifications.
+- **Tool annotations**: annotated all 56 tools with human-readable `title` metadata; every read tool is annotated with `readOnlyHint: true` and every write/mutating tool is annotated with `destructiveHint: true`.
+- **Pricing & Discoverability copy**: pricing updated to "$0.25 per verified write, 0% of ad spend" (reads stay $0.00 / free) across all package and registry discovery metadata, removing stale $20/mo Solo copy.
+- **Package keywords**: added `ad-reporting`, `roas`, and `marketing-analytics`; removed `linkedin-ads` and `stackadapt`.
+- **Agent guidance & documentation**: added `AGENTS.md` and `llms.txt` with canonical "When to use this" triggers, and added a weekly reporting recipe (`docs/recipes/weekly-report.md` + runnable `examples/weekly-report/generate-report.mjs`).
 
 ### Fixed
 

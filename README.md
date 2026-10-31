@@ -3,11 +3,11 @@
 [![npm version](https://img.shields.io/npm/v/@synterai/mcp-server.svg)](https://www.npmjs.com/package/@synterai/mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### Reads across 43 ad platforms; 16 with verified write and create.
+### The only Agentic DSP. Ads WITH guardrails from any MCP client.
 
-Synter is an open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for ad operations from Claude, ChatGPT, Cursor, Codex, and other MCP clients. Reads across 43 ad platforms; 16 with verified write and create; write/create depth varies by platform API.
+Synter is an open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for ad operations from Claude, ChatGPT, Cursor, Codex, and other MCP clients. The `@synterai/mcp-server` npm package supports reads and writes across 16 advertising platforms, with an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode; hosted Synter covers 43 advertising platforms (16 with verified write and create).
 
-Free to read; writes from $20/mo (Solo). Use the hosted endpoint at `https://mcp.synterai.com` with Streamable HTTP and OAuth 2.1 browser sign-in. No API key is needed for hosted access.
+Free to connect and read; pricing is $0.25 per verified write, 0% of ad spend. Use the hosted endpoint at `https://mcp.synterai.com` with Streamable HTTP and OAuth 2.1 browser sign-in. No API key is needed for hosted access.
 
 > **Note:** [`Synter-Media-AI/plugin`](https://github.com/Synter-Media-AI/plugin) is the canonical installable Claude plugin repo. The `.claude-plugin/` copy in this repo is not the install source.
 
@@ -183,7 +183,7 @@ See [integrations](https://synterai.com/integrations) for platform details. For 
 ## Pricing and safety
 
 - **Free Read Access ($0/mo):** Unlimited read, reporting, audit, and attribution queries across all connected ad platforms, plus 100 initial credits (`0%` ad spend markup on all tiers).
-- **Solo ($20/mo):** 1 workspace, 1 developer seat, $20.00/mo in claimable execution credits ($0.01/read, $0.05/light write = 400 budget/status/keyword writes/mo, $5.00/MCP campaign launch).
+- **Verified Writes:** $0.25 per verified write, 0% of ad spend.
 - **Scale ($500/mo):** 5 seats, multi-workspace isolation, $500.00/mo in claimable credits, dedicated concurrency, and team governance. See [pricing](https://synterai.com/pricing) for full plan details.
 
 Synter provides workspace spend limits, launch preflight (`dry_run: true`), post-write readback, and an immutable audit log. Review the intended account, budget, and action before a live write. Client confirmation behavior depends on the MCP client and its configuration.

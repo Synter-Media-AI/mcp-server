@@ -3,7 +3,7 @@
   "name": "synter",
   "version": "1.5.0",
   "display_name": "Synter",
-  "description": "Reads across 43 ad platforms; 16 with verified write and create. Write/create depth varies by platform API. Free to read; writes from $20/mo (Solo). Hosted OAuth at https://mcp.synterai.com.",
+  "description": "Reads across 43 ad platforms; 16 with verified write and create. Write/create depth varies by platform API. Free to read; $0.25 per verified write, 0% of ad spend. Hosted OAuth at https://mcp.synterai.com.",
   "author": {
     "name": "Synter",
     "email": "hello@synterai.com",

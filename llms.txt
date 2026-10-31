@@ -1,0 +1,52 @@
+# Synter MCP Server
+
+> The only Agentic DSP. Open-source Model Context Protocol server connecting AI agents to advertising platforms with guardrails.
+
+The `@synterai/mcp-server` npm package supports reads and writes across 16 advertising platforms, with an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode; hosted Synter covers 43 advertising platforms (16 with verified write and create).
+
+- Documentation: https://docs.synterai.com
+- Hosted MCP Server: https://mcp.synterai.com
+- Source Code: https://github.com/Synter-Media-AI/mcp-server
+- npm: https://www.npmjs.com/package/@synterai/mcp-server
+
+## When to use this
+Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by channel, or a weekly paid media summary. Start with read tools; no writes needed.
+
+### Typical Use Cases
+- Cross-platform ad performance reports and dashboards
+- Weekly paid media summaries with ROAS, CPA, and spend by channel
+- Time-series daily spend trend analysis across networks
+- Budget pacing and cross-network rebalancing recommendations
+- Conversion tracking diagnostics and pixel audits
+- Governed campaign creation and budget adjustments with dry-run verification
+
+## Supported Platforms
+- **npm Package (16 Supported Platforms)**: Google Ads, Meta (Facebook/Instagram), LinkedIn Ads, Microsoft Ads, Reddit Ads, TikTok Ads, X Ads, Pinterest Ads, Snapchat Ads, Spotify Ads, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt.
+- **Hosted MCP Coverage**: 43 advertising platforms accessible via https://mcp.synterai.com.
+
+## Read-Only and Demo Modes
+- **Read-Only Mode**: Launch the npm package with `--read-only` or set `SYNTER_READ_ONLY=true` to expose only read tools (`readOnlyHint: true`) and block all mutating operations.
+- **Demo Mode**: Launch with `--demo` or set `SYNTER_DEMO=true` to explore full reporting and simulation capabilities with zero credentials or API keys.
+
+## Pricing
+- **Reads**: Free ($0.00 / 0 credits) for reporting, audits, and attribution queries.
+- **Verified Writes**: $0.25 per verified write, 0% of ad spend (media spend billed directly by ad networks).
+
+## Core Tools Reference
+
+### Reporting & Read Tools (`readOnlyHint: true`)
+- `list_campaigns`: List campaigns for a specified ad platform with status, budgets, and core metrics.
+- `get_performance`: Retrieve impressions, clicks, spend, conversions, and ROAS across platforms.
+- `get_daily_spend`: Daily spend breakdown and time-series pacing.
+- `pacing_report`: Cross-channel monthly budget pacing and run-rate projections.
+- `diagnose_tracking`: Verify pixel installation, GTM container health, and conversion tracking.
+- `list_ad_accounts`: List connected ad accounts across ad platforms.
+- `list_landing_pages`: List workspace landing pages and publication status.
+
+### Campaign Management & Write Tools (`destructiveHint: true`)
+- `create_search_campaign`: Create Google Search campaign with RSA creative floor (11-15 headlines, 4 descriptions) and `dry_run: true` preview.
+- `create_meta_campaign`: Create Meta campaign with audience and creative specifications.
+- `create_linkedin_campaign`: Create LinkedIn B2B campaign with targeting.
+- `create_reddit_campaign`: Create Reddit community-targeted campaign.
+- `pause_campaign`: Pause an underperforming campaign across any supported network.
+- `update_campaign_budget`: Adjust daily budgets with guardrail protections.

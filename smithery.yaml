@@ -1,6 +1,6 @@
 # Smithery configuration for Synter MCP Server
 # Enables 1-click install and discovery across Claude Code, Cursor, Windsurf, and Smithery.ai
-description: "Reads across 43 ad platforms; 16 with verified write and create. Write/create depth varies by platform API. Free to read; writes from $20/mo (Solo). Hosted OAuth at https://mcp.synterai.com."
+description: "Reads across 43 ad platforms; 16 with verified write and create. Write/create depth varies by platform API. Free to read; $0.25 per verified write, 0% of ad spend. Hosted OAuth at https://mcp.synterai.com."
 startCommand:
   type: stdio
   configSchema:

@@ -134,11 +134,11 @@ invariant(
 );
 // Hosted reads cover 43; the local enum covers 16 core platforms. The 27
 // additional hosted read platforms are a valid subset, not a stale total.
-const discoveryFiles = [
-  "README.md", "server.json", "gemini-extension.json", "manifest.json", "package.json",
+const hostedDiscoveryFiles = [
+  "README.md", "server.json", "gemini-extension.json", "manifest.json",
   "plugin.json", ".claude-plugin/plugin.json", "glama.json", "smithery.yaml",
 ];
-for (const relativePath of discoveryFiles) {
+for (const relativePath of hostedDiscoveryFiles) {
   const text = readText(relativePath);
   invariant(
     text.includes("43 ad platforms") || text.includes("43 advertising platforms"),
@@ -150,19 +150,42 @@ for (const relativePath of discoveryFiles) {
       `${relativePath} must distinguish the 16 with verified write and create`,
     );
   }
+}
+
+// package.json accurately describes npm package capabilities (16 supported platforms, optional --read-only mode)
+invariant(
+  packageJson.description.includes("16 supported ad platforms") &&
+    packageJson.description.includes("--read-only") &&
+    packageJson.description.includes("$0.25 per verified write, 0% of ad spend"),
+  "package.json must describe reads/writes across 16 supported ad platforms, optional --read-only mode, and $0.25 pricing",
+);
+invariant(
+  !packageJson.keywords.includes("linkedin-ads") && !packageJson.keywords.includes("stackadapt"),
+  "package.json keywords must not include linkedin-ads or stackadapt",
+);
+invariant(
+  packageJson.keywords.includes("ad-reporting") &&
+    packageJson.keywords.includes("roas") &&
+    packageJson.keywords.includes("marketing-analytics"),
+  "package.json keywords must include ad-reporting, roas, marketing-analytics",
+);
+
+const allMetadataFiles = [...hostedDiscoveryFiles, "package.json"];
+for (const relativePath of allMetadataFiles) {
+  const text = readText(relativePath);
   const match = text.match(/\b(14|19|21)\s+(ad\s+)?platforms\b/i);
   invariant(!match, `${relativePath} has a stale platform count (${match?.[0]})`);
   invariant(
     !/(?:new )?campaigns start paused|paused[- ]on[- ]create|(?:launches|budget increases).*wait for approval|approval[- ]gated writes|approved writes|under management/i.test(text),
     `${relativePath} has an unsupported safety or usage claim`,
   );
-}
-
-// syntermedia.ai still resolves but must not be advertised in public copy.
-for (const relativePath of discoveryFiles) {
   invariant(
-    !readText(relativePath).includes("syntermedia.ai"),
+    !text.includes("syntermedia.ai"),
     `${relativePath} must not reference syntermedia.ai; use synterai.com`,
+  );
+  invariant(
+    !/\$20\/(?:mo|month)/.test(text),
+    `${relativePath} must not contain $20/mo Solo pricing copy`,
   );
 }
 

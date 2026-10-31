@@ -246,7 +246,7 @@ export async function runInstaller(): Promise<void> {
   );
   console.log("  3. Self-serve plans for live campaign execution:");
   console.log(
-    `     - SOLO ($20/mo — $20.00 monthly credits):   ${SOLO_CHECKOUT_URL}`,
+    `     - Verified writes ($0.25 per verified write, 0% of ad spend): ${SOLO_CHECKOUT_URL}`,
   );
   console.log(
     `     - SCALE ($500/mo — $500.00 monthly credits): ${SCALE_CHECKOUT_URL}`,

@@ -25,11 +25,11 @@ Synter charges **0% of ad spend** (ad platforms bill media directly) and **$0.00
 | Plan | Monthly Price | Seats & Workspaces | Included Monthly Credits & Scope |
 | :--- | :--- | :--- | :--- |
 | **Free Read Access** | **$0 / month** | Self-serve signup (no card required to connect & read) | **$0.00 (`0 credits`)** for all read, reporting, pacing, tracking diagnosis, and `dry_run: true` preview calls across all 43 ad platforms. |
-| **Solo (Developer)** | **$20 / month** ($200/yr) | 1 workspace, 1 developer seat, 1 advertiser account/platform | Includes **$20.00/mo** in claimable usage credits. Full MCP, CLI, SDK, and REST API read/write access across all supported platforms. |
+| **Verified Writes** | **$0.25 per write** | Pay-as-you-go | **$0.25 per verified write, 0% of ad spend**. Full MCP, CLI, SDK, and REST API read/write access across all supported platforms. |
 | **Scale (Teams & Brands)** | **$500 / month** ($5,000/yr) | 1 brand workspace (+$500/mo per additional workspace), 5 seats | Includes **$500.00/mo** in claimable usage credits, 24/7 Autonomous ROAS Optimization (Autopilot), 1-click bulk execution, and CRM sync (HubSpot, Salesforce, Attio, Pipedrive). |
 | **Custom (Agencies & Enterprise)** | **Custom** | Unlimited seats, multi-client workspaces, consolidated billing | Custom credit allowances, white-label client portal, SSO (SAML/Okta), and dedicated engineering support. |
 
-- **Metered Action Rates (1x on MCP, SDK, CLI & API — bring your own LLM)**: Reads (`list_campaigns`, `get_performance`, `get_daily_spend`, `pacing_report`, `diagnose_tracking`) cost **$0.00**; light writes (`pause_campaign`, `update_campaign_budget`) cost **$0.05** (`400` light writes/mo covered by Solo's $20 credit allowance); unpriced tool calls cost **$0.25**; campaign launches cost **$5.00** on MCP/API (or **$25.00** inside the Synter Angstrom web app, which includes a 5x markup for managed LLM compute). Use `forecast_tool_cost` on the hosted server to inspect exact rates before execution.
+- **Metered Action Rates (1x on MCP, SDK, CLI & API — bring your own LLM)**: Reads (`list_campaigns`, `get_performance`, `get_daily_spend`, `pacing_report`, `diagnose_tracking`) cost **$0.00**; verified writes cost **$0.25 per verified write, 0% of ad spend**. Use `forecast_tool_cost` on the hosted server to inspect exact rates before execution.
 
 ## 3. Authentication, Scoped Keys & Multi-Tenant / Partner Architecture
 
