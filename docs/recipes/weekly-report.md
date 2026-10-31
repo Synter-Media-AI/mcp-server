@@ -15,7 +15,7 @@ Use this workflow when you or an AI agent needs:
 
 ## Read-Only Tools Used
 
-All tools used in this recipe are strictly read-only (`readOnlyHint: true`) and cost **$0.00 / 0 credits**:
+All tools used in this recipe are strictly read-only (`readOnlyHint: true`) and cost **$0.00**:
 
 | Tool | Annotation Title | Purpose |
 | :--- | :--- | :--- |

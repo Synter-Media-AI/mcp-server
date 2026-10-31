@@ -95,7 +95,7 @@ const tools: Tool[] = [
   {
     name: "list_campaigns",
     description:
-      "List campaigns for ONE ad platform across all 16 ad platforms. `platform` is required -- this tool does not aggregate across platforms. Returns campaign name, status, budget, and performance metrics. Free to read ($0.00 / 0 credits — works out-of-the-box with zero configuration or API key; live writes are $0.25 per verified write, 0% of ad spend).",
+      "List campaigns for ONE ad platform across all 16 ad platforms. `platform` is required -- this tool does not aggregate across platforms. Returns campaign name, status, budget, and performance metrics. Works out-of-the-box with zero configuration or API key; live writes are $0.25 per verified write, 0% of ad spend.",
     annotations: { title: "List Campaigns", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
@@ -2596,7 +2596,7 @@ async function main() {
       {
         uri: "synter://pricing/coverage",
         name: "Verified Pricing and Platform Coverage Reference",
-        description: "Canonical pricing ($0.00 free to read across all 16 ad platforms; $0.25 per verified write, 0% of ad spend) and 16-platform matrix.",
+        description: "Canonical pricing ($0.25 per verified write, 0% of ad spend across all 16 ad platforms) and 16-platform matrix.",
         mimeType: "text/markdown",
       },
     ],
@@ -2686,7 +2686,7 @@ async function main() {
             mimeType: "text/markdown",
             text: `# Synter Verified Pricing & 16-Platform Matrix
 
-## 100% Free to Read ($0.00 / month — 0 credits)
+## Pricing
 - Campaign listing across all 16 ad platforms (list_campaigns)
 - Performance metrics across all 16 ad platforms (get_performance)
 - Daily spend time-series breakdown (get_daily_spend)
@@ -2699,8 +2699,8 @@ async function main() {
 
 ## Write Execution Pricing ($0.25 per verified write, 0% of ad spend)
 - Verified writes: $0.25 per verified write, 0% of ad spend across all 16 supported ad platforms
-- SCALE: $500/month ($5,000/year), 5 seats, includes $500.00/mo claimable credits for teams and agencies
-- CUSTOM: Sales-led enterprise contracts with custom seats and credit allocations
+- SCALE: $500/month ($5,000/year), 5 seats, dedicated concurrency, and team governance
+- CUSTOM: Sales-led enterprise contracts with custom seats
 - Media Spend Markup: 0% (Synter does not charge a percentage of your ad spend)
 
 ## Platform Matrix (16 Ad Platforms)

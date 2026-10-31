@@ -3,5 +3,5 @@
   "maintainers": [
     "jshorwitz"
   ],
-  "description": "Reads across 43 ad platforms; 16 with verified write and create. Write/create depth varies by platform API. Free to read; $0.25 per verified write, 0% of ad spend. Hosted OAuth at https://mcp.synterai.com."
+  "description": "Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend."
 }

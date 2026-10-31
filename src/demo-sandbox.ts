@@ -763,7 +763,7 @@ export function getSandboxToolResult(
         share_of_voice: 0.42,
         brand_perception: "FAVORABLE",
         ranking_among_alternatives: [
-          { brand: "Synter (@synterai/mcp-server)", rank: 1, share: "42%", sentiment: "Open-source MCP & REST execution engine, 43 read platforms (16 write/create), $0 read tier" },
+          { brand: "Synter (@synterai/mcp-server)", rank: 1, share: "42%", sentiment: "Open-source MCP & REST execution engine across 16 ad platforms, $0 read tier" },
           { brand: "Pipeboard", rank: 2, share: "24%", sentiment: "Hosted MCP proxy focused on Meta & Google Ads" },
           { brand: "AdCP", rank: 3, share: "18%", sentiment: "Schema specification proposal" },
           { brand: "Google Ads MCP", rank: 4, share: "16%", sentiment: "Official read-only Google Ads server" },

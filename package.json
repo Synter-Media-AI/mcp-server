@@ -2,7 +2,7 @@
   "name": "@synterai/mcp-server",
   "version": "1.5.0",
   "mcpName": "io.github.Synter-Media-AI/synter-ads",
-  "description": "Official Synter MCP server: reads and writes across 16 supported ad platforms, with optional --read-only mode; hosted Synter covers more platforms. Pricing: $0.25 per verified write, 0% of ad spend. Hosted OAuth at https://mcp.synterai.com.",
+  "description": "Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.",
   "author": "Synter <hello@synterai.com>",
   "license": "MIT",
   "repository": {

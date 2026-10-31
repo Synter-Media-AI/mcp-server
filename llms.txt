@@ -1,8 +1,8 @@
 # Synter MCP Server
 
-> The only Agentic DSP. Open-source Model Context Protocol server connecting AI agents to advertising platforms with guardrails.
+> Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.
 
-The `@synterai/mcp-server` npm package supports reads and writes across 16 advertising platforms, with an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode; hosted Synter covers 43 advertising platforms (16 with verified write and create).
+The `@synterai/mcp-server` npm package supports reads and writes across 16 advertising platforms, with an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode. Writes are enabled by default.
 
 - Documentation: https://docs.synterai.com
 - Hosted MCP Server: https://mcp.synterai.com
@@ -21,15 +21,14 @@ Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by 
 - Governed campaign creation and budget adjustments with dry-run verification
 
 ## Supported Platforms
-- **npm Package (16 Supported Platforms)**: Google Ads, Meta (Facebook/Instagram), LinkedIn Ads, Microsoft Ads, Reddit Ads, TikTok Ads, X Ads, Pinterest Ads, Snapchat Ads, Spotify Ads, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt.
-- **Hosted MCP Coverage**: 43 advertising platforms accessible via https://mcp.synterai.com.
+- **Supported Platforms (16 Core Platforms)**: Google Ads, Meta (Facebook/Instagram), LinkedIn Ads, Microsoft Ads, Reddit Ads, TikTok Ads, X Ads, Pinterest Ads, Snapchat Ads, Spotify Ads, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt.
 
 ## Read-Only and Demo Modes
-- **Read-Only Mode**: Launch the npm package with `--read-only` or set `SYNTER_READ_ONLY=true` to expose only read tools (`readOnlyHint: true`) and block all mutating operations.
+- **Read-Only Mode**: Launch the npm package with `--read-only` or set `SYNTER_READ_ONLY=true` to expose only read tools (`readOnlyHint: true`) and block all mutating operations. Writes are enabled by default.
 - **Demo Mode**: Launch with `--demo` or set `SYNTER_DEMO=true` to explore full reporting and simulation capabilities with zero credentials or API keys.
 
 ## Pricing
-- **Reads**: Free ($0.00 / 0 credits) for reporting, audits, and attribution queries.
+- **Reads**: $0.00 for reporting, audits, and attribution queries.
 - **Verified Writes**: $0.25 per verified write, 0% of ad spend (media spend billed directly by ad networks).
 
 ## Core Tools Reference

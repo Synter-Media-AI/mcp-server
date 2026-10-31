@@ -4,7 +4,7 @@
 
 ### Changed
 
-- **Registry description**: updated `server.json` top-level description to "43 advertising platforms, the only Agentic DSP. Ads WITH guardrails from any MCP client." (under the official MCP registry 100-character limit).
+- **Registry description**: updated `server.json` top-level description to "Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.".
 - Aligned version 1.5.0 across package metadata, server runtime, and registry specifications.
 - **Tool annotations**: annotated all 56 tools with human-readable `title` metadata; every read tool is annotated with `readOnlyHint: true` and every write/mutating tool is annotated with `destructiveHint: true`.
 - **Pricing & Discoverability copy**: pricing updated to "$0.25 per verified write, 0% of ad spend" (reads stay $0.00 / free) across all package and registry discovery metadata, removing stale $20/mo Solo copy.
@@ -17,7 +17,7 @@
 
 ## 1.4.7
 
-Docs/metadata only: platform coverage copy (reads across 43 ad platforms, 16 with verified write and create), synterai.com links, registry websiteUrl. No tool changes.
+Docs/metadata only: platform coverage copy (reads across 16 ad platforms with verified write and create), synterai.com links, registry websiteUrl. No tool changes.
 
 ## 1.4.6
 

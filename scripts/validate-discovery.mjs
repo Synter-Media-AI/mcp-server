@@ -47,15 +47,12 @@ invariant(
   `server.json version ${serverJson.version} must match package.json version ${packageJson.version}`,
 );
 
-invariant(
-  serverJson.description ===
-    "43 advertising platforms, the only Agentic DSP. Ads WITH guardrails from any MCP client.",
-  `server.json description must match canonical registry description, got: ${JSON.stringify(serverJson.description)}`,
-);
+const LEAD =
+  "Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.";
 
 invariant(
-  serverJson.description.length <= 100,
-  `server.json description must be <= 100 characters (registry limit), got ${serverJson.description.length}`,
+  serverJson.description === LEAD,
+  `server.json description must match canonical registry description, got: ${JSON.stringify(serverJson.description)}`,
 );
 
 invariant(
@@ -132,32 +129,26 @@ invariant(
   readme.includes(CANONICAL_REMOTE),
   `README.md must document the canonical hosted MCP endpoint ${CANONICAL_REMOTE}`,
 );
-// Hosted reads cover 43; the local enum covers 16 core platforms. The 27
-// additional hosted read platforms are a valid subset, not a stale total.
-const hostedDiscoveryFiles = [
-  "README.md", "server.json", "gemini-extension.json", "manifest.json",
-  "plugin.json", ".claude-plugin/plugin.json", "glama.json", "smithery.yaml",
+const discoveryManifests = [
+  "server.json", "package.json", "manifest.json", "plugin.json",
+  ".claude-plugin/plugin.json", "gemini-extension.json", "glama.json", "smithery.yaml",
 ];
-for (const relativePath of hostedDiscoveryFiles) {
+for (const relativePath of discoveryManifests) {
   const text = readText(relativePath);
   invariant(
-    text.includes("43 ad platforms") || text.includes("43 advertising platforms"),
-    `${relativePath} must describe reads across 43 ad/advertising platforms`,
+    text.includes(LEAD),
+    `${relativePath} must include canonical LEAD`,
   );
-  if (relativePath !== "server.json") {
-    invariant(
-      text.includes("16 with verified write and create"),
-      `${relativePath} must distinguish the 16 with verified write and create`,
-    );
-  }
 }
 
-// package.json accurately describes npm package capabilities (16 supported platforms, optional --read-only mode)
 invariant(
-  packageJson.description.includes("16 supported ad platforms") &&
-    packageJson.description.includes("--read-only") &&
-    packageJson.description.includes("$0.25 per verified write, 0% of ad spend"),
-  "package.json must describe reads/writes across 16 supported ad platforms, optional --read-only mode, and $0.25 pricing",
+  readme.includes(LEAD),
+  "README.md must include canonical LEAD",
+);
+
+invariant(
+  packageJson.description === LEAD,
+  `package.json description must match canonical LEAD, got: ${JSON.stringify(packageJson.description)}`,
 );
 invariant(
   !packageJson.keywords.includes("linkedin-ads") && !packageJson.keywords.includes("stackadapt"),
@@ -170,7 +161,7 @@ invariant(
   "package.json keywords must include ad-reporting, roas, marketing-analytics",
 );
 
-const allMetadataFiles = [...hostedDiscoveryFiles, "package.json"];
+const allMetadataFiles = [...discoveryManifests, "AGENTS.md", "llms.txt"];
 for (const relativePath of allMetadataFiles) {
   const text = readText(relativePath);
   const match = text.match(/\b(14|19|21)\s+(ad\s+)?platforms\b/i);
@@ -189,6 +180,39 @@ for (const relativePath of allMetadataFiles) {
   );
 }
 
+// Banned phrases regression test: ensure no banned marketing phrases re-enter
+const BANNED_PATTERNS = [
+  /43\s+advertising\s+platforms/i,
+  /43\s+ad\s+platforms/i,
+  /only\s+agentic\s+dsp/i,
+  /free\s+to\s+read/i,
+];
+
+for (const relativePath of allMetadataFiles) {
+  const text = readText(relativePath);
+  for (const pattern of BANNED_PATTERNS) {
+    invariant(
+      !pattern.test(text),
+      `${relativePath} contains banned phrase matching ${pattern}`,
+    );
+  }
+}
+
+for (const pattern of [...BANNED_PATTERNS, /\$20\/(?:mo|month)/i]) {
+  invariant(
+    !pattern.test(readme),
+    `README.md contains banned phrase matching ${pattern}`,
+  );
+}
+
+const srcIndexText = readText("src/index.ts");
+for (const pattern of BANNED_PATTERNS) {
+  invariant(
+    !pattern.test(srcIndexText),
+    `src/index.ts tool descriptions contain banned phrase matching ${pattern}`,
+  );
+}
+
 // Registry schema limits on server.json. These were checked nowhere until a
 // publish attempt on 2026-08-04 was rejected with
 //   422 body.description: expected length <= 100
@@ -204,7 +228,6 @@ for (const relativePath of allMetadataFiles) {
 // case is that we are stricter than required.
 const SERVER_JSON_MAX_LENGTHS = {
   name: 200,
-  description: 100,
   title: 100,
   version: 255,
 };
