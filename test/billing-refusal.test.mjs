@@ -69,11 +69,12 @@ test("legacy 402 without a payload still gets a working synterai.com checkout li
     assert.equal(res.isError, true);
     const text = res.content[0].text;
     assert.ok(
-      text.includes("https://synterai.com/settings/billing?plan=solo&autoCheckout=1&source=mcp"),
+      text.includes("https://synterai.com/settings/billing?source=mcp"),
       text,
     );
-    assert.doesNotMatch(text, /plan=developer|sign-up/);
-    assert.match(text, /SOLO is \$20\/mo/);
+    assert.doesNotMatch(text, /plan=|sign-up/);
+    assert.ok(text.includes("This action is a write, and your Synter account needs a payment method or available credits to run it. Synter is free to connect; writes are $0.25 per verified write, 0% of ad spend. Add a payment method at https://synterai.com/settings/billing?source=mcp to continue."), text);
+    assert.doesNotMatch(text, /SOLO|SCALE|CUSTOM|\$20|\$500|\/mo|stay free/i);
   });
 });
 
@@ -107,7 +108,7 @@ function expectedAction(code) {
   if (code === "ON_DEMAND_CAP_REACHED") {
     return "https://synterai.com/settings/billing?section=spend-management&source=mcp";
   }
-  return "https://synterai.com/settings/billing?plan=solo&autoCheckout=1&source=mcp";
+  return "https://synterai.com/settings/billing?source=mcp";
 }
 
 for (const code of BILLING_REFUSAL_CODES) {
@@ -132,25 +133,20 @@ for (const code of BILLING_REFUSAL_CODES) {
     assert.equal(url.hostname, "synterai.com");
     assert.equal(url.pathname, "/settings/billing");
     assert.equal(url.searchParams.get("source"), "mcp");
-    assert.deepEqual(
-      refusal.plans.map((p) => [p.id, p.price]),
-      [
-        ["SOLO", "$20/mo"],
-        ["SCALE", "$500/mo"],
-        ["CUSTOM", "Talk to sales"],
-      ],
-    );
+    assert.equal(refusal.plans, undefined);
     const text = formatBillingRefusalText(refusal);
     assert.ok(text.startsWith(`BILLING ACTION REQUIRED (${code})\n`), text);
     assert.ok(text.includes(`Fix it here: ${refusal.action_url}`));
     assert.ok(text.includes("show them this link exactly as written"));
-    assert.match(text, /SOLO is \$20\/mo .*SCALE is \$500\/mo .*CUSTOM is sales-led/);
+    assert.ok(refusal.message.includes(`Add a payment method at ${refusal.action_url} to continue.`));
+    assert.ok(refusal.message.includes("$0.25 per verified write, 0% of ad spend"));
+    assert.doesNotMatch(text, /SOLO|SCALE|CUSTOM|\$20|\$500|\/mo/);
     assert.ok(!refusal.action_url.includes("sign-up"));
     assert.ok(!refusal.message.includes("plan=developer"));
   });
 }
 
-test("a bare 402 with no code still becomes BILLING_REQUIRED with the SOLO checkout", () => {
+test("a bare 402 with no code still becomes BILLING_REQUIRED with the billing link", () => {
   const refusal = billingRefusalFromResponse(402, {}, "https://synterai.com");
   assert.equal(refusal.code, "BILLING_REQUIRED");
   assert.equal(refusal.action_url, expectedAction("BILLING_REQUIRED"));
@@ -164,7 +160,7 @@ test("staging API URL keeps refusal links on staging", () => {
   );
   assert.equal(
     refusal.action_url,
-    "https://staging.synterai.com/settings/billing?plan=solo&autoCheckout=1&source=mcp",
+    "https://staging.synterai.com/settings/billing?source=mcp",
   );
 });
 

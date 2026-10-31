@@ -3,11 +3,13 @@
 [![npm version](https://img.shields.io/npm/v/@synterai/mcp-server.svg)](https://www.npmjs.com/package/@synterai/mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### Reads across 43 ad platforms; 16 with verified write and create.
+### Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.
 
-Synter is an open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for ad operations from Claude, ChatGPT, Cursor, Codex, and other MCP clients. Reads across 43 ad platforms; 16 with verified write and create; write/create depth varies by platform API.
+Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.
 
-Free to read; writes from $20/mo (Solo). Use the hosted endpoint at `https://mcp.synterai.com` with Streamable HTTP and OAuth 2.1 browser sign-in. No API key is needed for hosted access.
+Synter is an open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for ad operations from Claude, ChatGPT, Cursor, Codex, and other MCP clients. Writes are enabled by default across 16 advertising platforms, with an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode.
+
+Connect and read across all 16 platforms; pricing is $0.25 per verified write, 0% of ad spend. Use the hosted endpoint at `https://mcp.synterai.com` with Streamable HTTP and OAuth 2.1 browser sign-in. No API key is needed for hosted access.
 
 > **Note:** [`Synter-Media-AI/plugin`](https://github.com/Synter-Media-AI/plugin) is the canonical installable Claude plugin repo. The `.claude-plugin/` copy in this repo is not the install source.
 
@@ -121,9 +123,7 @@ Use the Synter MCP server (https://mcp.synterai.com) for all ad platform operati
 
 ## Supported ad platforms
 
-Reads across 43 ad platforms; 16 with verified write and create; write/create depth varies by platform API.
-
-### 16 with verified write and create
+Reads and writes across 16 ad platforms; write/create depth varies by platform API.
 
 | Platform | Read | Write + create |
 |---|---|---|
@@ -144,47 +144,15 @@ Reads across 43 ad platforms; 16 with verified write and create; write/create de
 | The Trade Desk | Read | Verified; write and create limited |
 | Display & Video 360 | Read | Verified; write and create limited |
 
-### 27 more, read through Synter's hosted MCP
-
-| Platform | Access |
-|---|---|
-| Taboola | Read |
-| Outbrain | Read |
-| Yahoo DSP | Read |
-| Criteo | Read |
-| Teads | Read |
-| Basis DSP | Read |
-| Quantcast | Read |
-| Nextdoor Ads | Read |
-| Quora Ads | Read |
-| Apple Search Ads | Read |
-| YouTube Ads | Read |
-| Moloco | Read |
-| MNTN | Read |
-| Tatari | Read |
-| Vibe.co | Read |
-| AdRoll | Read |
-| Perplexity Ads | Read |
-| Brave Ads | Read |
-| Carbon Ads | Read |
-| EthicalAds | Read |
-| Twitch Ads | Read |
-| Discord Quests | Read |
-| Roblox Ads | Read |
-| Walmart Connect | Read |
-| Instacart Ads | Read |
-| Target Roundel | Read |
-| Kroger Precision Marketing | Read |
-
-The local npm/stdio package's `platform` enum covers the 16 core platforms above (see [`src/platform-routing.ts`](./src/platform-routing.ts)). The full 43 are read through the hosted endpoint at `https://mcp.synterai.com`. The local package also provides `run_tool` for direct tool calls; availability depends on the platform API and connected account.
+The `platform` enum covers the 16 platforms above (see [`src/platform-routing.ts`](./src/platform-routing.ts)). The package also provides `run_tool` for direct tool calls; availability depends on the platform API and connected account.
 
 See [integrations](https://synterai.com/integrations) for platform details. For MCP discovery, [`server.json`](./server.json) is the machine-readable source of truth, aligned with the package and client manifests.
 
 ## Pricing and safety
 
-- **Free Read Access ($0/mo):** Unlimited read, reporting, audit, and attribution queries across all connected ad platforms, plus 100 initial credits (`0%` ad spend markup on all tiers).
-- **Solo ($20/mo):** 1 workspace, 1 developer seat, $20.00/mo in claimable execution credits ($0.01/read, $0.05/light write = 400 budget/status/keyword writes/mo, $5.00/MCP campaign launch).
-- **Scale ($500/mo):** 5 seats, multi-workspace isolation, $500.00/mo in claimable credits, dedicated concurrency, and team governance. See [pricing](https://synterai.com/pricing) for full plan details.
+- **Read Access:** Unlimited read, reporting, audit, and attribution queries across all connected ad platforms (0% ad spend markup).
+- **Verified Writes:** $0.25 per verified write, 0% of ad spend.
+- **Scale ($500/mo):** 5 seats, multi-workspace isolation, dedicated concurrency, and team governance. See [pricing](https://synterai.com/pricing) for full plan details.
 
 Synter provides workspace spend limits, launch preflight (`dry_run: true`), post-write readback, and an immutable audit log. Review the intended account, budget, and action before a live write. Client confirmation behavior depends on the MCP client and its configuration.
 
@@ -264,10 +232,9 @@ Sign up at [synterai.com/sign-up](https://synterai.com/sign-up). Your API key is
   "mcpServers": {
     "synter": {
       "command": "npx",
-      "args": ["-y", "@synterai/mcp-server@latest", "--read-only"],
+      "args": ["-y", "@synterai/mcp-server@latest"],
       "env": {
-        "SYNTER_API_KEY": "syn_your_api_key_here",
-        "SYNTER_READ_ONLY": "true"
+        "SYNTER_API_KEY": "syn_your_api_key_here"
       }
     }
   }
@@ -555,7 +522,7 @@ To manage ads on each platform, you'll need to connect your accounts in Synter:
 3. Complete the OAuth flow
 4. Your agent can now manage that platform
 
-See [Supported ad platforms](#supported-ad-platforms) for the 16 with verified write and create and the 27 more available for reads through hosted MCP. Write/create depth varies by platform API.
+See [Supported ad platforms](#supported-ad-platforms) for the 16 ad platforms with verified write and create. Write/create depth varies by platform API.
 
 ---
 
@@ -647,7 +614,7 @@ Yes. Synter supports Google Ads reporting, Search, Display, and Performance Max 
 
 ### Can Claude or ChatGPT manage my ad campaigns?
 
-Yes. Add `https://mcp.synterai.com` as a custom connector and complete OAuth 2.1 browser sign-in. Synter reads across 43 ad platforms; 16 have verified write and create, with depth varying by platform API. No API key is needed for hosted access. Clients that only support stdio can use `npx -y @synterai/mcp-server` with `SYNTER_API_KEY`.
+Yes. Add `https://mcp.synterai.com` as a custom connector and complete OAuth 2.1 browser sign-in. Synter supports ad operations across 16 ad platforms with verified write and create, with depth varying by platform API. No API key is needed for hosted access. Clients that only support stdio can use `npx -y @synterai/mcp-server` with `SYNTER_API_KEY`.
 
 ---
 

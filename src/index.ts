@@ -45,6 +45,8 @@ const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
 const SYNTER_API_URL = process.env.SYNTER_API_URL || "https://synterai.com";
 const SYNTER_ARTIFACT_API_URL = process.env.SYNTER_ARTIFACT_API_URL || "https://api.synterai.com";
 
+export const VERSION = "1.5.0";
+
 export const IS_READ_ONLY =
   process.env.SYNTER_READ_ONLY === "true" ||
   process.env.SYNTER_READ_ONLY === "1" ||
@@ -78,7 +80,7 @@ Environment Variables:
 }
 
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  console.log("1.4.7");
+  console.log(VERSION);
   process.exit(0);
 }
 
@@ -93,8 +95,8 @@ const tools: Tool[] = [
   {
     name: "list_campaigns",
     description:
-      "List campaigns for ONE ad platform across all 16 ad platforms. `platform` is required -- this tool does not aggregate across platforms. Returns campaign name, status, budget, and performance metrics. 100% Free to Read ($0.00 / 0 credits — works out-of-the-box with zero configuration or API key; live write execution starts on the $20/month Solo plan).",
-    annotations: { readOnlyHint: true },
+      "List campaigns for ONE ad platform across all 16 ad platforms. `platform` is required -- this tool does not aggregate across platforms. Returns campaign name, status, budget, and performance metrics. Works out-of-the-box with zero configuration or API key; live writes are $0.25 per verified write, 0% of ad spend.",
+    annotations: { title: "List Campaigns", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -121,13 +123,13 @@ const tools: Tool[] = [
     description:
       "Create a Google Ads Search campaign with an ad group, responsive search ad, and keywords — all in one atomic request. " +
       "Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required) to preview payload and policy checks. " +
-      "Live execution passes the server-side Agent Shield safety gate (daily spend caps, paused-on-create default, human approval mode, and immutable workspace audit log) on the $20/month Solo plan ($20.00 included monthly credits, 0% ad-spend markup). " +
+      "Live execution passes the server-side Agent Shield safety gate (daily spend caps, paused-on-create default, human approval mode, and immutable workspace audit log; $0.25 per verified write, 0% of ad spend). " +
       "IMPORTANT — creative floor: supply 11-15 headlines (15 recommended, max 30 chars each) and 4 descriptions (max 90 chars each), " +
       "echoing your target keywords across at least 5 headlines. The API accepts as few as 3 headlines / 2 descriptions, but ads built " +
       "near that minimum score 'Poor' on Google Ad Strength, get throttled in the auction, and may be rejected by the platform — " +
       "treat 11 headlines / 4 descriptions as the real minimum. " +
       "Fewer than 3 headlines or fewer than 2 descriptions will cause the campaign to be rejected before any API call is made.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Create Google Search Campaign", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -180,7 +182,7 @@ const tools: Tool[] = [
     name: "create_display_campaign",
     description:
       "Create a Google Ads Display campaign with responsive display ads. Supports image uploads from URLs, `dry_run: true` ($0.00 / 0 credits, zero credentials required), and server-side safety gates (daily spend caps, paused-on-create default, approval mode, and audit log).",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Create Google Display Campaign", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -235,7 +237,7 @@ const tools: Tool[] = [
     name: "create_pmax_campaign",
     description:
       "Create a Google Ads Performance Max campaign. Requires images, headlines, descriptions, and a business name. Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required) and server-side safety gates (daily spend caps, paused-on-create default, approval mode, and audit log).",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Create Google Performance Max Campaign", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -301,8 +303,8 @@ const tools: Tool[] = [
   {
     name: "pause_campaign",
     description:
-      "Pause a campaign by ID across all 16 connected ad platforms. Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required). Live execution is audited in the workspace audit log ($0.05 / 2 credits on Solo $20/mo plan).",
-    annotations: { destructiveHint: true },
+      "Pause a campaign by ID across all 16 connected ad platforms. Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required). Live execution is audited in the workspace audit log ($0.25 per verified write, 0% of ad spend).",
+    annotations: { title: "Pause Campaign", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -327,7 +329,7 @@ const tools: Tool[] = [
     name: "update_campaign_budget",
     description:
       "Update the daily budget for a campaign across all 16 connected ad platforms. Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required). Live execution passes the server-side Agent Shield safety gate (daily spend ceiling, max 2x budget-change multiplier, approval mode, and immutable audit log).",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Update Campaign Budget", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -360,7 +362,7 @@ const tools: Tool[] = [
     name: "get_performance",
     description:
       "Get performance metrics (impressions, clicks, spend, conversions, ROAS) for campaigns across any of the 16 ad platforms. Free read-only tool ($0.00 / 0 credits).",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Get Performance Metrics", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -385,7 +387,7 @@ const tools: Tool[] = [
   {
     name: "get_daily_spend",
     description: "Get daily spend breakdown for ONE ad platform across any of the 16 ad platforms. `platform` is required -- this tool does not aggregate across platforms. Free read-only tool ($0.00 / 0 credits).",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Get Daily Spend Breakdown", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -406,7 +408,7 @@ const tools: Tool[] = [
     name: "pacing_report",
     description:
       "Return a deterministic budget-pacing snapshot for the current workspace across every connected ad platform and the overall portfolio (month-to-date spend, today's spend, expected spend to date, pacing percent, projected end-of-period spend, on_track/underspending/overspending/critical status, and off-pace warnings). Free read-only tool ($0.00 / 0 credits).",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Cross-Channel Budget Pacing Report", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -416,7 +418,7 @@ const tools: Tool[] = [
     name: "user_budget_pacing_report",
     description:
       "Return a deterministic per-user/trader budget ownership and pacing snapshot from saved workspace assignments (target budget, actual spend, expected spend, projected spend, variance, and pacing status). Free read-only tool ($0.00 / 0 credits).",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "User Budget Pacing Report", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -431,7 +433,7 @@ const tools: Tool[] = [
     name: "optimize_budget",
     description:
       "Recommend a cross-channel budget allocation across connected ad platforms using diminishing-returns modeling. Recommend-only (dry_run defaults to true); apply approved changes with update_campaign_budget. Free read-only recommendation tool ($0.00 / 0 credits).",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Optimize Cross-Channel Budget", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -464,7 +466,7 @@ const tools: Tool[] = [
   {
     name: "add_keywords",
     description: "Add keywords to a Google Ads campaign or ad group.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Add Keywords", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -490,7 +492,7 @@ const tools: Tool[] = [
     name: "add_negative_keywords",
     description:
       "Manage negative keywords in Google Ads across campaign, ad-group, shared negative list (create, add/remove terms, attach/detach campaigns), and account levels, with full post-change readback.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Add Negative Keywords", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -590,7 +592,7 @@ const tools: Tool[] = [
     name: "create_conversion",
     description:
       "Create a conversion action in Google Ads. Returns the conversion ID and label for GTM setup.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Create Conversion Action", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -614,7 +616,7 @@ const tools: Tool[] = [
   {
     name: "list_conversions",
     description: "List all conversion actions configured in Google Ads. Free read-only tool ($0.00 / 0 credits).",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "List Conversion Actions", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -624,7 +626,7 @@ const tools: Tool[] = [
     name: "diagnose_tracking",
     description:
       "Check if conversion tracking is properly set up on a website. Verifies gtag.js, GTM, and pixel installation. Free read-only tool ($0.00 / 0 credits).",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Diagnose Conversion Tracking", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -644,7 +646,7 @@ const tools: Tool[] = [
     name: "generate_image",
     description:
       "Generate an AI image for ad creatives using Imagen 4, Flux, or Stable Diffusion.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Generate Ad Creative Image", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -674,7 +676,7 @@ const tools: Tool[] = [
     name: "generate_video",
     description:
       "Generate an AI video ad using Veo, Runway, or Luma. Great for YouTube and social ads.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Generate Video Ad", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -717,7 +719,7 @@ const tools: Tool[] = [
     name: "create_meta_campaign",
     description:
       "Create a Meta (Facebook/Instagram) advertising campaign. Supports `dry_run: true` ($0.00 / 0 credits) to preview the campaign payload and policy checks before execution.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Create Meta Campaign", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -750,7 +752,7 @@ const tools: Tool[] = [
     name: "create_linkedin_campaign",
     description:
       "Create a LinkedIn Ads campaign for B2B advertising. Supports `dry_run: true` ($0.00 / 0 credits) to preview the campaign payload and targeting before execution.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Create LinkedIn Campaign", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -812,7 +814,7 @@ const tools: Tool[] = [
     name: "create_reddit_campaign",
     description:
       "Create a Reddit Ads campaign for community-based advertising. Supports `dry_run: true` ($0.00 / 0 credits) to preview the campaign payload before execution.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Create Reddit Campaign", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -856,7 +858,7 @@ const tools: Tool[] = [
       "in Synter's private artifact store and return an opaque artifact_id. Pass that id to " +
       "sync_audience via *_artifact_id parameters. No credits charged. Use this instead of " +
       "pasting hashed identifiers inline when you have more than ~500 entries.",
-    annotations: { readOnlyHint: false },
+    annotations: { title: "Stage Audience Artifact", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -895,7 +897,7 @@ const tools: Tool[] = [
       "Accepts inline hashed identifiers (hashed_emails, hashed_phones), raw mobile_ids (IDFA/GAID), " +
       "company_domains, a public csv_url, or *_artifact_id references staged via stage_audience_artifact. " +
       "Costs 10 credits on success.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Sync Audience to Ad Platforms", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -969,7 +971,7 @@ const tools: Tool[] = [
       "Use action='create' to build a new audience, 'upload' to append members to an existing one, " +
       "'list' to see all audiences, 'status' to check an upload job, or 'list-sources' to see " +
       "linked data sources (GA4, Merchant Center).",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Manage Audience Segments", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1020,7 +1022,7 @@ const tools: Tool[] = [
   {
     name: "list_ad_accounts",
     description: "List all connected ad accounts across platforms.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "List Connected Ad Accounts", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -1029,7 +1031,7 @@ const tools: Tool[] = [
   {
     name: "upload_image",
     description: "Upload an image as an asset for use in ads.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Upload Image Creative", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1054,7 +1056,7 @@ const tools: Tool[] = [
     name: "run_tool",
     description:
       "Run any Synter tool by name. Use this for advanced operations not covered by other tools. See docs.synterai.com for full tool list.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Run Backend Ad Script", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1078,7 +1080,7 @@ const tools: Tool[] = [
   {
     name: "list_landing_pages",
     description: "List all landing pages for the authenticated workspace, including publish status, custom domain, and URLs.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "List Landing Pages", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -1088,7 +1090,7 @@ const tools: Tool[] = [
     name: "inspect_agent_shield",
     description:
       "Inspect Synter Agent Shield security guardrails: spend velocity limits, circuit breaker status, and PII protection fences. Free read-only security audit tool.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Inspect Agent Shield Policies", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -1098,7 +1100,7 @@ const tools: Tool[] = [
     name: "verify_angstrom_claim",
     description:
       "Verify advertising claims, budget shifts, or campaign targets against Synter Ångström deterministic ground-truth verification model. Free claim verification tool.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Verify Ångström Benchmark Claim", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1114,7 +1116,7 @@ const tools: Tool[] = [
     name: "get_skill",
     description:
       "Retrieve core advertising skill runbooks and playbooks (e.g. 'pmax-brand-cannibalization', 'search-hygiene-shield', 'marginal-cpa-budget-rebalancer', 'meta-asc-dark-pool-auditor', 'single-truth-attribution') or pass 'all' to list catalog. Free loadable operational knowledge for AI coding agents.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Get Domain Skill", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1129,7 +1131,7 @@ const tools: Tool[] = [
     name: "get_llm_visibility",
     description:
       "Query AI model visibility, Answer Engine Optimization (AEO) ranking, and brand share of voice across ChatGPT, Claude, Perplexity, and Gemini. Free read-only intelligence tool.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Get LLM Visibility Score", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1148,7 +1150,7 @@ const tools: Tool[] = [
     name: "get_organic_publishing_readiness",
     description:
       "Check organic social publishing readiness and connected OAuth accounts across LinkedIn (personal & organization pages), X, Reddit, Meta, TikTok, and YouTube.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Get Organic Publishing Readiness", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -1158,7 +1160,7 @@ const tools: Tool[] = [
     name: "draft_organic_post",
     description:
       "Create an organic social media post draft for LinkedIn, X, Reddit, Meta, TikTok, or YouTube with optional media attachments and first-comment link.",
-    annotations: { readOnlyHint: false },
+    annotations: { title: "Draft Organic Social Post", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1201,7 +1203,7 @@ const tools: Tool[] = [
     name: "validate_organic_post",
     description:
       "Validate an organic social post draft against platform character limits, media requirements, and content policies.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Validate Organic Post", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1217,7 +1219,7 @@ const tools: Tool[] = [
     name: "approve_organic_post",
     description:
       "Approve a validated organic social post draft so it can be scheduled or published.",
-    annotations: { readOnlyHint: false },
+    annotations: { title: "Approve Organic Post", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1237,7 +1239,7 @@ const tools: Tool[] = [
     name: "schedule_organic_post",
     description:
       "Schedule an approved organic social post for future publication.",
-    annotations: { readOnlyHint: false },
+    annotations: { title: "Schedule Organic Post", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1261,7 +1263,7 @@ const tools: Tool[] = [
     name: "publish_organic_post",
     description:
       "Immediately publish an approved organic social post to LinkedIn, X, Reddit, Meta, TikTok, or YouTube via Synter native OAuth.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Publish Organic Post", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1281,7 +1283,7 @@ const tools: Tool[] = [
     name: "cancel_scheduled_post",
     description:
       "Cancel a scheduled organic social post before it is published.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Cancel Scheduled Post", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1301,7 +1303,7 @@ const tools: Tool[] = [
     name: "list_scheduled_posts",
     description:
       "List organic social posts across platforms filtered by lifecycle status.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "List Scheduled Posts", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1330,7 +1332,7 @@ const tools: Tool[] = [
     name: "prospector_get_pipeline_summary",
     description:
       "Get an overview of outbound outreach health: active campaigns, total leads, emails sent, replies, and inbox warmup status.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Prospector: Get Pipeline Summary", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -1340,7 +1342,7 @@ const tools: Tool[] = [
     name: "prospector_get_campaigns",
     description:
       "List outbound email outreach campaigns with status and volume metrics.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Prospector: List Campaigns", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1355,7 +1357,7 @@ const tools: Tool[] = [
     name: "prospector_get_campaign",
     description:
       "Get full details and sequence configuration for a specific outbound outreach campaign.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Prospector: Get Campaign Detail", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1371,7 +1373,7 @@ const tools: Tool[] = [
     name: "prospector_get_campaign_performance",
     description:
       "Get performance metrics (sent, opened, replied, bounced, interested) for an outbound campaign.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Prospector: Get Campaign Performance", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1395,7 +1397,7 @@ const tools: Tool[] = [
     name: "prospector_get_leads",
     description:
       "Search or list prospects and leads in the outbound outreach database.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Prospector: List Leads", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1414,7 +1416,7 @@ const tools: Tool[] = [
     name: "prospector_get_inbox_health",
     description:
       "Check sending email accounts, warmup scores, deliverability health, and daily send limits.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Prospector: Get Inbox Health", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -1424,7 +1426,7 @@ const tools: Tool[] = [
     name: "prospector_get_pending_replies",
     description:
       "List pending inbound prospect replies with AI classification and draft responses awaiting approval.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Prospector: Get Pending Replies", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1443,7 +1445,7 @@ const tools: Tool[] = [
     name: "prospector_get_intro_paths",
     description:
       "Find warm introduction paths to a target company or domain through your 1st-degree LinkedIn connections.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Prospector: Get Warm Intro Paths", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1459,7 +1461,7 @@ const tools: Tool[] = [
     name: "prospector_get_warm_intros",
     description:
       "Discover ICP target prospects (CMOs, VPs Growth, CEOs, Hiring Managers) reachable via warm introductions from your 1st-degree LinkedIn network.",
-    annotations: { readOnlyHint: true },
+    annotations: { title: "Prospector: Find Warm Intros", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1478,7 +1480,7 @@ const tools: Tool[] = [
     name: "prospector_create_campaign",
     description:
       "Create a new outbound email outreach campaign.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Prospector: Create Campaign", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1502,7 +1504,7 @@ const tools: Tool[] = [
     name: "prospector_update_campaign_sequence",
     description:
       "Set or replace the multi-step email sequence templates on an outbound outreach campaign.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Prospector: Update Campaign Sequence", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1531,7 +1533,7 @@ const tools: Tool[] = [
     name: "prospector_add_leads",
     description:
       "Add one or more leads to the outbound outreach database (and optionally assign to a campaign).",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Prospector: Add Leads to Campaign", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1556,7 +1558,7 @@ const tools: Tool[] = [
     name: "prospector_create_reply",
     description:
       "Approve and send a reply to an inbound prospect email thread.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Prospector: Send Outreach Reply", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1580,7 +1582,7 @@ const tools: Tool[] = [
     name: "prospector_send_outreach_email",
     description:
       "Send a 1:1 outreach or warm-introduction request email via native Microsoft 365 Exchange or Resend.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Prospector: Send Outreach Email", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1616,7 +1618,7 @@ const tools: Tool[] = [
     name: "prospector_post_linkedin_document",
     description:
       "Publish a native LinkedIn PDF carousel / document post via Synter LinkedIn OAuth (supports personal profile or organization page and optional first comment).",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Prospector: Post LinkedIn Document", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1653,7 +1655,7 @@ const tools: Tool[] = [
     name: "prospector_post_linkedin_comment",
     description:
       "Post a comment on a LinkedIn post (urn:li:share:... or urn:li:ugcPost:...) via Synter LinkedIn OAuth.",
-    annotations: { destructiveHint: true },
+    annotations: { title: "Prospector: Post LinkedIn Comment", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -1803,7 +1805,7 @@ async function callSynterProspectorTool(
       params: {
         protocolVersion: "2024-11-05",
         capabilities: {},
-        clientInfo: { name: "synter-mcp-stdio", version: "1.4.7" },
+        clientInfo: { name: "synter-mcp-stdio", version: VERSION },
       },
     }),
   });
@@ -2553,7 +2555,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.4.7",
+      version: VERSION,
     },
     {
       capabilities: {
@@ -2594,7 +2596,7 @@ async function main() {
       {
         uri: "synter://pricing/coverage",
         name: "Verified Pricing and Platform Coverage Reference",
-        description: "Canonical pricing tiers ($0.00 free to read across all 16 ad platforms, then SOLO $20/mo with $20.00 claimable monthly credits, SCALE $500/mo, 0% ad spend fee) and 16-platform matrix.",
+        description: "Canonical pricing ($0.25 per verified write, 0% of ad spend across all 16 ad platforms) and 16-platform matrix.",
         mimeType: "text/markdown",
       },
     ],
@@ -2684,7 +2686,7 @@ async function main() {
             mimeType: "text/markdown",
             text: `# Synter Verified Pricing & 16-Platform Matrix
 
-## 100% Free to Read ($0.00 / month — 0 credits)
+## Pricing
 - Campaign listing across all 16 ad platforms (list_campaigns)
 - Performance metrics across all 16 ad platforms (get_performance)
 - Daily spend time-series breakdown (get_daily_spend)
@@ -2695,10 +2697,10 @@ async function main() {
 - Agent skills catalog and execution runbooks (get_skill)
 - LLM visibility and AEO ranking reads (get_llm_visibility)
 
-## Subscription Plans for Write Execution ($20 / month Solo)
-- SOLO: $20/month ($200/year), 1 seat, includes $20.00/mo claimable credits for live campaign creation, budget updates, pausing, and audience sync across all 16 ad platforms
-- SCALE: $500/month ($5,000/year), 5 seats, includes $500.00/mo claimable credits for teams and agencies
-- CUSTOM: Sales-led enterprise contracts with custom seats and credit allocations
+## Write Execution Pricing ($0.25 per verified write, 0% of ad spend)
+- Verified writes: $0.25 per verified write, 0% of ad spend across all 16 supported ad platforms
+- SCALE: $500/month ($5,000/year), 5 seats, dedicated concurrency, and team governance
+- CUSTOM: Sales-led enterprise contracts with custom seats
 - Media Spend Markup: 0% (Synter does not charge a percentage of your ad spend)
 
 ## Platform Matrix (16 Ad Platforms)
