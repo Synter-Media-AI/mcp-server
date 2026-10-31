@@ -70,7 +70,6 @@ test("regression test: no banned phrases in metadata, README, or src tool descri
   const banned = [
     /43\s+advertising\s+platforms/i,
     /43\s+ad\s+platforms/i,
-    /only\s+agentic\s+dsp/i,
     /free\s+to\s+read/i,
   ];
 
@@ -89,7 +88,7 @@ test("regression test: no banned phrases in metadata, README, or src tool descri
 
   for (const f of metadataFiles) {
     const text = read(f);
-    for (const pat of banned) {
+    for (const pat of [...banned, /only\s+agentic\s+dsp/i]) {
       assert.ok(!pat.test(text), `${f} contains banned phrase matching ${pat}`);
     }
   }
@@ -100,7 +99,7 @@ test("regression test: no banned phrases in metadata, README, or src tool descri
   }
 
   const srcIndex = read("src/index.ts");
-  for (const pat of banned) {
+  for (const pat of [...banned, /only\s+agentic\s+dsp/i]) {
     assert.ok(!pat.test(srcIndex), `src/index.ts contains banned phrase matching ${pat}`);
   }
 });
@@ -108,3 +107,25 @@ test("regression test: no banned phrases in metadata, README, or src tool descri
 test("validate-discovery passes", () => {
   execFileSync(process.execPath, [new URL("../scripts/validate-discovery.mjs", import.meta.url).pathname]);
 });
+
+test("README documents Add Synter to Amp as built-in and local read-only config", () => {
+  const readme = read("README.md");
+  assert.ok(readme.includes("## Add Synter to Amp"), "README missing Add Synter to Amp section");
+  assert.ok(
+    readme.includes("In Amp: Synter is a built-in integration. Turn it on in Amp under Settings > Integrations."),
+    "README missing built-in integration line",
+  );
+  assert.ok(
+    readme.includes("Claude, ChatGPT and other MCP clients, hosted (30+ ad platforms, the only Agentic DSP): https://mcp.synterai.com"),
+    "README missing hosted line",
+  );
+  assert.ok(readme.includes("Local read-only (16 platforms)"), "README missing local read-only label");
+  assert.ok(readme.includes("@synterai/mcp-server"), "README missing package reference");
+  assert.ok(readme.includes("--read-only"), "README missing --read-only flag");
+  assert.ok(readme.includes("${SYNTER_API_KEY}"), "README missing ${SYNTER_API_KEY} variable");
+  assert.ok(readme.includes("**Amp:** built in"), "README missing line 52 Amp built-in pointer");
+  assert.ok(!readme.includes("amp mcp add"), "README should not contain amp mcp add");
+  assert.ok(!readme.includes("amp mcp remote"), "README should not contain amp mcp remote");
+  assert.ok(!readme.includes("amp.mcpServers"), "README should not contain amp.mcpServers");
+});
+

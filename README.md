@@ -51,6 +51,8 @@ codex mcp add synter-ads --url https://mcp.synterai.com
 codex mcp login synter-ads
 ```
 
+**Amp:** built in — see [Add Synter to Amp](#add-synter-to-amp).
+
 **Gemini CLI:** install this repo as an extension (it ships a [`gemini-extension.json`](./gemini-extension.json)):
 
 ```bash
@@ -84,6 +86,30 @@ Then start chatting:
 > "Create a search campaign for 'project management software' with a $50/day budget"
 
 > "Pause the campaign that's overspending"
+
+---
+
+## Add Synter to Amp
+
+In Amp: Synter is a built-in integration. Turn it on in Amp under Settings > Integrations.
+
+Claude, ChatGPT and other MCP clients, hosted (30+ ad platforms, the only Agentic DSP): https://mcp.synterai.com
+
+**Local read-only (16 platforms):**
+
+```json
+{
+  "mcpServers": {
+    "synter-ro": {
+      "command": "npx",
+      "args": ["-y", "@synterai/mcp-server", "--read-only"],
+      "env": {
+        "SYNTER_API_KEY": "${SYNTER_API_KEY}"
+      }
+    }
+  }
+}
+```
 
 ---
 
