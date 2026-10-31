@@ -51,7 +51,7 @@ codex mcp add synter-ads --url https://mcp.synterai.com
 codex mcp login synter-ads
 ```
 
-**Amp:** see [Add Synter to Amp](#add-synter-to-amp) (`amp mcp add synter https://mcp.synterai.com`).
+**Amp:** built in — see [Add Synter to Amp](#add-synter-to-amp).
 
 **Gemini CLI:** install this repo as an extension (it ships a [`gemini-extension.json`](./gemini-extension.json)):
 
@@ -91,35 +91,25 @@ Then start chatting:
 
 ## Add Synter to Amp
 
-Connect Synter to [Amp](https://ampcode.com) for ad operations ($0.25 per verified write, 0% of ad spend). The npm package covers 16 ad platforms.
+In Amp: Synter is a built-in integration. Turn it on in Amp under Settings > Integrations.
 
-**Hosted, OAuth:**
-```bash
-amp mcp add synter https://mcp.synterai.com
-```
-Amp opens sign-in on next start. Hosted everywhere incl. Amp orbs/web:
-```bash
-amp mcp remote --personal add Synter https://mcp.synterai.com --auth oauth
-```
+Claude, ChatGPT and other MCP clients, hosted (30+ ad platforms, the only Agentic DSP): https://mcp.synterai.com
 
-**npm local read-only:**
-```bash
-amp mcp add synter-ro --env SYNTER_API_KEY=$SYNTER_API_KEY -- npx -y @synterai/mcp-server --read-only
-```
-Equivalent `amp.mcpServers` JSON in `.amp/settings.json` using `"${SYNTER_API_KEY}"`:
+**Local read-only (16 platforms):**
+
 ```json
 {
-  "amp.mcpServers": {
+  "mcpServers": {
     "synter-ro": {
       "command": "npx",
       "args": ["-y", "@synterai/mcp-server", "--read-only"],
-      "env": { "SYNTER_API_KEY": "${SYNTER_API_KEY}" }
+      "env": {
+        "SYNTER_API_KEY": "${SYNTER_API_KEY}"
+      }
     }
   }
 }
 ```
-
-**Skill option:** Add `mcp.json` next to `SKILL.md` (Amp recommends skills).
 
 ---
 

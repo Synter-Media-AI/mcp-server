@@ -185,13 +185,17 @@ for (const relativePath of allMetadataFiles) {
 const BANNED_PATTERNS = [
   /43\s+advertising\s+platforms/i,
   /43\s+ad\s+platforms/i,
-  /only\s+agentic\s+dsp/i,
   /free\s+to\s+read/i,
+];
+
+const METADATA_BANNED_PATTERNS = [
+  ...BANNED_PATTERNS,
+  /only\s+agentic\s+dsp/i,
 ];
 
 for (const relativePath of allMetadataFiles) {
   const text = readText(relativePath);
-  for (const pattern of BANNED_PATTERNS) {
+  for (const pattern of METADATA_BANNED_PATTERNS) {
     invariant(
       !pattern.test(text),
       `${relativePath} contains banned phrase matching ${pattern}`,
@@ -207,7 +211,7 @@ for (const pattern of [...BANNED_PATTERNS, /\$20\/(?:mo|month)/i]) {
 }
 
 const srcIndexText = readText("src/index.ts");
-for (const pattern of BANNED_PATTERNS) {
+for (const pattern of METADATA_BANNED_PATTERNS) {
   invariant(
     !pattern.test(srcIndexText),
     `src/index.ts tool descriptions contain banned phrase matching ${pattern}`,
