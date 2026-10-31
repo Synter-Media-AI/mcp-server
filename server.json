@@ -1,19 +1,19 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.Synter-Media-AI/synter-ads",
-  "description": "Ads MCP: read across 43 ad platforms; write depth varies by API. Hosted OAuth at mcp.synterai.com",
+  "description": "Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.",
   "status": "active",
   "repository": {
     "url": "https://github.com/Synter-Media-AI/mcp-server",
     "source": "github"
   },
-  "version": "1.4.7",
+  "version": "1.5.0",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@synterai/mcp-server",
-      "version": "1.4.7",
+      "version": "1.5.0",
       "transport": {
         "type": "stdio"
       },
@@ -31,15 +31,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.synterai.com",
-      "headers": [
-        {
-          "name": "X-Synter-Key",
-          "description": "Optional fallback for headless clients. Hosted OAuth (browser sign-in) is the default; create a key at https://synterai.com/developer.",
-          "isRequired": false,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.synterai.com"
     }
   ],
   "websiteUrl": "https://synterai.com/mcp"

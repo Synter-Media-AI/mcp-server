@@ -91,19 +91,17 @@ export function billingRefusalFromResponse(
 
   // Older API deployment: build a usable prompt from what we have.
   const origin = billingOrigin(apiUrl);
-  const solo = `${origin}/settings/billing?plan=solo&autoCheckout=1&source=mcp`;
-  const scale = `${origin}/settings/billing?plan=synter&autoCheckout=1&source=mcp`;
+  const billing = `${origin}/settings/billing?source=mcp`;
   const card = `${origin}/settings/billing?setup=payment&source=mcp`;
   const actionUrl =
     code === "PAYMENT_METHOD_REQUIRED" || code === "PAYMENT_FAILED" || code === "PAST_DUE"
       ? card
       : code === "ON_DEMAND_CAP_REACHED"
         ? `${origin}/settings/billing?section=spend-management&source=mcp`
-        : serverUrl && !serverUrl.includes("/sign-up")
+        : serverUrl && !serverUrl.includes("/sign-up") && !/plan=/.test(serverUrl)
           ? serverUrl
-          : solo;
-  const reason = serverMessage ?? "This Synter action needs billing to be set up.";
-  const message = `This Synter action was not run. ${reason} Fix it here: ${actionUrl} — SOLO is $20/mo ($20.00 of monthly usage included); SCALE is $500/mo ($500.00 included); CUSTOM is sales-led. Reads, drafts and planning stay free. After paying, retry the same request — no reconnect needed.`;
+          : billing;
+  const message = `This action is a write, and your Synter account needs a payment method or available credits to run it. Synter is free to connect; writes are $0.25 per verified write, 0% of ad spend. Add a payment method at ${actionUrl} to continue.`;
   return {
     ...body,
     success: false,
@@ -111,11 +109,6 @@ export function billingRefusalFromResponse(
     billing_refusal: true,
     message,
     action_url: actionUrl,
-    plans: [
-      { id: "SOLO", name: "SOLO", price: "$20/mo", url: solo },
-      { id: "SCALE", name: "SCALE", price: "$500/mo", url: scale },
-      { id: "CUSTOM", name: "CUSTOM", price: "Talk to sales", url: `${origin}/demo?source=mcp` },
-    ],
     assistant_instruction: `Tell the user this action is blocked for billing and show them this link exactly as written so they can fix it: ${actionUrl} — then offer to retry once they confirm it's done.`,
   };
 }
