@@ -49,6 +49,8 @@ codex mcp add synter-ads --url https://mcp.synterai.com
 codex mcp login synter-ads
 ```
 
+**Amp:** see [Add Synter to Amp](#add-synter-to-amp) (`amp mcp add synter https://mcp.synterai.com`).
+
 **Gemini CLI:** install this repo as an extension (it ships a [`gemini-extension.json`](./gemini-extension.json)):
 
 ```bash
@@ -82,6 +84,40 @@ Then start chatting:
 > "Create a search campaign for 'project management software' with a $50/day budget"
 
 > "Pause the campaign that's overspending"
+
+---
+
+## Add Synter to Amp
+
+Connect Synter to [Amp](https://ampcode.com) for ad operations ($0.25 per verified write, 0% of ad spend). The npm package covers 16 ad platforms.
+
+**Hosted, OAuth:**
+```bash
+amp mcp add synter https://mcp.synterai.com
+```
+Amp opens sign-in on next start. Hosted everywhere incl. Amp orbs/web:
+```bash
+amp mcp remote --personal add Synter https://mcp.synterai.com --auth oauth
+```
+
+**npm local read-only:**
+```bash
+amp mcp add synter-ro --env SYNTER_API_KEY=$SYNTER_API_KEY -- npx -y @synterai/mcp-server --read-only
+```
+Equivalent `amp.mcpServers` JSON in `.amp/settings.json` using `"${SYNTER_API_KEY}"`:
+```json
+{
+  "amp.mcpServers": {
+    "synter-ro": {
+      "command": "npx",
+      "args": ["-y", "@synterai/mcp-server", "--read-only"],
+      "env": { "SYNTER_API_KEY": "${SYNTER_API_KEY}" }
+    }
+  }
+}
+```
+
+**Skill option:** Add `mcp.json` next to `SKILL.md` (Amp recommends skills).
 
 ---
 

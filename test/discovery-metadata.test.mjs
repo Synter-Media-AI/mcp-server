@@ -33,3 +33,16 @@ test("public metadata has no stale platform counts", () => {
 test("validate-discovery passes", () => {
   execFileSync(process.execPath, [new URL("../scripts/validate-discovery.mjs", import.meta.url).pathname]);
 });
+
+test("README documents Add Synter to Amp with CLI and remote commands", () => {
+  const readme = read("README.md");
+  assert.ok(readme.includes("## Add Synter to Amp"), "README missing Add Synter to Amp section");
+  assert.ok(readme.includes("amp mcp add synter https://mcp.synterai.com"), "README missing hosted amp mcp add command");
+  assert.ok(readme.includes("amp mcp remote --personal add Synter https://mcp.synterai.com --auth oauth"), "README missing remote amp command");
+  assert.ok(readme.includes("amp mcp add synter-ro --env SYNTER_API_KEY=$SYNTER_API_KEY -- npx -y @synterai/mcp-server --read-only"), "README missing local read-only amp command");
+  assert.ok(readme.includes("amp.mcpServers"), "README missing amp.mcpServers JSON");
+  assert.ok(readme.includes("${SYNTER_API_KEY}"), "README missing ${SYNTER_API_KEY} variable");
+  assert.ok(readme.includes("mcp.json"), "README missing mcp.json reference");
+  assert.ok(readme.includes("SKILL.md"), "README missing SKILL.md reference");
+});
+
