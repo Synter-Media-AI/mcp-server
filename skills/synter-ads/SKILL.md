@@ -1,13 +1,13 @@
 ---
 name: synter-ads
-description: Technical reference for @synterai/mcp-server (v1.4.7), covering hosted OAuth, local stdio, platform coverage, pricing and metering, workspace isolation, and write safety.
+description: Technical reference for @synterai/mcp-server (v1.5.0), covering hosted OAuth, local stdio, platform coverage, pricing and metering, workspace isolation, and write safety.
 ---
 
-# `@synterai/mcp-server` (v1.4.7) — Technical Reference
+# `@synterai/mcp-server` (v1.5.0) — Technical Reference
 
-- **Package**: `@synterai/mcp-server@1.4.7` (MIT license, [source](https://github.com/Synter-Media-AI/mcp-server))
+- **Package**: `@synterai/mcp-server@1.5.0` (MIT license, [source](https://github.com/Synter-Media-AI/mcp-server))
 - **Hosted MCP Endpoint**: `https://mcp.synterai.com` (Streamable HTTP + OAuth 2.1 with PKCE, or `X-Synter-Key` header for headless/CI clients)
-- **Local Stdio Launch**: `npx -y @synterai/mcp-server@1.4.7` (pass `--read-only` to strip mutating tools from `tools/list` at startup, or `--demo` for offline schema/mock testing)
+- **Local Stdio Launch**: `npx -y @synterai/mcp-server@1.5.0` (pass `--read-only` to strip mutating tools from `tools/list` at startup, or `--demo` for offline schema/mock testing)
 - **REST API, CLI & SDKs**: `https://synterai.com/api/v1`, `pip install synter`, `@synterai/sdk-js`, `crates.io/crates/synter`, Maven `ai.syntermedia:synter-sdk`
 
 ## 1. Platform Coverage (43 Read Platforms; 16 with Verified Write & Create)

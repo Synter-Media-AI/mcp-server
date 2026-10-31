@@ -45,6 +45,8 @@ const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
 const SYNTER_API_URL = process.env.SYNTER_API_URL || "https://synterai.com";
 const SYNTER_ARTIFACT_API_URL = process.env.SYNTER_ARTIFACT_API_URL || "https://api.synterai.com";
 
+export const VERSION = "1.5.0";
+
 export const IS_READ_ONLY =
   process.env.SYNTER_READ_ONLY === "true" ||
   process.env.SYNTER_READ_ONLY === "1" ||
@@ -78,7 +80,7 @@ Environment Variables:
 }
 
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
-  console.log("1.4.7");
+  console.log(VERSION);
   process.exit(0);
 }
 
@@ -1803,7 +1805,7 @@ async function callSynterProspectorTool(
       params: {
         protocolVersion: "2024-11-05",
         capabilities: {},
-        clientInfo: { name: "synter-mcp-stdio", version: "1.4.7" },
+        clientInfo: { name: "synter-mcp-stdio", version: VERSION },
       },
     }),
   });
@@ -2553,7 +2555,7 @@ async function main() {
   const server = new Server(
     {
       name: "synter-mcp",
-      version: "1.4.7",
+      version: VERSION,
     },
     {
       capabilities: {

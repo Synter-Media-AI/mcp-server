@@ -287,7 +287,7 @@ test("--help CLI argument displays help and exits with code 0", async () => {
 test("--version CLI argument displays version and exits with code 0", async () => {
   const binaryPath = new URL("../dist/index.js", import.meta.url).pathname;
   const { stdout } = await execFileAsync(process.execPath, [binaryPath, "--version"]);
-  assert.equal(stdout.trim(), "1.4.7");
+  assert.equal(stdout.trim(), "1.5.0");
 });
 
 test("zero-friction install-and-go: read tools and dry_run mutations succeed with zero flags and zero API key", async () => {

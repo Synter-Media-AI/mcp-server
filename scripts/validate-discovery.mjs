@@ -48,6 +48,17 @@ invariant(
 );
 
 invariant(
+  serverJson.description ===
+    "43 advertising platforms, the only Agentic DSP. Ads WITH guardrails from any MCP client.",
+  `server.json description must match canonical registry description, got: ${JSON.stringify(serverJson.description)}`,
+);
+
+invariant(
+  serverJson.description.length <= 100,
+  `server.json description must be <= 100 characters (registry limit), got ${serverJson.description.length}`,
+);
+
+invariant(
   manifestJson.version === packageJson.version,
   `manifest.json version ${manifestJson.version} must match package.json version ${packageJson.version}`,
 );
@@ -129,7 +140,10 @@ const discoveryFiles = [
 ];
 for (const relativePath of discoveryFiles) {
   const text = readText(relativePath);
-  invariant(text.includes("43 ad platforms"), `${relativePath} must describe reads across 43 ad platforms`);
+  invariant(
+    text.includes("43 ad platforms") || text.includes("43 advertising platforms"),
+    `${relativePath} must describe reads across 43 ad/advertising platforms`,
+  );
   if (relativePath !== "server.json") {
     invariant(
       text.includes("16 with verified write and create"),

@@ -1,6 +1,6 @@
 {
   "name": "@synterai/mcp-server",
-  "version": "1.4.7",
+  "version": "1.5.0",
   "mcpName": "io.github.Synter-Media-AI/synter-ads",
   "description": "Official Synter MCP server: hosted Ads MCP for Claude, ChatGPT, Cursor and Codex. Reads across 43 ad platforms (16 with verified write and create), including Google, Meta, LinkedIn, TikTok, Amazon, Microsoft, Reddit, Snapchat, Pinterest, X and OpenAI Ads. Free to read; writes from $20/mo. Hosted OAuth at https://mcp.synterai.com.",
   "author": "Synter <hello@synterai.com>",

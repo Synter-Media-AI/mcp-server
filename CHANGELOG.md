@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 1.5.0
+
+### Changed
+
+- **Registry description**: updated `server.json` top-level description to "43 advertising platforms, the only Agentic DSP. Ads WITH guardrails from any MCP client." (under the official MCP registry 100-character limit).
+- Aligned version 1.5.0 across package metadata, server runtime, and registry specifications.
 
 ### Fixed
 

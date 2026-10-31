@@ -10,6 +10,17 @@ test("server.json advertises the hosted remote at https://mcp.synterai.com", () 
   assert.equal(server.remotes[0].url, "https://mcp.synterai.com");
 });
 
+test("server.json version matches package.json and description matches registry copy", () => {
+  const server = JSON.parse(read("server.json"));
+  const pkg = JSON.parse(read("package.json"));
+  assert.equal(server.version, pkg.version);
+  assert.equal(
+    server.description,
+    "43 advertising platforms, the only Agentic DSP. Ads WITH guardrails from any MCP client."
+  );
+  assert.ok(server.description.length <= 100);
+});
+
 test("public metadata does not reference syntermedia.ai", () => {
   for (const p of ["README.md", "server.json", "gemini-extension.json", "manifest.json", "package.json", "plugin.json", ".claude-plugin/plugin.json", "glama.json", "smithery.yaml"]) {
     const text = read(p);
