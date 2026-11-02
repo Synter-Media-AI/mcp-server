@@ -3,13 +3,13 @@
 [![npm version](https://img.shields.io/npm/v/@synterai/mcp-server.svg)](https://www.npmjs.com/package/@synterai/mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.
+### Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.
 
-Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.
+Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.
 
-Synter is an open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for ad operations from Claude, ChatGPT, Cursor, Codex, and other MCP clients. Writes are enabled by default across 16 advertising platforms, with an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode.
+Synter is an open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for ad operations from Claude, ChatGPT, Cursor, Codex, and other MCP clients. Writes are enabled by default across 30+ ad platforms, with an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode.
 
-Connect and read across all 16 platforms; pricing is $0.25 per verified write, 0% of ad spend. Use the hosted endpoint at `https://mcp.synterai.com` with Streamable HTTP and OAuth 2.1 browser sign-in. No API key is needed for hosted access.
+Pricing is $0.25 per verified write, 0% of ad spend; MCP reads are free. Use the hosted endpoint at `https://mcp.synterai.com` with Streamable HTTP and OAuth 2.1 browser sign-in. No API key is needed for hosted access.
 
 > **Note:** [`Synter-Media-AI/plugin`](https://github.com/Synter-Media-AI/plugin) is the canonical installable Claude plugin repo. The `.claude-plugin/` copy in this repo is not the install source.
 
@@ -26,13 +26,15 @@ Add the hosted server to your MCP client and complete OAuth 2.1 browser sign-in 
 {"mcpServers":{"synter-ads":{"url":"https://mcp.synterai.com"}}}
 ```
 
+> **Auth:** Hosted MCP (mcp.synterai.com) authenticates with OAuth or the `X-Synter-Key: syn_...` header. Do not send `Authorization: Bearer syn_...` to the hosted MCP yet; REST/SDKs use Bearer.
+
 Signup is self-serve at [synterai.com/sign-up](https://synterai.com/sign-up). There is no access review: sign up, connect your ad accounts, and your MCP client can start working.
 
 Synter's canonical domain is **synterai.com**; the hosted MCP endpoint is `https://mcp.synterai.com`.
 
 > ⚡ **Try in < 60 Seconds with Zero Credentials:** Run `npx -y @synterai/mcp-server --demo` (or set `SYNTER_DEMO=true`) to explore campaigns, inspect performance metrics, and simulate mutations with high-fidelity sandbox data. No account or API key required.
 
-> The only official packages are @synterai/mcp-server, @synterai/sdk-js, PyPI synter, crates.io synter, Maven ai.syntermedia:synter-sdk. @iflow-mcp/* copies are unofficial and outdated.
+> The only official packages are npm `@synterai/mcp-server`, npm `@synterai/sdk-js`, PyPI `synter`, crates.io `synter`, and Maven `ai.syntermedia:synter-sdk`. @iflow-mcp/* copies are unofficial and outdated.
 
 **Cursor:** click the badge above, or open `cursor://anysphere.cursor-deeplink/mcp/install?name=synter-ads&config=eyJ1cmwiOiJodHRwczovL21jcC5zeW50ZXJhaS5jb20ifQ==`
 
@@ -77,7 +79,9 @@ Or add it to `settings.json`:
 {"mcpServers":{"synter-ads":{"type":"streamableHttp","url":"https://mcp.synterai.com","disabled":false,"autoApprove":[]}}}
 ```
 
-**Claude.ai / ChatGPT:** add a custom connector with the URL `https://mcp.synterai.com` and sign in when prompted.
+**Claude.ai / Claude Desktop:** open Settings → Connectors → Add custom connector, enter `https://mcp.synterai.com`, and sign in when prompted.
+
+**ChatGPT:** custom MCP connectors require Developer mode. Turn it on under Settings → Apps & Connectors → Advanced → Developer mode, then add a connector with the URL `https://mcp.synterai.com` and sign in when prompted.
 
 Then start chatting:
 
@@ -95,11 +99,25 @@ In Amp: Synter is a built-in integration. Turn it on in Amp under Settings > Int
 
 Claude, ChatGPT and other MCP clients, hosted (30+ ad platforms, the only Agentic DSP): https://mcp.synterai.com
 
-**Local read-only (16 platforms):**
+> **Auth:** Hosted MCP (mcp.synterai.com) authenticates with OAuth or the `X-Synter-Key: syn_...` header. Do not send `Authorization: Bearer syn_...` to the hosted MCP yet; REST/SDKs use Bearer.
+
+**MCP fallback (hosted):** if the integration isn't available in your Amp client, add the hosted server under `amp.mcpServers` in `~/.config/amp/settings.json` (or `.amp/settings.json` for one project):
 
 ```json
 {
-  "mcpServers": {
+  "amp.mcpServers": {
+    "synter-ads": {
+      "url": "https://mcp.synterai.com"
+    }
+  }
+}
+```
+
+**Local read-only (npm package):**
+
+```json
+{
+  "amp.mcpServers": {
     "synter-ro": {
       "command": "npx",
       "args": ["-y", "@synterai/mcp-server", "--read-only"],
@@ -149,7 +167,7 @@ Use the Synter MCP server (https://mcp.synterai.com) for all ad platform operati
 
 ## Supported ad platforms
 
-Reads and writes across 16 ad platforms; write/create depth varies by platform API.
+The hosted MCP covers 30+ ad platforms. The table below lists the platforms built into the local npm package's `platform` enum; write/create depth varies by platform API.
 
 | Platform | Read | Write + create |
 |---|---|---|
@@ -170,15 +188,15 @@ Reads and writes across 16 ad platforms; write/create depth varies by platform A
 | The Trade Desk | Read | Verified; write and create limited |
 | Display & Video 360 | Read | Verified; write and create limited |
 
-The `platform` enum covers the 16 platforms above (see [`src/platform-routing.ts`](./src/platform-routing.ts)). The package also provides `run_tool` for direct tool calls; availability depends on the platform API and connected account.
+The `platform` enum covers the platforms above (see [`src/platform-routing.ts`](./src/platform-routing.ts)). The package also provides `run_tool` for direct tool calls; availability depends on the platform API and connected account.
 
 See [integrations](https://synterai.com/integrations) for platform details. For MCP discovery, [`server.json`](./server.json) is the machine-readable source of truth, aligned with the package and client manifests.
 
 ## Pricing and safety
 
-- **Read Access:** Unlimited read, reporting, audit, and attribution queries across all connected ad platforms (0% ad spend markup).
-- **Verified Writes:** $0.25 per verified write, 0% of ad spend.
-- **Scale ($500/mo):** 5 seats, multi-workspace isolation, dedicated concurrency, and team governance. See [pricing](https://synterai.com/pricing) for full plan details.
+- **Verified Writes:** $0.25 per verified write, 0% of ad spend. Ad platforms bill media spend directly.
+- **Reads:** MCP reads (reporting, audits, attribution) are free.
+- **Plans:** Free, Solo, Scale, and Custom. Scale ($500/mo) adds 5 seats, multi-workspace isolation, dedicated concurrency, and team governance. See [pricing](https://synterai.com/pricing) for full plan details.
 
 Synter provides workspace spend limits, launch preflight (`dry_run: true`), post-write readback, and an immutable audit log. Review the intended account, budget, and action before a live write. Client confirmation behavior depends on the MCP client and its configuration.
 
@@ -201,7 +219,7 @@ For SaaS products, agencies, and engineering teams embedding ad operations acros
    - **Embedded / White-Label OAuth:** Generate per-tenant authorization URLs (`POST https://synterai.com/api/v1/oauth/{platform}/authorize` with `workspace_id` and custom `redirect_uri`) so your end users connect Google, Meta, LinkedIn, Reddit, TikTok, or DSP accounts inside your app without visiting Synter's UI, with automatic token refresh and credential vaulting.
    - **BYO OAuth App / Credentials:** Register your own platform OAuth client ID/secret and developer tokens per workspace, or pass credentials directly via the SDK/CLI (`SYNTER_BYO_CREDENTIALS=true`).
 4. **REST API & Official Multi-Language SDKs:**
-   - Call any tool over HTTP (`POST https://synterai.com/api/v1/tools/execute` with `Authorization: Bearer syn_...` or `X-Synter-Key: syn_...`) or via the official typed SDKs:
+   - Call any tool over HTTP (`POST https://synterai.com/api/v1/tools/run` with `Authorization: Bearer syn_...`) or via the official typed SDKs. (The hosted MCP at `mcp.synterai.com` is different: it takes OAuth or `X-Synter-Key`, not Bearer, for now.)
      - **TypeScript / Node.js (`@synterai/sdk-js`):**
        ```ts
        import { SynterClient } from "@synterai/sdk-js";
@@ -211,11 +229,13 @@ For SaaS products, agencies, and engineering teams embedding ad operations acros
        ```
      - **Python (`pip install synter`):**
        ```python
+       import os
        from synter import Synter
-       client = Synter(api_key=os.environ["SYNTER_API_KEY"], workspace_id="ws_tenant_123")
-       perf = client.performance.get(platform="meta", date_range="LAST_14_DAYS")
+
+       client = Synter(api_key=os.environ["SYNTER_API_KEY"])  # optional: base_url=, timeout=, max_retries=
+       perf = client.analytics.get_performance(platform="meta", date_range="LAST_30_DAYS")
        ```
-     - **Rust (`cargo add synter-sdk`)** & **Java (`ai.synter:synter-sdk` on Maven Central)**.
+     - **Rust (`cargo add synter`, crates.io `synter`)** & **Java (`ai.syntermedia:synter-sdk` on Maven Central)**.
 
 ---
 
@@ -322,11 +342,11 @@ Sign up at [synterai.com/sign-up](https://synterai.com/sign-up). Your API key is
 }
 ```
 
-**For Amp:** Add to `.amp/settings.json`:
+**For Amp:** Add under `amp.mcpServers` in `~/.config/amp/settings.json` (or `.amp/settings.json`):
 
 ```json
 {
-  "mcpServers": {
+  "amp.mcpServers": {
     "synter": {
       "command": "npx",
       "args": ["-y", "@synterai/mcp-server@latest"],
@@ -344,6 +364,8 @@ Sign up at [synterai.com/sign-up](https://synterai.com/sign-up). Your API key is
 URL: https://mcp.synterai.com
 Header: X-Synter-Key: syn_your_api_key_here
 ```
+
+Hosted MCP (mcp.synterai.com) authenticates with OAuth or the `X-Synter-Key: syn_...` header. Do not send `Authorization: Bearer syn_...` to the hosted MCP yet; REST/SDKs use Bearer.
 
 The header is optional; browser OAuth is the default. Works with any MCP client that supports [Streamable HTTP](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http) transport.
 
@@ -548,7 +570,7 @@ To manage ads on each platform, you'll need to connect your accounts in Synter:
 3. Complete the OAuth flow
 4. Your agent can now manage that platform
 
-See [Supported ad platforms](#supported-ad-platforms) for the 16 ad platforms with verified write and create. Write/create depth varies by platform API.
+See [Supported ad platforms](#supported-ad-platforms) for platforms with verified write and create. Write/create depth varies by platform API.
 
 ---
 
@@ -636,11 +658,11 @@ You need to connect at least one ad platform:
 
 ### Is there an MCP server for Google Ads?
 
-Yes. Synter supports Google Ads reporting, Search, Display, and Performance Max campaign creation, keywords, budget updates, audience management, and conversion tracking. Google Ads is one of the 16 platforms with verified write and create; write/create depth varies by platform API.
+Yes. Synter supports Google Ads reporting, Search, Display, and Performance Max campaign creation, keywords, budget updates, audience management, and conversion tracking. Google Ads is one of the platforms with verified write and create; write/create depth varies by platform API.
 
 ### Can Claude or ChatGPT manage my ad campaigns?
 
-Yes. Add `https://mcp.synterai.com` as a custom connector and complete OAuth 2.1 browser sign-in. Synter supports ad operations across 16 ad platforms with verified write and create, with depth varying by platform API. No API key is needed for hosted access. Clients that only support stdio can use `npx -y @synterai/mcp-server` with `SYNTER_API_KEY`.
+Yes. Add `https://mcp.synterai.com` as a custom connector (Claude: Settings → Connectors → Add custom connector; ChatGPT: enable Developer mode first under Settings → Apps & Connectors → Advanced) and complete OAuth 2.1 browser sign-in. Synter supports ad operations across 30+ ad platforms, with write/create depth varying by platform API. No API key is needed for hosted access. Clients that only support stdio can use `npx -y @synterai/mcp-server` with `SYNTER_API_KEY`.
 
 ---
 
