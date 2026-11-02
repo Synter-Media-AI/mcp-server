@@ -6,7 +6,7 @@ import fs from "node:fs";
 const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
 const LEAD =
-  "Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.";
+  "Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.";
 
 test("server.json advertises the hosted remote at https://mcp.synterai.com", () => {
   const server = JSON.parse(read("server.json"));
@@ -119,13 +119,45 @@ test("README documents Add Synter to Amp as built-in and local read-only config"
     readme.includes("Claude, ChatGPT and other MCP clients, hosted (30+ ad platforms, the only Agentic DSP): https://mcp.synterai.com"),
     "README missing hosted line",
   );
-  assert.ok(readme.includes("Local read-only (16 platforms)"), "README missing local read-only label");
+  assert.ok(readme.includes("Local read-only (npm package)"), "README missing local read-only label");
   assert.ok(readme.includes("@synterai/mcp-server"), "README missing package reference");
   assert.ok(readme.includes("--read-only"), "README missing --read-only flag");
   assert.ok(readme.includes("${SYNTER_API_KEY}"), "README missing ${SYNTER_API_KEY} variable");
   assert.ok(readme.includes("**Amp:** built in"), "README missing line 52 Amp built-in pointer");
-  assert.ok(!readme.includes("amp mcp add"), "README should not contain amp mcp add");
-  assert.ok(!readme.includes("amp mcp remote"), "README should not contain amp mcp remote");
-  assert.ok(!readme.includes("amp.mcpServers"), "README should not contain amp.mcpServers");
+  assert.ok(readme.includes('"amp.mcpServers"'), "README Amp MCP fallback must use the amp.mcpServers key");
+  assert.ok(!readme.includes(".agents/mcp.json"), "README should not point Amp at .agents/mcp.json");
+});
+
+test("harness sweep copy: canonical platform count, pricing, brand, REST route, SDK names", () => {
+  const files = ["README.md", "llms.txt", "GEMINI.md", "gemini-extension.json", "package.json"];
+  const banned = [
+    [/\b(16|43)\s+(ad(vertising)?\s+)?platforms\b/i, "stale platform count (use 30+)"],
+    [/\$20\/mo(nth)?\s+to\s+execute/i, "old $20/mo-to-execute framing"],
+    [/\$0\.05\b/, "removed $0.05 price"],
+    [/\bSynter Media\b/, "old brand name"],
+    [/tools\/execute\b/, "unserved REST route (use /api/v1/tools/run)"],
+    [/workspace_id=/, "Python SDK has no workspace_id kwarg"],
+    [/client\.performance\b/, "Python SDK has no client.performance"],
+    [/synter-sdk`\)|cargo add synter-sdk/, "Rust crate is `synter`"],
+    [/ai\.synter:synter-sdk/, "Maven coordinates are ai.syntermedia:synter-sdk"],
+    [/Settings\s*(→|->|>)\s*Connections/i, "Claude uses Settings → Connectors"],
+  ];
+  for (const f of files) {
+    const text = read(f);
+    for (const [pat, why] of banned) {
+      assert.doesNotMatch(text, pat, `${f}: ${why}`);
+    }
+  }
+
+  const gemini = JSON.parse(read("gemini-extension.json"));
+  assert.equal(gemini.contextFileName, "GEMINI.md");
+  assert.ok(fs.existsSync(new URL("../GEMINI.md", import.meta.url)), "GEMINI.md must exist");
+
+  const authLine =
+    "Do not send `Authorization: Bearer syn_...` to the hosted MCP yet; REST/SDKs use Bearer.";
+  for (const f of ["README.md", "llms.txt", "GEMINI.md"]) {
+    assert.ok(read(f).includes(authLine), `${f} missing hosted MCP auth callout`);
+  }
+  assert.ok(read("README.md").includes("/api/v1/tools/run"), "README must document /api/v1/tools/run");
 });
 

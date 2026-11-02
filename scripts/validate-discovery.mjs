@@ -48,7 +48,7 @@ invariant(
 );
 
 const LEAD =
-  "Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.";
+  "Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.";
 
 invariant(
   serverJson.description === LEAD,
