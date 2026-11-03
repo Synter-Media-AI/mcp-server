@@ -94,7 +94,7 @@ test("regression test: no banned phrases in metadata, README, or src tool descri
   }
 
   const readme = read("README.md");
-  for (const pat of [...banned, /\$20\/(?:mo|month)/i]) {
+  for (const pat of [...banned, /\$20\/(?:mo|month)\b(?!\s+minimum)/i]) {
     assert.ok(!pat.test(readme), `README.md contains banned phrase matching ${pat}`);
   }
 

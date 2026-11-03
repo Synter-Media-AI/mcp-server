@@ -23,4 +23,4 @@ Start with read tools for reports. Use `dry_run: true` to preview a write before
 
 ## Pricing
 
-$0.25 per verified write, 0% of ad spend. Reading your own connected accounts is free; paid third-party data and actions use credits. Plans: Free, Solo, Scale, Custom (https://synterai.com/pricing).
+Reading your own ad accounts is free. Actions start at $0.25. Audiences, creative and other add-ons are priced per use. $20/month minimum. 0% of ad spend. Plans: Free, Solo, Scale, Custom (https://synterai.com/pricing).

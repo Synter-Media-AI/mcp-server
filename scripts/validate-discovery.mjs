@@ -176,7 +176,7 @@ for (const relativePath of allMetadataFiles) {
     `${relativePath} must not reference syntermedia.ai; use synterai.com`,
   );
   invariant(
-    !/\$20\/(?:mo|month)/.test(text),
+    !/\$20\/(?:mo|month)\b(?!\s+minimum)/.test(text),
     `${relativePath} must not contain $20/mo Solo pricing copy`,
   );
 }
@@ -203,7 +203,7 @@ for (const relativePath of allMetadataFiles) {
   }
 }
 
-for (const pattern of [...BANNED_PATTERNS, /\$20\/(?:mo|month)/i]) {
+for (const pattern of [...BANNED_PATTERNS, /\$20\/(?:mo|month)\b(?!\s+minimum)/i]) {
   invariant(
     !pattern.test(readme),
     `README.md contains banned phrase matching ${pattern}`,

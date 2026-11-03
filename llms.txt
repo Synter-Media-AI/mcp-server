@@ -42,8 +42,8 @@ Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by 
 - **Demo Mode**: Launch with `--demo` or set `SYNTER_DEMO=true` to explore full reporting and simulation capabilities with zero credentials or API keys.
 
 ## Pricing
-- **Verified Writes**: $0.25 per verified write, 0% of ad spend (media spend billed directly by ad networks).
-- **Reads**: Reading your own connected accounts is free; paid third-party data and actions use credits.
+- **Actions**: start at $0.25. Audiences, creative and other add-ons are priced per use. $20/month minimum. 0% of ad spend (media spend billed directly by ad networks).
+- **Reads**: Reading your own ad accounts is free.
 - **Plans**: Free, Solo, Scale, and Custom. See https://synterai.com/pricing.
 
 ## SDKs

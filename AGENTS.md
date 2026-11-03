@@ -28,4 +28,4 @@ Every tool advertised by `@synterai/mcp-server` includes standard MCP tool annot
 
 ## Pricing
 - **Reads**: $0.00 across all platforms.
-- **Writes**: $0.25 per verified write, 0% of ad spend. Ad platforms bill media spend directly.
+- **Writes**: actions start at $0.25; audiences, creative and other add-ons are priced per use; $20/month minimum. 0% of ad spend. Ad platforms bill media spend directly.
