@@ -1,6 +1,6 @@
 # Smithery configuration for Synter MCP Server
 # Enables 1-click install and discovery across Claude Code, Cursor, Windsurf, and Smithery.ai
-description: "Read all 43 ad platforms from Claude, Cursor or Codex; pay only when Synter acts."
+description: "Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts."
 startCommand:
   type: stdio
   configSchema:

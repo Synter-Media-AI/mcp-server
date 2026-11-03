@@ -48,7 +48,7 @@ invariant(
 );
 
 const LEAD =
-  "Read all 43 ad platforms from Claude, Cursor or Codex; pay only when Synter acts.";
+  "Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts.";
 
 invariant(
   serverJson.description === LEAD,
@@ -183,7 +183,8 @@ for (const relativePath of allMetadataFiles) {
 
 // Banned phrases regression test: ensure no banned marketing phrases re-enter
 const BANNED_PATTERNS = [
-  /\b(20|30)\+\s+(advertising\s+|ad\s+)?platforms/i,
+  /43\s+advertising\s+platforms/i,
+  /43\s+ad\s+platforms/i,
   /free\s+to\s+read/i,
 ];
 

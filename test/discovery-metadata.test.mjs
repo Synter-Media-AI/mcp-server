@@ -6,7 +6,7 @@ import fs from "node:fs";
 const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
 const LEAD =
-  "Read all 43 ad platforms from Claude, Cursor or Codex; pay only when Synter acts.";
+  "Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts.";
 
 test("server.json advertises the hosted remote at https://mcp.synterai.com", () => {
   const server = JSON.parse(read("server.json"));
@@ -68,7 +68,8 @@ test("public metadata has no stale platform counts", () => {
 
 test("regression test: no banned phrases in metadata, README, or src tool descriptions", () => {
   const banned = [
-    /\b(20|30)\+\s+(advertising\s+|ad\s+)?platforms/i,
+    /43\s+advertising\s+platforms/i,
+    /43\s+ad\s+platforms/i,
     /free\s+to\s+read/i,
   ];
 
@@ -115,7 +116,7 @@ test("README documents Add Synter to Amp as built-in and local read-only config"
     "README missing built-in integration line",
   );
   assert.ok(
-    readme.includes("Claude, ChatGPT and other MCP clients, hosted (43 ad platforms, the only Agentic DSP): https://mcp.synterai.com"),
+    readme.includes("Claude, ChatGPT and other MCP clients, hosted (30+ ad platforms, the only Agentic DSP): https://mcp.synterai.com"),
     "README missing hosted line",
   );
   assert.ok(readme.includes("Local read-only (npm package)"), "README missing local read-only label");
@@ -130,7 +131,7 @@ test("README documents Add Synter to Amp as built-in and local read-only config"
 test("harness sweep copy: canonical platform count, pricing, brand, REST route, SDK names", () => {
   const files = ["README.md", "llms.txt", "GEMINI.md", "gemini-extension.json", "package.json"];
   const banned = [
-    [/\b(16|19|20|27|30)\+?\s+(ad(vertising)?\s+)?platforms\b/i, "stale platform count (use 43)"],
+    [/\b(16|43)\s+(ad(vertising)?\s+)?platforms\b/i, "stale platform count (use 30+)"],
     [/\$20\/mo(nth)?\s+to\s+execute/i, "old $20/mo-to-execute framing"],
     [/\$0\.05\b/, "removed $0.05 price"],
     [/\bSynter Media\b/, "old brand name"],

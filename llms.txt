@@ -1,8 +1,8 @@
 # Synter MCP Server
 
-> Read all 43 ad platforms from Claude, Cursor or Codex; pay only when Synter acts.
+> Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts.
 
-Synter (https://synterai.com) gives AI agents reporting and governed campaign changes across 43 ad platforms through the hosted MCP at https://mcp.synterai.com. The `@synterai/mcp-server` npm package runs locally over stdio, with writes enabled by default and an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode.
+Synter (https://synterai.com) gives AI agents reporting and governed campaign changes across 30+ ad platforms through the hosted MCP at https://mcp.synterai.com. The `@synterai/mcp-server` npm package runs locally over stdio, with writes enabled by default and an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode.
 
 - Documentation: https://docs.synterai.com
 - Hosted MCP Server: https://mcp.synterai.com
@@ -34,7 +34,7 @@ Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by 
 - Gemini CLI: `gemini extensions install https://github.com/Synter-Media-AI/mcp-server`.
 
 ## Supported Platforms
-- The hosted MCP covers 43 ad platforms.
+- The hosted MCP covers 30+ ad platforms.
 - The local npm package's `platform` enum includes Google Ads, Meta (Facebook/Instagram), LinkedIn Ads, Microsoft Ads, Reddit Ads, TikTok Ads, X Ads, Pinterest Ads, Snapchat Ads, Spotify Ads, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt.
 
 ## Read-Only and Demo Modes

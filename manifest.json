@@ -3,7 +3,7 @@
   "name": "synter",
   "version": "1.5.0",
   "display_name": "Synter",
-  "description": "Read all 43 ad platforms from Claude, Cursor or Codex; pay only when Synter acts.",
+  "description": "Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts.",
   "author": {
     "name": "Synter",
     "email": "hello@synterai.com",

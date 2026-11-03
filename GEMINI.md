@@ -1,6 +1,6 @@
 # Synter
 
-Synter (https://synterai.com) is an MCP server that lets agents report on and make approved changes to ad campaigns across 43 ad platforms, including Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Amazon, and programmatic DSPs.
+Synter (https://synterai.com) is an MCP server that lets agents report on and make approved changes to ad campaigns across 30+ ad platforms, including Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Amazon, and programmatic DSPs.
 
 ## Connection
 
