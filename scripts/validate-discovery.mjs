@@ -48,7 +48,7 @@ invariant(
 );
 
 const LEAD =
-  "Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.";
+  "Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts.";
 
 invariant(
   serverJson.description === LEAD,
@@ -176,7 +176,7 @@ for (const relativePath of allMetadataFiles) {
     `${relativePath} must not reference syntermedia.ai; use synterai.com`,
   );
   invariant(
-    !/\$20\/(?:mo|month)/.test(text),
+    !/\$20\/(?:mo|month)\b(?!\s+minimum)/.test(text),
     `${relativePath} must not contain $20/mo Solo pricing copy`,
   );
 }
@@ -203,7 +203,7 @@ for (const relativePath of allMetadataFiles) {
   }
 }
 
-for (const pattern of [...BANNED_PATTERNS, /\$20\/(?:mo|month)/i]) {
+for (const pattern of [...BANNED_PATTERNS, /\$20\/(?:mo|month)\b(?!\s+minimum)/i]) {
   invariant(
     !pattern.test(readme),
     `README.md contains banned phrase matching ${pattern}`,

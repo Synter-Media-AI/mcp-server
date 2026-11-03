@@ -1,7 +1,7 @@
 {
   "name": "synter-ads",
   "version": "1.5.0",
-  "description": "Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.",
+  "description": "Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts.",
   "contextFileName": "GEMINI.md",
   "mcpServers": {
     "synter-ads": {

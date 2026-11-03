@@ -6,7 +6,7 @@ import fs from "node:fs";
 const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
 const LEAD =
-  "Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.";
+  "Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts.";
 
 test("server.json advertises the hosted remote at https://mcp.synterai.com", () => {
   const server = JSON.parse(read("server.json"));
@@ -94,7 +94,7 @@ test("regression test: no banned phrases in metadata, README, or src tool descri
   }
 
   const readme = read("README.md");
-  for (const pat of [...banned, /\$20\/(?:mo|month)/i]) {
+  for (const pat of [...banned, /\$20\/(?:mo|month)\b(?!\s+minimum)/i]) {
     assert.ok(!pat.test(readme), `README.md contains banned phrase matching ${pat}`);
   }
 

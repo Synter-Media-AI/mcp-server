@@ -3,15 +3,44 @@
 [![npm version](https://img.shields.io/npm/v/@synterai/mcp-server.svg)](https://www.npmjs.com/package/@synterai/mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.
+### Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts.
 
-Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.
+Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts.
 
 Synter is an open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server for ad operations from Claude, ChatGPT, Cursor, Codex, and other MCP clients. Writes are enabled by default across 30+ ad platforms, with an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode.
 
-Pricing is $0.25 per verified write, 0% of ad spend; MCP reads are free. Use the hosted endpoint at `https://mcp.synterai.com` with Streamable HTTP and OAuth 2.1 browser sign-in. No API key is needed for hosted access.
+Pricing: Reading your own ad accounts is free. Actions start at $0.25. Audiences, creative and other add-ons are priced per use. $20/month minimum. 0% of ad spend. Use the hosted endpoint at `https://mcp.synterai.com` with Streamable HTTP and OAuth 2.1 browser sign-in. No API key is needed for hosted access.
 
 > **Note:** [`Synter-Media-AI/plugin`](https://github.com/Synter-Media-AI/plugin) is the canonical installable Claude plugin repo. The `.claude-plugin/` copy in this repo is not the install source.
+
+
+## Quickstart: a → b → c
+
+**Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts.** Reading your own ad accounts is free. Actions start at $0.25. Audiences, creative and other add-ons are priced per use. $20/month minimum.
+
+1. **Create an account:** [synterai.com/sign-up](https://synterai.com/sign-up) (self-serve, no access review).
+2. **Connect an ad account:** [synterai.com/settings/credentials](https://synterai.com/settings/credentials), or ask your agent to call `get_connect_link` and open the URL it returns.
+3. **Connect your own agent** to `https://mcp.synterai.com` (below), **or use Synter** at [synterai.com](https://synterai.com).
+
+First prompt (read-only):
+
+> "Audit my connected ad accounts for wasted spend — read-only."
+
+One-line installs:
+
+```bash
+claude mcp add --transport http synter-ads https://mcp.synterai.com   # Claude Code
+codex mcp add synter-ads --url https://mcp.synterai.com               # Codex, then: codex mcp login synter-ads
+```
+
+Cursor and VS Code: use the one-click buttons below.
+
+**Grok (xAI API remote MCP).** The xAI API authenticates remote MCP servers with headers, not browser OAuth, so use an API key from [synterai.com/developer](https://synterai.com/developer) kept in an environment variable:
+
+```python
+tools=[{"type": "mcp", "server_url": "https://mcp.synterai.com", "server_label": "synter-ads",
+        "headers": {"X-Synter-Key": os.environ["SYNTER_API_KEY"]}}]
+```
 
 ---
 
@@ -194,7 +223,7 @@ See [integrations](https://synterai.com/integrations) for platform details. For 
 
 ## Pricing and safety
 
-- **Verified Writes:** $0.25 per verified write, 0% of ad spend. Ad platforms bill media spend directly.
+- **Actions:** start at $0.25. Audiences, creative and other add-ons are priced per use. $20/month minimum. 0% of ad spend; ad platforms bill media spend directly.
 - **Reads:** MCP reads (reporting, audits, attribution) are free.
 - **Plans:** Free, Solo, Scale, and Custom. Scale ($500/mo) adds 5 seats, multi-workspace isolation, dedicated concurrency, and team governance. See [pricing](https://synterai.com/pricing) for full plan details.
 

@@ -1,6 +1,6 @@
 # Synter MCP Server
 
-> Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.
+> Execute campaigns on 30+ ad platforms from Claude, Cursor or Codex; pay only when Synter acts.
 
 Synter (https://synterai.com) gives AI agents reporting and governed campaign changes across 30+ ad platforms through the hosted MCP at https://mcp.synterai.com. The `@synterai/mcp-server` npm package runs locally over stdio, with writes enabled by default and an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode.
 
@@ -42,8 +42,8 @@ Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by 
 - **Demo Mode**: Launch with `--demo` or set `SYNTER_DEMO=true` to explore full reporting and simulation capabilities with zero credentials or API keys.
 
 ## Pricing
-- **Verified Writes**: $0.25 per verified write, 0% of ad spend (media spend billed directly by ad networks).
-- **Reads**: MCP reads are free.
+- **Actions**: start at $0.25. Audiences, creative and other add-ons are priced per use. $20/month minimum. 0% of ad spend (media spend billed directly by ad networks).
+- **Reads**: Reading your own ad accounts is free.
 - **Plans**: Free, Solo, Scale, and Custom. See https://synterai.com/pricing.
 
 ## SDKs
