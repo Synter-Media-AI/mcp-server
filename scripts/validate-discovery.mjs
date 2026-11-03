@@ -48,7 +48,7 @@ invariant(
 );
 
 const LEAD =
-  "Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.";
+  "Read all 43 ad platforms from Claude, Cursor or Codex; pay only when Synter acts.";
 
 invariant(
   serverJson.description === LEAD,
@@ -183,8 +183,7 @@ for (const relativePath of allMetadataFiles) {
 
 // Banned phrases regression test: ensure no banned marketing phrases re-enter
 const BANNED_PATTERNS = [
-  /43\s+advertising\s+platforms/i,
-  /43\s+ad\s+platforms/i,
+  /\b(20|30)\+\s+(advertising\s+|ad\s+)?platforms/i,
   /free\s+to\s+read/i,
 ];
 

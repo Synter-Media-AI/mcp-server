@@ -1,6 +1,6 @@
 # Synter
 
-Synter (https://synterai.com) is an MCP server that lets agents report on and make approved changes to ad campaigns across 30+ ad platforms, including Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Amazon, and programmatic DSPs.
+Synter (https://synterai.com) is an MCP server that lets agents report on and make approved changes to ad campaigns across 43 ad platforms, including Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Amazon, and programmatic DSPs.
 
 ## Connection
 
@@ -23,4 +23,4 @@ Start with read tools for reports. Use `dry_run: true` to preview a write before
 
 ## Pricing
 
-$0.25 per verified write, 0% of ad spend. MCP reads are free. Plans: Free, Solo, Scale, Custom (https://synterai.com/pricing).
+$0.25 per verified write, 0% of ad spend. Reading your own connected accounts is free; paid third-party data and actions use credits. Plans: Free, Solo, Scale, Custom (https://synterai.com/pricing).
