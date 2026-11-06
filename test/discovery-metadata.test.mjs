@@ -104,6 +104,16 @@ test("regression test: no banned phrases in metadata, README, or src tool descri
   }
 });
 
+test("package.json SDK range matches the lockfile 1.x install", () => {
+  const pkg = JSON.parse(read("package.json"));
+  const lock = JSON.parse(read("package-lock.json"));
+  const name = "@modelcontextprotocol/sdk";
+  const range = pkg.dependencies[name];
+  assert.equal(range, lock.packages[""].dependencies[name]);
+  assert.match(range, /^\^1\./);
+  assert.match(lock.packages[`node_modules/${name}`].version, /^1\.\d+\.\d+/);
+});
+
 test("validate-discovery passes", () => {
   execFileSync(process.execPath, [new URL("../scripts/validate-discovery.mjs", import.meta.url).pathname]);
 });

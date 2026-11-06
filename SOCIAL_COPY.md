@@ -1,263 +1,134 @@
-# Social Copy for Synter MCP Server Launch
+# Social drafts for @synterai/mcp-server
 
-## X/Twitter
+Drafts only. They are not scheduled. Facts match the README: hosted MCP at `https://mcp.synterai.com`, public coverage of 30+ ad platforms, reads free, verified writes $0.25 each and 0% of ad spend.
 
-### Main Launch Tweet
+## X
+
+### Launch
+
 ```
-The MCP extension Claude doesn't want you to use.
+Synter MCP is open source.
 
-Because once you install it, your AI agent can spend real money.
+Ad performance reports and approved campaign changes across 30+ ad platforms, from Claude, Cursor, ChatGPT, and other MCP clients.
 
-Create campaigns. Adjust budgets. Pause losers. Generate creatives.
+Reads are free. Verified writes are $0.25, 0% of ad spend.
 
-Across Google, Meta, LinkedIn, Reddit, TikTok—all through conversation.
-
-github.com/Synter-Media-AI/mcp-server
-```
-
-### Thread Version
-```
-1/ I just open-sourced the first MCP server that gives AI agents a credit card.
-
-Your Claude/Cursor/Amp can now:
-- Create ad campaigns
-- Adjust budgets
-- Add keywords
-- Generate creatives
-- Pull performance data
-
-All through natural conversation.
-
-2/ "Show me my Google Ads campaigns"
-
-"Pause the one with the lowest ROAS"
-
-"Create a search campaign for 'project management software' with $50/day budget"
-
-Your agent just became a media buyer.
-
-3/ Works across:
-• Google Ads
-• Meta (Facebook/Instagram)
-• LinkedIn
-• Microsoft (Bing)
-• Reddit
-• TikTok
-• X
-• Amazon
-
-One MCP server. Every platform.
-
-4/ Fair warning: your agent will be able to spend real money.
-
-We built in confirmations for destructive actions.
-
-But still—maybe don't give this to an agent you just met.
-
-5/ Get started in 2 minutes:
-
-1. Get API key at syntermedia.ai/developer
-2. Add to Claude Desktop config
-3. Ask "show me my campaigns"
-
-That's it.
-
-github.com/Synter-Media-AI/mcp-server
+https://github.com/Synter-Media-AI/mcp-server
+https://mcp.synterai.com
 ```
 
-### Short Versions
+### Thread
+
 ```
-Your AI agent can now spend real money.
+1/ Synter is an open-source MCP server for paid media reporting and campaign changes.
 
-The Synter MCP server lets Claude create campaigns, adjust budgets, and manage ads across Google, Meta, LinkedIn, Reddit, TikTok.
+Hosted: https://mcp.synterai.com (OAuth)
+Local: npx -y @synterai/mcp-server
 
-The first MCP extension with a credit card.
+2/ Ask for a report first.
 
-github.com/Synter-Media-AI/mcp-server
+"Show this week's Google Ads spend, clicks, and conversions."
+"How does Meta pacing look against budget?"
+
+Reads are free.
+
+3/ Writes are explicit.
+
+create_search_campaign, pause_campaign, and update_campaign_budget accept dry_run so you can preview the payload before anything changes. A verified write is $0.25. Ad platforms bill media spend themselves.
+
+4/ The local platform enum includes Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt. Hosted coverage is 30+ ad platforms.
+
+5/ Docs: https://docs.synterai.com
+Sign up: https://synterai.com/sign-up
+Source: https://github.com/Synter-Media-AI/mcp-server
+```
+
+### Short
+
+```
+One MCP server for cross-platform ad reports.
+
+30+ ad platforms. Reads free. $0.25 per verified write, 0% of ad spend.
+
+npx -y @synterai/mcp-server
+https://mcp.synterai.com
 ```
 
 ```
-"Pause my worst performing campaign"
+"What did each channel spend this week, and which campaigns are off pace?"
 
-*Claude pauses it*
+That question is a read. Synter returns it from the connected ad accounts. Preview any change with dry_run before you run it.
 
-"Create a new search campaign for $25/day"
-
-*Claude creates it*
-
-This is what happens when you give AI agents access to your ad accounts.
-
-github.com/Synter-Media-AI/mcp-server
+https://synterai.com/mcp
 ```
-
-```
-MCP servers that read files: 😴
-MCP servers that search the web: 😴
-MCP servers that spend your money: 🔥
-
-Just shipped the Synter MCP server.
-
-Your AI agent is now a media buyer.
-```
-
-### Engagement Bait
-```
-AI agents managing $10k/month ad budgets.
-
-What could go wrong?
-
-(actually it works really well)
-```
-
-```
-POV: You tell Claude to "optimize my ad spend" and it actually does it.
-
-Across Google, Meta, LinkedIn, Reddit, TikTok.
-
-In one conversation.
-
-This is the future of PPC.
-```
-
----
 
 ## LinkedIn
 
-### Professional Announcement
 ```
-I just open-sourced something that might change how we think about AI agents.
+We released the Synter MCP server for teams who report on paid media across more than one ad platform.
 
-The Synter MCP Server gives Claude, Cursor, and other AI assistants the ability to manage advertising campaigns across Google, Meta, LinkedIn, Microsoft, Reddit, and TikTok.
+It is an open-source Model Context Protocol server. Claude, Cursor, ChatGPT, Codex, and other MCP clients can pull performance, daily spend, and pacing, and can apply campaign changes after a dry-run preview.
 
-Not just read data. Actually manage them.
+Public coverage is 30+ ad platforms. The local package's platform enum includes Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt.
 
-Create campaigns. Adjust budgets. Add keywords. Pause underperformers. Generate creatives.
+Pricing is simple: MCP reads are free. A verified write is $0.25, and Synter takes 0% of ad spend. The ad platform bills the media.
 
-All through natural conversation.
-
-This is the first MCP extension that gives AI agents access to real ad budgets.
-
-A few things I learned building this:
-
-1. The hard part isn't the AI—it's the APIs. Each ad platform has its own quirks, rate limits, and authentication flows.
-
-2. Trust requires transparency. Every destructive action gets flagged. The agent explains what it's about to do before doing it.
-
-3. Natural language is the new UI. "Pause my worst campaign" is easier than clicking through 5 screens.
-
-We're entering an era where AI agents don't just advise—they execute.
-
-For marketers spending hours in ad dashboards, this is a glimpse of what's coming.
-
-Link in comments.
-
-#AI #Marketing #Advertising #MCP #Claude
+Hosted endpoint (OAuth): https://mcp.synterai.com
+Source: https://github.com/Synter-Media-AI/mcp-server
+Docs: https://docs.synterai.com
 ```
 
-### Shorter LinkedIn
-```
-Your AI assistant can now manage your ad campaigns.
-
-I just released the Synter MCP Server—an open-source extension that lets Claude, Cursor, and other AI tools:
-
-• Create campaigns across Google, Meta, LinkedIn, Reddit, TikTok
-• Adjust budgets and bids
-• Add/remove keywords
-• Generate ad creatives
-• Pull performance reports
-
-All through natural conversation.
-
-"Show me my worst performing campaign and pause it."
-
-Done.
-
-This is the first MCP server that gives AI agents real spending power.
-
-Fair warning: maybe don't give this to an agent you just met.
-
-GitHub link in comments.
-```
-
-### Thought Leadership Angle
-```
-Hot take: The biggest unlock for AI agents isn't reasoning—it's access.
-
-We've been so focused on making models smarter that we forgot they still can't DO anything.
-
-They can write code but not run it.
-They can suggest optimizations but not implement them.
-They can analyze data but not act on it.
-
-Today I'm releasing something that changes that for advertising.
-
-The Synter MCP Server lets AI agents actually manage ad campaigns. Not suggest. Manage.
-
-Create. Pause. Adjust. Optimize.
-
-Across every major platform.
-
-This is what happens when you give AI a credit card.
-
-The question isn't whether AI will manage our marketing budgets.
-
-It's whether we're ready for it.
-```
-
----
-
-## Product Hunt Tagline Options
+### Shorter
 
 ```
-The MCP extension Claude doesn't want you to use
+Synter MCP: ad reports and approved campaign changes across 30+ ad platforms.
+
+Connect https://mcp.synterai.com, or run npx -y @synterai/mcp-server.
+
+Reads are free. Verified writes are $0.25 each, 0% of ad spend. Use dry_run before a live change.
+
+https://github.com/Synter-Media-AI/mcp-server
+```
+
+## Product Hunt taglines
+
+Each line is under 60 characters.
+
+```
+Ad reports and approved changes across 30+ platforms
 ```
 
 ```
-Give your AI agent a credit card (for ads)
+Open-source MCP server for cross-platform ad reports
 ```
 
 ```
-Your AI assistant is now a media buyer
+Reports and campaign changes for 30+ ad platforms
+```
+
+## Hacker News titles
+
+```
+Show HN: Synter – open-source MCP server for ad reports across 30+ platforms
 ```
 
 ```
-Manage ads across 16 ad platforms with natural language
+Show HN: MCP server for cross-platform ad reporting and campaign changes
 ```
 
----
+## Facts to keep
 
-## Hacker News Title Options
-
-```
-Show HN: MCP server that lets AI agents manage real ad campaigns
-```
-
-```
-Show HN: I gave Claude access to my ad budgets (open source)
-```
-
-```
-Show HN: Synter – MCP server for AI-powered advertising management
-```
-
----
-
-## Key Messaging Points
-
-**The hook:** AI agents can now spend real money
-
-**The fear:** What happens when AI has a credit card?
-
-**The promise:** Manage 16 ad platforms through conversation
-
-**The proof:** Open source, see exactly what it does
-
-**The CTA:** Get your API key at syntermedia.ai/developer
-
----
+- Package: `@synterai/mcp-server` (MIT)
+- Hosted MCP: `https://mcp.synterai.com`
+- Docs: `https://docs.synterai.com`
+- Keys: `https://synterai.com/developer`
+- Pricing page: `https://synterai.com/pricing`
+- Coverage line: 30+ ad platforms
+- Price line: $0.25 per verified write, 0% of ad spend. MCP reads are free.
+- Preview a write with `dry_run: true` before running it live.
 
 ## Hashtags
 
-X: #MCP #Claude #AI #Advertising #GoogleAds #Marketing #OpenSource
+X: #MCP #Advertising #GoogleAds #Marketing #OpenSource
 
-LinkedIn: #AI #Marketing #Advertising #DigitalMarketing #MarTech #Claude #OpenSource #MCP
+LinkedIn: #AI #Marketing #Advertising #DigitalMarketing #MarTech #OpenSource #MCP

@@ -37,6 +37,27 @@ invariant(
   "package-lock.json package versions must match package.json",
 );
 
+// package.json used to say ^0.6.0 while the lockfile root and the installed
+// tarball were already 1.32.1. `npm install` then resolves a different major
+// than `npm ci`. Keep the declared range, the lockfile root range, and the
+// resolved 1.x tarball in agreement.
+const SDK_NAME = "@modelcontextprotocol/sdk";
+const sdkRange = packageJson.dependencies?.[SDK_NAME];
+const lockSdkRange = packageLock.packages?.[""]?.dependencies?.[SDK_NAME];
+const resolvedSdk = packageLock.packages?.[`node_modules/${SDK_NAME}`]?.version;
+invariant(
+  typeof sdkRange === "string" && sdkRange === lockSdkRange,
+  `package.json ${SDK_NAME} range ${JSON.stringify(sdkRange)} must equal the lockfile root range ${JSON.stringify(lockSdkRange)}`,
+);
+invariant(
+  typeof sdkRange === "string" && /^\^1\./.test(sdkRange),
+  `package.json ${SDK_NAME} range must be a 1.x caret (^1.), got ${JSON.stringify(sdkRange)}`,
+);
+invariant(
+  typeof resolvedSdk === "string" && /^1\.\d+\.\d+/.test(resolvedSdk),
+  `lockfile must resolve ${SDK_NAME} to 1.x, got ${JSON.stringify(resolvedSdk)}`,
+);
+
 invariant(
   serverJson.name === packageJson.mcpName,
   `server.json name ${serverJson.name} must match package.json mcpName ${packageJson.mcpName}`,
