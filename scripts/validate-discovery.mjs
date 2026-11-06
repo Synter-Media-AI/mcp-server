@@ -20,6 +20,26 @@ function invariant(condition, message) {
   }
 }
 
+// A caret or tilde on major 1 stays below 2.0.0. An alternative such as
+// "^1.32.1 || ^2.0.0" still matches a "^1." prefix check, and a fresh install
+// can then select 2.x. Accept only ranges where every alternative is 1.x-only.
+export function sdkRangeAllowsOnly1x(range) {
+  if (typeof range !== "string") return false;
+  const alternatives = range.split("||").map((part) => part.trim()).filter(Boolean);
+  if (alternatives.length === 0) return false;
+  return alternatives.every(is1xOnlyRange);
+}
+
+function is1xOnlyRange(alt) {
+  if (/^\^1(\.\d+){0,2}$/.test(alt)) return true;
+  if (/^~1(\.\d+){0,2}$/.test(alt)) return true;
+  if (/^1\.\d+\.\d+$/.test(alt)) return true;
+  if (/^1(\.[xX*]){1,2}$/.test(alt)) return true;
+  if (/^1\.\d+\.[xX*]$/.test(alt)) return true;
+  if (/^>=1(\.\d+){0,2} <2(\.0){0,2}$/.test(alt)) return true;
+  return false;
+}
+
 const packageJson = readJson("package.json");
 const serverJson = readJson("server.json");
 const manifestJson = readJson("manifest.json");
@@ -50,8 +70,8 @@ invariant(
   `package.json ${SDK_NAME} range ${JSON.stringify(sdkRange)} must equal the lockfile root range ${JSON.stringify(lockSdkRange)}`,
 );
 invariant(
-  typeof sdkRange === "string" && /^\^1\./.test(sdkRange),
-  `package.json ${SDK_NAME} range must be a 1.x caret (^1.), got ${JSON.stringify(sdkRange)}`,
+  sdkRangeAllowsOnly1x(sdkRange),
+  `package.json ${SDK_NAME} range must be 1.x only and must not permit 2.x (including "||" alternatives), got ${JSON.stringify(sdkRange)}`,
 );
 invariant(
   typeof resolvedSdk === "string" && /^1\.\d+\.\d+/.test(resolvedSdk),

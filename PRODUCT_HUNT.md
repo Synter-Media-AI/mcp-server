@@ -19,9 +19,9 @@ Synter MCP
 ### Short description
 
 ```text
-Synter is an open-source MCP server for ad performance reports and approved campaign changes across 30+ ad platforms. Connect Claude, Cursor, ChatGPT, or any MCP client to https://mcp.synterai.com (OAuth), or run npx -y @synterai/mcp-server locally.
+Synter is an open-source MCP server for ad performance reports and approved campaign changes across 30+ ad platforms. Connect Claude, Cursor, ChatGPT, or any MCP client to https://mcp.synterai.com (OAuth), or run npx -y @synterai/mcp-server locally with SYNTER_API_KEY=syn_your_key_here.
 
-MCP reads are free. A verified write is $0.25, and Synter takes 0% of ad spend. Ad platforms bill media spend directly. Pass dry_run to preview a change before it is applied.
+MCP reads are free. A verified write is $0.25, and Synter takes 0% of ad spend. Ad platforms bill media spend directly. On the local server, dry_run returns a sandbox simulation and does not change the account.
 ```
 
 ### Categories
@@ -40,8 +40,8 @@ Developer Tools, Artificial Intelligence, Marketing.
 
 ## What to show
 
-1. **Reports.** `list_campaigns`, `get_performance`, `get_daily_spend`, and `pacing_report` for one platform per call. `platform` is required.
-2. **Previews.** `dry_run: true` on campaign create, pause, budget update, and negative keywords. A preview does not change the ad account.
+1. **Reports.** `list_campaigns`, `get_performance`, and `get_daily_spend` each require `platform` and report on that one platform. `pacing_report` takes no `platform` argument and reports across the workspace’s connected platforms.
+2. **Local dry run.** `dry_run: true` on campaign create, pause, budget update, and negative keywords returns a sandbox simulation. It does not change the ad account, and the sample budget or status in that result is not a live readback.
 3. **Writes when asked.** Search, Display, Performance Max, Meta, LinkedIn, and Reddit create tools, plus `pause_campaign`, `update_campaign_budget`, keywords, and audience sync.
 4. **Local safety switches.** `--read-only` / `SYNTER_READ_ONLY=true` removes mutating tools. `--demo` / `SYNTER_DEMO=true` returns sandbox data with no API key.
 
@@ -71,9 +71,9 @@ Claude Code:
 
 claude mcp add --transport http synter-ads https://mcp.synterai.com
 
-Local stdio:
+Local stdio (connected-account data needs a key from https://synterai.com/developer):
 
-npx -y @synterai/mcp-server
+SYNTER_API_KEY=syn_your_key_here npx -y @synterai/mcp-server
 
 Reads (performance, daily spend, pacing, tracking checks) are free. A verified write is $0.25, and we take 0% of ad spend. Use dry_run before a live change. Pass --read-only to expose only read tools, or --demo to try the sandbox with no API key.
 

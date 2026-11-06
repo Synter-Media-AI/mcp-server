@@ -134,6 +134,15 @@ Bump every version the validator compares, in one commit, before tagging:
 - `plugin.json` and `.claude-plugin/plugin.json` `version`
 - `gemini-extension.json` `version`
 - `src/index.ts` `VERSION`
+- `package-lock.json` top-level `version` and `packages[""].version`
+
+After those fields match, refresh the lockfile before the release checks. `npm ci` and `validate-discovery` compare both lockfile versions to `package.json`:
+
+```bash
+npm install --package-lock-only
+```
+
+That rewrites the top-level `version` and `packages[""].version`. If you edit the lockfile by hand, change both of those fields and leave dependency resolutions alone unless a dependency range changed.
 
 Patch for fixes, minor for new tools, major for breaking tool or config changes. Then `npm test`, `npm run validate:discovery`, npm publish, and only then `git tag vX.Y.Z && git push origin vX.Y.Z`.
 

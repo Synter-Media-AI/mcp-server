@@ -34,7 +34,7 @@ Reads are free.
 
 3/ Writes are explicit.
 
-create_search_campaign, pause_campaign, and update_campaign_budget accept dry_run so you can preview the payload before anything changes. A verified write is $0.25. Ad platforms bill media spend themselves.
+For local use, create_search_campaign, pause_campaign, and update_campaign_budget accept dry_run to return a sandbox simulation without changing a live account. A verified write is $0.25. Ad platforms bill media spend themselves.
 
 4/ The local platform enum includes Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt. Hosted coverage is 30+ ad platforms.
 
@@ -57,7 +57,7 @@ https://mcp.synterai.com
 ```
 "What did each channel spend this week, and which campaigns are off pace?"
 
-That question is a read. Synter returns it from the connected ad accounts. Preview any change with dry_run before you run it.
+That question is a read. Synter returns it from the connected ad accounts. On the local server, dry_run returns a sandbox simulation and does not change the account.
 
 https://synterai.com/mcp
 ```
@@ -67,7 +67,7 @@ https://synterai.com/mcp
 ```
 We released the Synter MCP server for teams who report on paid media across more than one ad platform.
 
-It is an open-source Model Context Protocol server. Claude, Cursor, ChatGPT, Codex, and other MCP clients can pull performance, daily spend, and pacing, and can apply campaign changes after a dry-run preview.
+It is an open-source Model Context Protocol server. Claude, Cursor, ChatGPT, Codex, and other MCP clients can pull performance, daily spend, and pacing. On the local server, dry_run returns a sandbox simulation before a live change.
 
 Public coverage is 30+ ad platforms. The local package's platform enum includes Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt.
 
@@ -125,7 +125,7 @@ Show HN: MCP server for cross-platform ad reporting and campaign changes
 - Pricing page: `https://synterai.com/pricing`
 - Coverage line: 30+ ad platforms
 - Price line: $0.25 per verified write, 0% of ad spend. MCP reads are free.
-- Preview a write with `dry_run: true` before running it live.
+- Local `dry_run: true` returns a sandbox simulation. It does not change a live account and it does not echo the full submitted payload.
 
 ## Hashtags
 

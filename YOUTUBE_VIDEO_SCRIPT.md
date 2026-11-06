@@ -29,7 +29,8 @@ Draft. Record only against a demo ad account. Title and narration stay on report
 
 1. Add `https://mcp.synterai.com`.
 2. Complete the OAuth sign-in.
-3. Optional second shot: local stdio config for clients that cannot use HTTP.
+3. Connect Google Ads at https://synterai.com/integrations. Connector sign-in does not connect the ad account. The report in the next scene needs that connection.
+4. Optional second shot: local stdio config for clients that cannot use HTTP.
 
 ```json
 {
@@ -49,7 +50,7 @@ Keys are created at https://synterai.com/developer. Say that on screen. Do not s
 
 **Voiceover:**
 
-> The hosted server is mcp.synterai.com. Sign in in the browser.
+> The hosted server is mcp.synterai.com. Sign in in the browser, then connect Google Ads at synterai.com/integrations. The connector login and the ad-account connection are two steps.
 >
 > If your client only speaks stdio, run the npm package and set SYNTER_API_KEY. There is also a --demo flag that returns sandbox data with no key, and a --read-only flag that removes write tools.
 
@@ -57,13 +58,13 @@ Keys are created at https://synterai.com/developer. Say that on screen. Do not s
 
 **Visual:** A new chat.
 
-**Action:** Ask: “List my Google Ads campaigns and their spend, clicks, and conversions for the last 7 days.” Wait for `list_campaigns` or `get_performance`. Show the table.
+**Action:** Ask: “Show Google Ads spend, clicks, and conversions for the last 7 days.” Wait for `get_performance` with `platform: "google"` and `date_range: "LAST_7_DAYS"`. Show that table. Optionally call `list_campaigns` to list names and status. `list_campaigns` has no date-range input.
 
 **Voiceover:**
 
-> Start with a read. The agent calls list_campaigns or get_performance for one platform. Platform is required; one call does not merge every channel.
+> Use get_performance for a dated report. Pass platform google and date_range LAST_7_DAYS. That returns impressions, clicks, spend, conversions, and ROAS for the window.
 >
-> Impressions, clicks, spend, conversions, and ROAS come back from the connected account. That read is free.
+> list_campaigns only lists campaigns. It does not take a date range, so it cannot answer “last 7 days.” The read is free, and it needs the Google Ads account connected in Synter.
 
 ## Scene 3 — Daily spend and pacing (1:40–2:10)
 
@@ -77,15 +78,15 @@ Keys are created at https://synterai.com/developer. Say that on screen. Do not s
 
 **Action:**
 
-1. Ask for a pause or a budget change with `dry_run: true`.
-2. Show the preview payload and that the live account did not change.
+1. Ask for a pause or a budget change with `dry_run: true` on the local stdio server.
+2. Show the sandbox result (`sandbox: true`, `simulated: true`). Previous budget and previous status in that result are sample values. They are not a live readback, and the call does not reach the ad account.
 3. Only if the demo account is disposable: run the same call without dry_run, then read the campaign back with `list_campaigns`.
 
 **Voiceover:**
 
-> A write is a separate step. dry_run previews the payload and does not change the account.
+> On the local server, dry_run returns a sandbox simulation. It does not change the account, and it does not check the live campaign or server-side rules.
 >
-> When you run it live, a verified write is 25 cents. The ad platform still bills the media spend. Confirm the account, the campaign, and the budget before you leave dry_run.
+> A live write is a separate call. A verified write is 25 cents. The ad platform bills the media spend. Confirm the account, the campaign, and the budget before you run the call without dry_run.
 
 ## Scene 5 — Where it runs (2:45–3:10)
 
