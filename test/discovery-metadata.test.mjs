@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
+import { sdkRangeAllowsOnly1x } from "../scripts/validate-discovery.mjs";
 
 const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
@@ -102,6 +103,29 @@ test("regression test: no banned phrases in metadata, README, or src tool descri
   for (const pat of [...banned, /only\s+agentic\s+dsp/i]) {
     assert.ok(!pat.test(srcIndex), `src/index.ts contains banned phrase matching ${pat}`);
   }
+});
+
+test("package.json SDK range matches the lockfile 1.x install", () => {
+  const pkg = JSON.parse(read("package.json"));
+  const lock = JSON.parse(read("package-lock.json"));
+  const name = "@modelcontextprotocol/sdk";
+  const range = pkg.dependencies[name];
+  assert.equal(range, lock.packages[""].dependencies[name]);
+  assert.equal(sdkRangeAllowsOnly1x(range), true);
+  assert.match(lock.packages[`node_modules/${name}`].version, /^1\.\d+\.\d+/);
+});
+
+test("SDK range check rejects ranges that permit 2.x", () => {
+  assert.equal(sdkRangeAllowsOnly1x("^1.32.1"), true);
+  assert.equal(sdkRangeAllowsOnly1x("^1.32.1 || ^1.40.0"), true);
+  assert.equal(sdkRangeAllowsOnly1x("~1.32.1"), true);
+  assert.equal(sdkRangeAllowsOnly1x("1.32.1"), true);
+  assert.equal(sdkRangeAllowsOnly1x(">=1.32.1 <2.0.0"), true);
+  assert.equal(sdkRangeAllowsOnly1x("^1.32.1 || ^2.0.0"), false);
+  assert.equal(sdkRangeAllowsOnly1x("^2.0.0"), false);
+  assert.equal(sdkRangeAllowsOnly1x(">=1.32.1"), false);
+  assert.equal(sdkRangeAllowsOnly1x("*"), false);
+  assert.equal(sdkRangeAllowsOnly1x("^0.6.0"), false);
 });
 
 test("validate-discovery passes", () => {

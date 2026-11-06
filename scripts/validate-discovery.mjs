@@ -20,6 +20,26 @@ function invariant(condition, message) {
   }
 }
 
+// A caret or tilde on major 1 stays below 2.0.0. An alternative such as
+// "^1.32.1 || ^2.0.0" still matches a "^1." prefix check, and a fresh install
+// can then select 2.x. Accept only ranges where every alternative is 1.x-only.
+export function sdkRangeAllowsOnly1x(range) {
+  if (typeof range !== "string") return false;
+  const alternatives = range.split("||").map((part) => part.trim()).filter(Boolean);
+  if (alternatives.length === 0) return false;
+  return alternatives.every(is1xOnlyRange);
+}
+
+function is1xOnlyRange(alt) {
+  if (/^\^1(\.\d+){0,2}$/.test(alt)) return true;
+  if (/^~1(\.\d+){0,2}$/.test(alt)) return true;
+  if (/^1\.\d+\.\d+$/.test(alt)) return true;
+  if (/^1(\.[xX*]){1,2}$/.test(alt)) return true;
+  if (/^1\.\d+\.[xX*]$/.test(alt)) return true;
+  if (/^>=1(\.\d+){0,2} <2(\.0){0,2}$/.test(alt)) return true;
+  return false;
+}
+
 const packageJson = readJson("package.json");
 const serverJson = readJson("server.json");
 const manifestJson = readJson("manifest.json");
@@ -35,6 +55,27 @@ const packageLock = readJson("package-lock.json");
 invariant(
   packageLock.version === packageJson.version && packageLock.packages?.[""]?.version === packageJson.version,
   "package-lock.json package versions must match package.json",
+);
+
+// package.json used to say ^0.6.0 while the lockfile root and the installed
+// tarball were already 1.32.1. `npm install` then resolves a different major
+// than `npm ci`. Keep the declared range, the lockfile root range, and the
+// resolved 1.x tarball in agreement.
+const SDK_NAME = "@modelcontextprotocol/sdk";
+const sdkRange = packageJson.dependencies?.[SDK_NAME];
+const lockSdkRange = packageLock.packages?.[""]?.dependencies?.[SDK_NAME];
+const resolvedSdk = packageLock.packages?.[`node_modules/${SDK_NAME}`]?.version;
+invariant(
+  typeof sdkRange === "string" && sdkRange === lockSdkRange,
+  `package.json ${SDK_NAME} range ${JSON.stringify(sdkRange)} must equal the lockfile root range ${JSON.stringify(lockSdkRange)}`,
+);
+invariant(
+  sdkRangeAllowsOnly1x(sdkRange),
+  `package.json ${SDK_NAME} range must be 1.x only and must not permit 2.x (including "||" alternatives), got ${JSON.stringify(sdkRange)}`,
+);
+invariant(
+  typeof resolvedSdk === "string" && /^1\.\d+\.\d+/.test(resolvedSdk),
+  `lockfile must resolve ${SDK_NAME} to 1.x, got ${JSON.stringify(resolvedSdk)}`,
 );
 
 invariant(
