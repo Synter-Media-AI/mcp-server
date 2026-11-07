@@ -56,7 +56,7 @@ Synter charges **0% of ad spend** (ad platforms bill media directly) and **$0.00
 
 ## 5. Coding Agent Tool Routing, REST Contract & Parameter Reference
 
-Always call dedicated first-class read tools instead of routing read operations through `execute` / `run_action`:
+Prefer dedicated first-class read tools when available, and use documented `execute` / `run_action` scripts when no dedicated read tool exists:
 
 | Task | Canonical Tool / Endpoint | Exact Parameters & Response Contract |
 | :--- | :--- | :--- |
