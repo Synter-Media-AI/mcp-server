@@ -1,7 +1,7 @@
 {
   "name": "synter",
-  "description": "Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.",
-  "version": "1.5.0",
+  "description": "The AI Agent Operator for Ads. Manage campaigns, analyze performance, research competitors, and generate creatives across Google Ads, Meta, LinkedIn, Reddit, Microsoft Ads, and more — all from Claude Code.",
+  "version": "1.4.6",
   "author": {
     "name": "Synter",
     "url": "https://synterai.com"
