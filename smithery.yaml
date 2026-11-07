@@ -1,6 +1,5 @@
 # Smithery configuration for Synter MCP Server
 # Enables 1-click install and discovery across Claude Code, Cursor, Windsurf, and Smithery.ai
-description: "Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend."
 startCommand:
   type: stdio
   configSchema:
