@@ -1,8 +1,7 @@
 {
   "name": "synter-ads",
-  "version": "1.5.0",
-  "description": "Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.",
-  "contextFileName": "GEMINI.md",
+  "version": "1.4.6",
+  "description": "Run ads across 43 ad platforms from Gemini CLI (hosted Synter MCP, browser OAuth).",
   "mcpServers": {
     "synter-ads": {
       "httpUrl": "https://mcp.synterai.com"
