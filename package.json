@@ -2,7 +2,7 @@
   "name": "@synterai/mcp-server",
   "version": "1.4.6",
   "mcpName": "io.github.Synter-Media-AI/synter-ads",
-  "description": "Official Synter MCP server: AI agents run ads across 30+ ad platforms on hosted MCP (https://mcp.synterai.com) and 16 core platforms via local stdio, including Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Amazon, and StackAdapt. Free to read ($0/mo), then $20/month Solo for campaign creation, budget updates, creatives, and audience sync.",
+  "description": "Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.",
   "author": "Synter <hello@synterai.com>",
   "license": "MIT",
   "repository": {
@@ -24,6 +24,9 @@
     "google-ads",
     "meta-ads",
     "facebook-ads",
+    "ad-reporting",
+    "roas",
+    "marketing-analytics",
     "linkedin-ads",
     "microsoft-ads",
     "reddit-ads",

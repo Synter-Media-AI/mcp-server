@@ -45,19 +45,36 @@ const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
 const SYNTER_API_URL = process.env.SYNTER_API_URL || "https://synterai.com";
 const SYNTER_ARTIFACT_API_URL = process.env.SYNTER_ARTIFACT_API_URL || "https://api.synterai.com";
 
-export const VERSION = "1.5.0";
+export const VERSION = "1.4.6";
 
 export const IS_READ_ONLY =
   process.env.SYNTER_READ_ONLY === "true" ||
   process.env.SYNTER_READ_ONLY === "1" ||
   process.argv.includes("--read-only");
 
+function resolveToolset(env: NodeJS.ProcessEnv, argv: string[]): "full" | "ad-ops" {
+  const eqArg = argv.find((a) => a.startsWith("--toolset="));
+  const idx = argv.indexOf("--toolset");
+  const raw =
+    (eqArg ? eqArg.slice("--toolset=".length) : undefined) ??
+    (idx !== -1 && argv[idx + 1] ? argv[idx + 1] : undefined) ??
+    env.SYNTER_TOOLSET ??
+    "full";
+  const normalized = raw.trim().toLowerCase().replace(/_/g, "-");
+  return normalized === "ad-ops" || normalized === "ads" || normalized === "paid-ads"
+    ? "ad-ops"
+    : "full";
+}
+
+export const TOOLSET = resolveToolset(process.env, process.argv);
+export const IS_AD_OPS_ONLY = TOOLSET === "ad-ops";
+
 export const IS_DEMO = isDemoMode(process.env, process.argv);
 
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(`Synter MCP Server (@synterai/mcp-server)
 
-Official MCP server connecting AI agents to 16 ad platforms:
+Official MCP server connecting AI agents to 43 ad platforms on hosted MCP (https://mcp.synterai.com) and 16 core full-write + read platforms in local stdio:
 Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt.
 
 Usage:
@@ -65,15 +82,17 @@ Usage:
   npx @synterai/mcp-server [options]
 
 Options:
-  --demo       Run in zero-credential demo sandbox mode with realistic mock ad data
-  --read-only  Disable all mutating tools and enforce strict read-only mode
-  --version    Display version number
-  --help, -h   Show this help message
+  --demo              Run in zero-credential demo sandbox mode with realistic mock ad data
+  --read-only         Disable all mutating tools and enforce strict read-only mode
+  --toolset <mode>    Toolset filter: 'full' (default, 56 tools) or 'ad-ops' (32 paid-ad tools only)
+  --version           Display version number
+  --help, -h          Show this help message
 
 Environment Variables:
   SYNTER_API_KEY     Your Synter API key from https://synterai.com/developer
   SYNTER_DEMO        Enable demo sandbox mode (true / 1)
   SYNTER_READ_ONLY   Enforce read-only mode (true / 1)
+  SYNTER_TOOLSET     Toolset filter ('full' or 'ad-ops')
   SYNTER_API_URL     API URL override (default: https://synterai.com)
 `);
   process.exit(0);
@@ -2565,11 +2584,21 @@ async function main() {
     }
   );
 
-  // List available tools (filtered to read-only tools when read-only mode is active)
+  // List available tools (filtered by toolset and read-only mode when active)
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: IS_READ_ONLY
-      ? tools.filter((t) => (t.annotations as any)?.readOnlyHint === true)
-      : tools,
+    tools: tools.filter((t) => {
+      if (
+        IS_AD_OPS_ONLY &&
+        (ORGANIC_MCP_TOOLS.has(t.name) ||
+          Object.prototype.hasOwnProperty.call(PROSPECTOR_MCP_TOOL_MAP, t.name))
+      ) {
+        return false;
+      }
+      if (IS_READ_ONLY && (t.annotations as any)?.readOnlyHint !== true) {
+        return false;
+      }
+      return true;
+    }),
   }));
 
   // List free knowledge & security resources
@@ -2684,28 +2713,29 @@ async function main() {
           {
             uri,
             mimeType: "text/markdown",
-            text: `# Synter Verified Pricing & 16-Platform Matrix
+            text: `# Synter Verified Pricing & Platform Coverage Matrix
 
-## Pricing
-- Campaign listing across all 16 ad platforms (list_campaigns)
-- Performance metrics across all 16 ad platforms (get_performance)
-- Daily spend time-series breakdown (get_daily_spend)
-- Cross-channel budget pacing and trader ownership (pacing_report, user_budget_pacing_report, optimize_budget)
-- Conversion tracking diagnostics (diagnose_tracking, list_conversions)
-- Agent Shield security inspection (inspect_agent_shield)
-- Synter Ångström claim verification (verify_angstrom_claim)
-- Agent skills catalog and execution runbooks (get_skill)
-- LLM visibility and AEO ranking reads (get_llm_visibility)
+## Free Read Access ($0.00/month — No Credit Card Required)
+- Campaign listing across all 16 local stdio / 43 hosted ad platforms (\`list_campaigns\`)
+- Performance metrics across all 16 local stdio / 43 hosted ad platforms (\`get_performance\`)
+- Daily spend time-series breakdown (\`get_daily_spend\`)
+- Cross-channel budget pacing and trader ownership (\`pacing_report\`, \`user_budget_pacing_report\`, \`optimize_budget\`)
+- Conversion tracking diagnostics (\`diagnose_tracking\`, \`list_conversions\`)
+- Agent Shield security inspection (\`inspect_agent_shield\`)
+- Synter Ångström claim verification (\`verify_angstrom_claim\`)
+- Agent skills catalog and execution runbooks (\`get_skill\`)
+- LLM visibility and AEO ranking reads (\`get_llm_visibility\`)
+- All \`dry_run: true\` mutation previews (\`$0.00\`)
 
-## Write Execution Pricing ($0.25 per verified write, 0% of ad spend)
-- Verified writes: $0.25 per verified write, 0% of ad spend across all 16 supported ad platforms
-- SCALE: $500/month ($5,000/year), 5 seats, dedicated concurrency, and team governance
-- CUSTOM: Sales-led enterprise contracts with custom seats
-- Media Spend Markup: 0% (Synter does not charge a percentage of your ad spend)
+## Write Plans & Execution Pricing (0% of Ad Spend)
+- **SOLO**: **$20.00/month** ($200.00/year), 1 seat, 1 workspace, **includes $20.00/month in claimable usage value** (covers up to **400 light writes** at **$0.05** each, **80 standard writes** at **$0.25** each, or **4 full MCP campaign launches** at **$5.00** each).
+- **SCALE**: **$500.00/month** ($5,000.00/year), 5 seats, **includes $500.00/month in claimable usage value**, multi-workspace isolation, 24/7 Autonomous Loop / Autopilot, and dedicated concurrency.
+- **CUSTOM**: Sales-led enterprise contracts with custom seats, SLA, and volume rates.
+- **Media Spend Markup**: **0%** across every plan (ad platforms bill media spend directly).
 
-## Platform Matrix (16 Ad Platforms)
-- 16 Direct Execution: Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, StackAdapt
-- 11 Extended Catalog: FreeWheel, CM360, Walmart Connect, Instacart, Target Roundel, Criteo, SA360, Samsung Ads, Taboola, Outbrain, Apple Search Ads`,
+## Platform Matrix (43 Hosted MCP & REST Platforms / 16 Local Stdio Full-Write + Read Platforms)
+- **16 Core Local Stdio Full-Write + Read Platforms (\`@synterai/mcp-server@1.4.6\`)**: Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, StackAdapt
+- **27 Additional Hosted MCP (\`https://mcp.synterai.com\`) & REST (\`run_tool\`) Platforms (43 Total)**: FreeWheel, CM360, Walmart Connect, Instacart, Target Roundel, Criteo, SA360, Samsung Ads, Taboola, Outbrain, Apple Ads, Roku Ads, Yahoo DSP, Teads, Viant, Basis, MediaMath, Magnite, PubMatic, Index Exchange, TripleLift,GumGum, Dianomi, Quora Ads, Nextdoor Ads, Twitch Ads, Yelp Ads`,
           },
         ],
       };
@@ -2716,6 +2746,22 @@ async function main() {
   // Handle tool calls
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
+
+    if (
+      IS_AD_OPS_ONLY &&
+      (ORGANIC_MCP_TOOLS.has(name) ||
+        Object.prototype.hasOwnProperty.call(PROSPECTOR_MCP_TOOL_MAP, name))
+    ) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error: Tool '${name}' is disabled when --toolset ad-ops (SYNTER_TOOLSET=ad-ops) is active. Remove --toolset ad-ops or set SYNTER_TOOLSET=full to enable organic social and outbound tools.`,
+          },
+        ],
+        isError: true,
+      };
+    }
 
     if (IS_READ_ONLY) {
       const toolDef = tools.find((t) => t.name === name);

@@ -3,7 +3,7 @@
   "name": "synter",
   "version": "1.4.6",
   "display_name": "Synter",
-  "description": "Open-source MCP server for running ads with AI agents across 43 ad platforms: reporting, campaigns, budgets, and creatives. Destructive tools are flagged so your MCP client asks before running them.",
+  "description": "Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.",
   "author": {
     "name": "Synter",
     "email": "hello@synterai.com",

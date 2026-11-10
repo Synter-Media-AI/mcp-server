@@ -1,7 +1,7 @@
 {
   "name": "synter",
-  "description": "Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.",
-  "version": "1.5.0",
+  "description": "Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.",
+  "version": "1.4.6",
   "author": {
     "name": "Synter",
     "url": "https://synterai.com"

@@ -1,4 +1,5 @@
 # Smithery configuration for Synter MCP Server
+# Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
 # Enables 1-click install and discovery across Claude Code, Cursor, Windsurf, and Smithery.ai
 startCommand:
   type: stdio

@@ -1,6 +1,6 @@
 {
   "name": "synter",
-  "description": "The AI Agent Operator for Ads. Manage campaigns, analyze performance, research competitors, and generate creatives across Google Ads, Meta, LinkedIn, Reddit, Microsoft Ads, and more — all from Claude Code.",
+  "description": "Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.",
   "version": "1.4.6",
   "author": {
     "name": "Synter",

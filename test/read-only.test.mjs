@@ -109,3 +109,23 @@ test("unknown tool calls fail closed in read-only mode", async () => {
   });
 });
 
+test("--toolset ad-ops filters out organic social and outbound prospector tools (32 paid-ad tools only)", async () => {
+  await withClient({ args: ["--toolset", "ad-ops"] }, async (client) => {
+    const { tools } = await client.listTools();
+    assert.equal(tools.length, 32, "ad-ops toolset should expose only the 32 core paid-ad tools");
+    const toolNames = tools.map((t) => t.name);
+    assert.ok(toolNames.includes("list_campaigns"), "list_campaigns must be included in ad-ops");
+    assert.ok(toolNames.includes("get_performance"), "get_performance must be included in ad-ops");
+    assert.ok(toolNames.includes("pause_campaign"), "pause_campaign must be included in ad-ops");
+    assert.ok(!toolNames.includes("draft_organic_post"), "draft_organic_post must be filtered out in ad-ops");
+    assert.ok(!toolNames.includes("prospector_create_campaign"), "prospector_create_campaign must be filtered out in ad-ops");
+
+    const res = await client.callTool({
+      name: "draft_organic_post",
+      arguments: { platform: "linkedin", body: "Test" },
+    });
+    assert.equal(res.isError, true, "calling an organic tool in ad-ops mode must return isError: true");
+    assert.match(res.content?.[0]?.text ?? "", /disabled when --toolset ad-ops/);
+  });
+});
+

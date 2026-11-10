@@ -1,50 +1,56 @@
 # Synter MCP Server
 
-> Open-source MCP server for ad performance reports and approved changes across 30+ ad platforms. $0.25 per verified write, 0% of ad spend.
+> Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
 
-Synter (https://synterai.com) gives AI agents reporting and governed campaign changes across 30+ ad platforms through the hosted MCP at https://mcp.synterai.com. The `@synterai/mcp-server` npm package runs locally over stdio, with writes enabled by default and an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode.
+Synter (https://synterai.com) gives AI coding agents (`Claude Code`, `OpenAI Codex`, `Cursor`, `Windsurf`, `Gemini CLI`) reporting, diagnostics, and governed campaign execution across **43 advertising platforms** through the hosted MCP at `https://mcp.synterai.com` and REST API (`https://synterai.com/api/v1`). The open-source `@synterai/mcp-server` (`v1.4.6`, MIT license) npm package runs locally over stdio across **16 core full-write + read ad platforms**, with writes enabled by default, an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode, and an optional `--toolset ad-ops` (`SYNTER_TOOLSET=ad-ops`) mode that exposes only paid-ad tools.
 
 - Documentation: https://docs.synterai.com
 - Hosted MCP Server: https://mcp.synterai.com
 - Source Code: https://github.com/Synter-Media-AI/mcp-server
-- npm: https://www.npmjs.com/package/@synterai/mcp-server
-- Pricing: https://synterai.com/pricing
+- npm: https://www.npmjs.com/package/@synterai/mcp-server (`v1.4.6`)
+- Pricing & Coverage: https://synterai.com/pricing
 
 ## When to use this
-Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by channel, or a weekly paid media summary. Start with read tools; no writes needed.
+Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by channel, a weekly paid media summary, or governed campaign and budget changes across Google Ads, Meta, LinkedIn, Microsoft/Bing, Reddit, TikTok, X, Amazon, and programmatic DSPs. Start with read tools; no writes needed.
 
 ### Typical Use Cases
-- Cross-platform ad performance reports and dashboards
-- Weekly paid media summaries with ROAS, CPA, and spend by channel
-- Time-series daily spend trend analysis across networks
-- Budget pacing and cross-network rebalancing recommendations
-- Conversion tracking diagnostics and pixel audits
-- Governed campaign creation and budget adjustments with dry-run verification
+- Cross-platform ad performance reports and normalized dashboards (`get_performance`, `list_campaigns`)
+- Weekly paid media summaries with ROAS, CPA, CTR, CPC, and spend by channel
+- Time-series daily spend trend analysis across networks (`get_daily_spend`)
+- Portfolio budget pacing and diminishing-returns budget optimization (`pacing_report`, `optimize_budget`)
+- Conversion tracking diagnostics and pixel/CAPI audits (`diagnose_tracking`, `list_conversions`)
+- Governed campaign creation, pause, negative keyword hygiene, and budget adjustments with `dry_run: true` preview and mandatory post-write provider readback
 
-## Authentication
-- Hosted MCP (mcp.synterai.com) authenticates with OAuth or the `X-Synter-Key: syn_...` header. Do not send `Authorization: Bearer syn_...` to the hosted MCP yet; REST/SDKs use Bearer.
-- REST: `POST https://synterai.com/api/v1/tools/run` with `Authorization: Bearer syn_...`.
-- Local stdio package: set `SYNTER_API_KEY=syn_...`.
+## Authentication & Multi-Tenant Architecture
+- **Hosted MCP (`https://mcp.synterai.com`)**: Authenticates via OAuth 2.1 browser sign-in or `X-Synter-Key: syn_...` header. Do not send `Authorization: Bearer syn_...` to the hosted MCP yet; REST/SDKs use Bearer.
+- **REST API**: `POST https://synterai.com/api/v1/tools/run` with `Authorization: Bearer syn_...`.
+- **Local stdio package (`@synterai/mcp-server@1.4.6`)**: Set `SYNTER_API_KEY=syn_...` (or run with `--demo` / zero config for instant sandbox evaluation).
+- **Multi-Tenant / Embedded SaaS**:
+  1. **Hosted Workspace-Isolated Keys & Connect Links**: Issue scoped API keys (`POST /api/v1/keys` with `reporting:read`, `campaigns:read`, `intel:read`, `budget:decrease`, `campaigns:write`, `budget:write`) and generate self-serve tenant OAuth handoff URLs (`POST /api/v1/connections/start` or `POST /api/v1/connections/request`).
+  2. **Self-Hosted MIT Open-Source BYO-Credential Mode**: Run `@synterai/mcp-server` inside your own VPC/containers passing your tenant's platform OAuth tokens directly via per-request environment variables—zero third-party token custody.
 
 ## Client Setup
-- Claude.ai / Claude Desktop: Settings -> Connectors -> Add custom connector -> `https://mcp.synterai.com`.
-- ChatGPT: custom MCP connectors require Developer mode (Settings -> Apps & Connectors -> Advanced -> Developer mode), then add `https://mcp.synterai.com`.
-- Amp: Synter is a built-in integration (Settings > Integrations). MCP fallback: add `{"synter-ads": {"url": "https://mcp.synterai.com"}}` under `amp.mcpServers` in Amp settings.
-- Claude Code: `claude mcp add --transport http synter-ads https://mcp.synterai.com`.
-- Gemini CLI: `gemini extensions install https://github.com/Synter-Media-AI/mcp-server`.
+- **Claude.ai / Claude Desktop**: Settings -> Connectors -> Add custom connector -> `https://mcp.synterai.com`.
+- **ChatGPT**: Settings -> Apps & Connectors -> Advanced -> Developer mode, then add `https://mcp.synterai.com`.
+- **Amp**: Built-in integration (Settings > Integrations), or add `{"synter-ads": {"url": "https://mcp.synterai.com"}}` under `amp.mcpServers`.
+- **Claude Code**: `claude mcp add --transport http synter-ads https://mcp.synterai.com` (or local stdio: `claude mcp add synter -- npx -y @synterai/mcp-server@1.4.6`).
+- **Gemini CLI**: `gemini extensions install https://github.com/Synter-Media-AI/mcp-server`.
 
-## Supported Platforms
-- The hosted MCP covers 30+ ad platforms.
-- The local npm package's `platform` enum includes Google Ads, Meta (Facebook/Instagram), LinkedIn Ads, Microsoft Ads, Reddit Ads, TikTok Ads, X Ads, Pinterest Ads, Snapchat Ads, Spotify Ads, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt.
+## Supported Platforms (43 Hosted MCP & REST / 16 Local Stdio Package)
+- **Hosted MCP (`https://mcp.synterai.com`) & REST (`run_tool`)**: Covers all **43 canonical advertising platforms** across Search, Social, Retail Media, CTV, Audio, and Programmatic DSPs.
+- **Local Stdio Package (`@synterai/mcp-server@1.4.6`)**: Direct typed `platform` enum covers **16 full-write + read platforms**: Google Ads (`google`), Meta (`meta`), LinkedIn Ads (`linkedin`), Microsoft Ads (`microsoft`), Reddit Ads (`reddit`), TikTok Ads (`tiktok`), X Ads (`x`), Pinterest Ads (`pinterest`), Snapchat Ads (`snapchat`), Spotify Ads (`spotify`), Amazon Ads (`amazon_ads`), Amazon DSP (`amazon_dsp`), The Trade Desk (`the_trade_desk`), OpenAI Ads (`openai`), Google DV360 (`dv360`), and StackAdapt (`stackadapt`).
 
-## Read-Only and Demo Modes
-- **Read-Only Mode**: Launch the npm package with `--read-only` or set `SYNTER_READ_ONLY=true` to expose only read tools (`readOnlyHint: true`) and block all mutating operations. Writes are enabled by default.
-- **Demo Mode**: Launch with `--demo` or set `SYNTER_DEMO=true` to explore full reporting and simulation capabilities with zero credentials or API keys.
+## Toolsets, Read-Only Mode & Demo Mode
+- **Ad-Ops Only Toolset (`--toolset ad-ops` / `SYNTER_TOOLSET=ad-ops`)**: Exposes only the **32 core paid-advertising tools** and strips organic social (`*_organic_post`) and outbound (`prospector_*`) tools. Default (`full`) exposes all 56 tools.
+- **Read-Only Mode (`--read-only` / `SYNTER_READ_ONLY=true`)**: Exposes only read tools (`readOnlyHint: true`) and fails closed on any mutating operation.
+- **Demo Sandbox Mode (`--demo` / `SYNTER_DEMO=true`)**: Deterministic zero-credential sandbox responses across all tools and platforms with zero API key or credit card required.
 
-## Pricing
-- **Verified Writes**: $0.25 per verified write, 0% of ad spend (media spend billed directly by ad networks).
-- **Reads**: MCP reads are free.
-- **Plans**: Free, Solo, Scale, and Custom. See https://synterai.com/pricing.
+## Pricing (100% USD — 0% Ad Spend Markup)
+- **Free Read Access ($0.00/mo)**: **$0.00** for all own-account read queries (`list_campaigns`, `get_performance`, `get_daily_spend`, `pacing_report`, `user_budget_pacing_report`, `optimize_budget`, `list_conversions`, `diagnose_tracking`, `list_ad_accounts`, `list_landing_pages`, `inspect_agent_shield`, `verify_angstrom_claim`, `get_skill`, `get_llm_visibility`, `run_gaql_query`, `get_ad_readback`, `get_solo_price_card`, `get_credit_balance`) and all `dry_run: true` previews. No credit card required.
+- **SOLO ($20.00/month or $200.00/year)**: 1 seat, 1 workspace, **includes $20.00/month in claimable usage value** (covers up to **400 light writes** at **$0.05** each or **80 standard writes** at **$0.25** each, or **4 full MCP campaign launches** at **$5.00** each). Overages billed at exact unit rates with configurable hard spend caps (`ON_DEMAND_CAP_REACHED`).
+- **SCALE ($500.00/month or $5,000.00/year)**: 5 seats, **includes $500.00/month in claimable usage value** (up to 10,000 light writes or 2,000 standard writes/mo included), multi-workspace isolation, 24/7 Autonomous Loop / Autopilot, and dedicated concurrency.
+- **CUSTOM (Enterprise)**: Custom seats, dedicated infrastructure, custom SLA, and volume rates.
+- **Ad Spend Markup**: **0%** across every plan (media spend is billed directly by the ad networks).
 
 ## SDKs
 - TypeScript: npm `@synterai/sdk-js`
@@ -54,19 +60,29 @@ Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by 
 
 ## Core Tools Reference
 
-### Reporting & Read Tools (`readOnlyHint: true`)
+### Reporting & Read Tools (`readOnlyHint: true`, `$0.00`)
 - `list_campaigns`: List campaigns for a specified ad platform with status, budgets, and core metrics.
-- `get_performance`: Retrieve impressions, clicks, spend, conversions, and ROAS across platforms.
+- `get_performance`: Retrieve normalized impressions, clicks, spend, conversions, CPA, CTR, CPC, and ROAS across platforms.
 - `get_daily_spend`: Daily spend breakdown and time-series pacing.
 - `pacing_report`: Cross-channel monthly budget pacing and run-rate projections.
+- `user_budget_pacing_report`: Per-user/trader budget ownership and pacing variance.
+- `optimize_budget`: Recommend cross-channel budget allocation using diminishing-returns modeling (`dry_run: true` default).
 - `diagnose_tracking`: Verify pixel installation, GTM container health, and conversion tracking.
+- `list_conversions`: List configured conversion actions.
 - `list_ad_accounts`: List connected ad accounts across ad platforms.
 - `list_landing_pages`: List workspace landing pages and publication status.
+- `inspect_agent_shield`: Inspect active spend velocity caps, circuit breakers, and PII sanitization rules.
+- `verify_angstrom_claim`: Verify optimization claims against deterministic ground-truth rules.
 
-### Campaign Management & Write Tools (`destructiveHint: true`)
-- `create_search_campaign`: Create Google Search campaign with RSA creative floor (11-15 headlines, 4 descriptions) and `dry_run: true` preview.
-- `create_meta_campaign`: Create Meta campaign with audience and creative specifications.
-- `create_linkedin_campaign`: Create LinkedIn B2B campaign with targeting.
+### Campaign Management & Write Tools (`destructiveHint: true`, `$0.05–$0.25` or `$5.00` launch; `$0.00` with `dry_run: true`)
+- `create_search_campaign`: Create Google Search campaign (enforced `PAUSED` on create) with RSA creative floor (11-15 headlines, 4 descriptions) and `dry_run: true` preview.
+- `create_display_campaign`: Create Google Display campaign (enforced `PAUSED` on create).
+- `create_pmax_campaign`: Create Google Performance Max campaign (enforced `PAUSED` on create).
+- `create_meta_campaign`: Create Meta campaign (enforced `PAUSED` on create).
+- `create_linkedin_campaign`: Create LinkedIn B2B campaign within a campaign group (`group_id`).
 - `create_reddit_campaign`: Create Reddit community-targeted campaign.
-- `pause_campaign`: Pause an underperforming campaign across any supported network.
-- `update_campaign_budget`: Adjust daily budgets with guardrail protections.
+- `pause_campaign`: Pause a campaign across any of the 16 supported platforms.
+- `update_campaign_budget`: Adjust daily budgets across any of the 16 supported platforms with Agent Shield spend-cap protection.
+- `add_keywords` / `add_negative_keywords`: Add positive or negative keywords (`BROAD`, `PHRASE`, `EXACT`) at campaign, ad-group, shared-list, or account level with post-write readback.
+- `stage_audience_artifact` / `sync_audience` / `manage_audience`: Stage hashed PII ($0.00) and sync Customer Match / Matched Audiences across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, and StackAdapt.
+- `run_tool`: Invoke any of 140+ backend platform scripts across all 43 platforms (including `amazon_dsp_create_order`, `ttd_create_campaign`, `dv360_create_campaign`, `spotify_ads_create_campaign`, `openai_ads_create_campaign`, `get_ad_readback`, `run_gaql_query`).

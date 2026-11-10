@@ -596,7 +596,7 @@ export function getSandboxToolResult(
           {
             page_id: "lp_demo_02",
             title: "Synter vs Pipeboard Comparison",
-            url: "https://synter.dev/vs/pipeboard",
+            url: "https://synterai.com/vs/pipeboard",
             status: "PUBLISHED",
             views: 8900,
             conversions: 512,
@@ -912,6 +912,36 @@ export function getSandboxToolResult(
             "3. Weight conversion contribution using Shapley and Markov chain attribution.",
           ],
         },
+        "executive-media-plan": {
+          name: "Executive Multi-Tab Media Plan",
+          objective: "Build a 4-tab vetted executive media plan (MP Summary with Options, Option 1 Detailed Breakout, Media Split by Channel+Geo, Vetted Inventory & Rate Card) backed by SpyFu and ad platform CPM/CPC benchmarks.",
+          triggers: ["New quarterly or annual media plan request", "Multi-channel budget scenario modeling (Moderate vs Aggressive)"],
+          execution_runbook: [
+            "1. Vet live keyword CPCs/volumes via SpyFu (get_keyword_data, expand_keywords, benchmark_ppc_budgets) and programmatic/social CPMs via search_stackadapt_inventory and search_stackadapt_audiences.",
+            "2. Apply template_id 'executive_media_plan' via project_artifact_edit (table.apply_template) to create all 4 tabs with =SUM and =ROUND formulas.",
+            "3. Verify 1:1 parity between the Activity Window summary and saved workbook cells via project_artifact_read.",
+          ],
+        },
+        "campaign-trafficking-inputs": {
+          name: "Campaign Trafficking & Ad Copy Workbook",
+          objective: "Scaffold a 3-tab enterprise trafficking workbook (Campaign Inputs - Consistent, Campaign Inputs - Variable, Ad Copy Sheet) for multi-platform launch.",
+          triggers: ["Campaign launch trafficking handoff", "Multi-channel ad copy and UTM taxonomy standardization"],
+          execution_runbook: [
+            "1. Apply template_id 'campaign_trafficking_inputs' via project_artifact_edit (table.apply_template) to create the 3-tab workbook.",
+            "2. Populate consistent hierarchy settings, variable flight/budget rows with =SUM(...) rollups, and character-validated ad copy.",
+            "3. Echo the exact saved rows in the Activity Window for human launch approval.",
+          ],
+        },
+        "digital-media-strategy-sow": {
+          name: "Digital Media & GTM Campaign Strategy SOW",
+          objective: "Generate a comprehensive Digital Media & Campaign Strategy Statement of Work (SOW), Dual-Audience GTM Strategy Briefs (Enterprise & Self-Serve), Content BOM, 3-Month Execution Plan, and Billing Schedule.",
+          triggers: ["New client/brand GTM strategy & SOW kickoff", "Dual-audience (Enterprise + Self-Serve) funnel & content planning"],
+          execution_runbook: [
+            "1. Apply template_id 'digital_media_strategy_sow' via project_artifact_edit (document.apply_template) for the narrative strategy & SOW document.",
+            "2. Apply template_id 'gtm_strategy_and_sow' via project_artifact_edit (table.apply_template) for the 4-tab companion workbook.",
+            "3. Vet keyword demand and paid media benchmarks with SpyFu and sync 1:1 across document, table, and Activity Window.",
+          ],
+        },
       };
 
       if (skillName === "all" || skillName === "list" || !SKILLS_DATABASE[skillName]) {
@@ -1141,36 +1171,6 @@ export function getSandboxToolResult(
         artifact_id: "art_demo_sandbox_8f2a",
         script_name: args.script_name || "meta_ads_create_audience",
         ttl_seconds: args.ttl_seconds || 86400,
-        "executive-media-plan": {
-          name: "Executive Multi-Tab Media Plan",
-          objective: "Build a 4-tab vetted executive media plan (MP Summary with Options, Option 1 Detailed Breakout, Media Split by Channel+Geo, Vetted Inventory & Rate Card) backed by SpyFu and ad platform CPM/CPC benchmarks.",
-          triggers: ["New quarterly or annual media plan request", "Multi-channel budget scenario modeling (Moderate vs Aggressive)"],
-          execution_runbook: [
-            "1. Vet live keyword CPCs/volumes via SpyFu (get_keyword_data, expand_keywords, benchmark_ppc_budgets) and programmatic/social CPMs via search_stackadapt_inventory and search_stackadapt_audiences.",
-            "2. Apply template_id 'executive_media_plan' via project_artifact_edit (table.apply_template) to create all 4 tabs with =SUM and =ROUND formulas.",
-            "3. Verify 1:1 parity between the Activity Window summary and saved workbook cells via project_artifact_read.",
-          ],
-        },
-        "campaign-trafficking-inputs": {
-          name: "Campaign Trafficking & Ad Copy Workbook",
-          objective: "Scaffold a 3-tab enterprise trafficking workbook (Campaign Inputs - Consistent, Campaign Inputs - Variable, Ad Copy Sheet) for multi-platform launch.",
-          triggers: ["Campaign launch trafficking handoff", "Multi-channel ad copy and UTM taxonomy standardization"],
-          execution_runbook: [
-            "1. Apply template_id 'campaign_trafficking_inputs' via project_artifact_edit (table.apply_template) to create the 3-tab workbook.",
-            "2. Populate consistent hierarchy settings, variable flight/budget rows with =SUM(...) rollups, and character-validated ad copy.",
-            "3. Echo the exact saved rows in the Activity Window for human launch approval.",
-          ],
-        },
-        "digital-media-strategy-sow": {
-          name: "Digital Media & GTM Campaign Strategy SOW",
-          objective: "Generate a comprehensive Digital Media & Campaign Strategy Statement of Work (SOW), Dual-Audience GTM Strategy Briefs (Enterprise & Self-Serve), Content BOM, 3-Month Execution Plan, and Billing Schedule.",
-          triggers: ["New client/brand GTM strategy & SOW kickoff", "Dual-audience (Enterprise + Self-Serve) funnel & content planning"],
-          execution_runbook: [
-            "1. Apply template_id 'digital_media_strategy_sow' via project_artifact_edit (document.apply_template) for the narrative strategy & SOW document.",
-            "2. Apply template_id 'gtm_strategy_and_sow' via project_artifact_edit (table.apply_template) for the 4-tab companion workbook.",
-            "3. Vet keyword demand and paid media benchmarks with SpyFu and sync 1:1 across document, table, and Activity Window.",
-          ],
-        },
         record_count: lines.length || 2500,
       };
     }
@@ -1414,7 +1414,7 @@ export function getSandboxToolResult(
         notice: DEMO_BANNER_NOTICE,
         accounts: [
           {
-            email: "joel@syntermedia.ai",
+            email: "growth@joinsynter.com",
             provider: "microsoft_exchange_native",
             warmup_score: 99,
             daily_limit: 50,
@@ -1475,7 +1475,7 @@ export function getSandboxToolResult(
         success: true,
         simulated: true,
         provider: "microsoft_exchange_native",
-        from: "joel@syntermedia.ai",
+        from: "growth@joinsynter.com",
         to: args.to_email,
         subject: args.subject,
         message: "[Sandbox] 1:1 outreach email validated via native Exchange transport.",
