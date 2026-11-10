@@ -138,6 +138,34 @@
     {
       "name": "list_landing_pages",
       "description": "List landing pages for the authenticated workspace, including publish status, custom domain, and URLs"
+    },
+    {
+      "name": "pacing_report",
+      "description": "Cross-channel monthly budget pacing and run-rate projections ($0.00 read)"
+    },
+    {
+      "name": "user_budget_pacing_report",
+      "description": "Per-user/trader budget ownership and pacing variance snapshot ($0.00 read)"
+    },
+    {
+      "name": "optimize_budget",
+      "description": "Recommend cross-channel daily budget allocation using diminishing-returns modeling ($0.00 read)"
+    },
+    {
+      "name": "inspect_agent_shield",
+      "description": "Inspect workspace spend velocity limits, budget escalation ceilings, and PII sanitization policies ($0.00 read)"
+    },
+    {
+      "name": "verify_angstrom_claim",
+      "description": "Verify advertising claims, budget shifts, or campaign targets against deterministic ground-truth rules ($0.00 read)"
+    },
+    {
+      "name": "get_skill",
+      "description": "Retrieve core advertising skill runbooks and playbooks ($0.00 read)"
+    },
+    {
+      "name": "get_llm_visibility",
+      "description": "Query AI model visibility, Answer Engine Optimization (AEO) ranking, and brand share of voice ($0.00 read)"
     }
   ]
 }
