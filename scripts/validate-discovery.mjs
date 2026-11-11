@@ -48,7 +48,7 @@ invariant(
 );
 
 const LEAD =
-  "Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.";
+  "Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.";
 
 invariant(
   serverJson.description === LEAD,
@@ -159,7 +159,7 @@ invariant(
 const allMetadataFiles = [...discoveryManifests, "AGENTS.md", "llms.txt", "GEMINI.md", "skills/synter-ads/SKILL.md"];
 for (const relativePath of allMetadataFiles) {
   const text = readText(relativePath);
-  const match = text.match(/\b(14|19|21|30\+)\s+(ad(vertising)?\s+)?platforms\b/i);
+  const match = text.match(/\b(14|16|19|20\+|21|27|43)\s+(ad(vertising)?\s+)?platforms\b/i);
   invariant(!match, `${relativePath} has a stale platform count (${match?.[0]})`);
   invariant(
     !text.includes("syntermedia.ai"),

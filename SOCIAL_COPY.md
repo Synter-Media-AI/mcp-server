@@ -221,7 +221,7 @@ Your AI assistant is now a media buyer
 ```
 
 ```
-Manage ads across 16 ad platforms with natural language
+Manage ads across 30+ ad platforms with natural language
 ```
 
 ---
@@ -248,7 +248,7 @@ Show HN: Synter – MCP server for AI-powered advertising management
 
 **The fear:** What happens when AI has a credit card?
 
-**The promise:** Manage 16 ad platforms through conversation
+**The promise:** Manage 30+ ad platforms through conversation
 
 **The proof:** Open source, see exactly what it does
 

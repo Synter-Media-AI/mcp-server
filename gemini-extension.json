@@ -1,7 +1,7 @@
 {
   "name": "synter-ads",
   "version": "1.4.6",
-  "description": "Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.",
+  "description": "Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.",
   "contextFileName": "GEMINI.md",
   "mcpServers": {
     "synter-ads": {

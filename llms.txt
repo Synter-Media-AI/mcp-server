@@ -1,8 +1,8 @@
 # Synter MCP Server
 
-> Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
+> Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
 
-Synter (https://synterai.com) gives AI coding agents (`Claude Code`, `OpenAI Codex`, `Cursor`, `Windsurf`, `Gemini CLI`) reporting, diagnostics, and governed campaign execution across **43 advertising platforms** through the hosted MCP at `https://mcp.synterai.com` and REST API (`https://synterai.com/api/v1`). The open-source `@synterai/mcp-server` (`v1.4.6`, MIT license) npm package runs locally over stdio across **16 core full-write + read ad platforms**, with writes enabled by default, an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode, and an optional `--toolset ad-ops` (`SYNTER_TOOLSET=ad-ops`) mode that exposes only paid-ad tools.
+Synter (https://synterai.com) gives AI coding agents (`Claude Code`, `OpenAI Codex`, `Cursor`, `Windsurf`, `Gemini CLI`) reporting, diagnostics, and governed campaign execution across **30+ advertising platforms** through the hosted MCP at `https://mcp.synterai.com` and REST API (`https://synterai.com/api/v1`). The open-source `@synterai/mcp-server` (`v1.4.6`, MIT license) npm package runs locally over stdio across **16 core full-write + read ad platforms**, with writes enabled by default, an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode, and an optional `--toolset ad-ops` (`SYNTER_TOOLSET=ad-ops`) mode that exposes only paid-ad tools.
 
 - Documentation: https://docs.synterai.com
 - Hosted MCP Server: https://mcp.synterai.com
@@ -36,9 +36,9 @@ Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by 
 - **Claude Code**: `claude mcp add --transport http synter-ads https://mcp.synterai.com` (or local stdio: `claude mcp add synter -- npx -y @synterai/mcp-server@1.4.6`).
 - **Gemini CLI**: `gemini extensions install https://github.com/Synter-Media-AI/mcp-server`.
 
-## Supported Platforms (43 Hosted MCP & REST / 16 Local Stdio Package)
-- **Hosted MCP (`https://mcp.synterai.com`) & REST (`run_tool`)**: Covers all **43 canonical advertising platforms** across Search, Social, Retail Media, CTV, Audio, and Programmatic DSPs.
-- **Local Stdio Package (`@synterai/mcp-server@1.4.6`)**: Direct typed `platform` enum covers **16 full-write + read platforms**: Google Ads (`google`), Meta (`meta`), LinkedIn Ads (`linkedin`), Microsoft Ads (`microsoft`), Reddit Ads (`reddit`), TikTok Ads (`tiktok`), X Ads (`x`), Pinterest Ads (`pinterest`), Snapchat Ads (`snapchat`), Spotify Ads (`spotify`), Amazon Ads (`amazon_ads`), Amazon DSP (`amazon_dsp`), The Trade Desk (`the_trade_desk`), OpenAI Ads (`openai`), Google DV360 (`dv360`), and StackAdapt (`stackadapt`).
+## Supported Platforms (Hosted MCP & REST / Local Stdio Package)
+- **Hosted MCP (`https://mcp.synterai.com`) & REST (`run_tool`)**: Covers all **30+ advertising platforms** across Search, Social, Retail Media, CTV, Audio, and Programmatic DSPs.
+- **Local Stdio Package (`@synterai/mcp-server@1.4.6`)**: Direct typed `platform` enum covers **the core full-write + read platforms**: Google Ads (`google`), Meta (`meta`), LinkedIn Ads (`linkedin`), Microsoft Ads (`microsoft`), Reddit Ads (`reddit`), TikTok Ads (`tiktok`), X Ads (`x`), Pinterest Ads (`pinterest`), Snapchat Ads (`snapchat`), Spotify Ads (`spotify`), Amazon Ads (`amazon_ads`), Amazon DSP (`amazon_dsp`), The Trade Desk (`the_trade_desk`), OpenAI Ads (`openai`), Google DV360 (`dv360`), and StackAdapt (`stackadapt`).
 
 ## Toolsets, Read-Only Mode & Demo Mode
 - **Ad-Ops Only Toolset (`--toolset ad-ops` / `SYNTER_TOOLSET=ad-ops`)**: Exposes only the **32 core paid-advertising tools** and strips organic social (`*_organic_post`) and outbound (`prospector_*`) tools. Default (`full`) exposes all 56 tools.
@@ -81,8 +81,8 @@ Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by 
 - `create_meta_campaign`: Create Meta campaign (enforced `PAUSED` on create).
 - `create_linkedin_campaign`: Create LinkedIn B2B campaign within a campaign group (`group_id`).
 - `create_reddit_campaign`: Create Reddit community-targeted campaign.
-- `pause_campaign`: Pause a campaign across any of the 16 supported platforms.
-- `update_campaign_budget`: Adjust daily budgets across any of the 16 supported platforms with Agent Shield spend-cap protection.
+- `pause_campaign`: Pause a campaign across any supported platform.
+- `update_campaign_budget`: Adjust daily budgets across any supported platform with Agent Shield spend-cap protection.
 - `add_keywords` / `add_negative_keywords`: Add positive or negative keywords (`BROAD`, `PHRASE`, `EXACT`) at campaign, ad-group, shared-list, or account level with post-write readback.
 - `stage_audience_artifact` / `sync_audience` / `manage_audience`: Stage hashed PII ($0.00) and sync Customer Match / Matched Audiences across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, and StackAdapt.
-- `run_tool`: Invoke any of 140+ backend platform scripts across all 43 platforms (including `amazon_dsp_create_order`, `ttd_create_campaign`, `dv360_create_campaign`, `spotify_ads_create_campaign`, `openai_ads_create_campaign`, `get_ad_readback`, `run_gaql_query`).
+- `run_tool`: Invoke any of 140+ backend platform scripts across all 30+ platforms (including `amazon_dsp_create_order`, `ttd_create_campaign`, `dv360_create_campaign`, `spotify_ads_create_campaign`, `openai_ads_create_campaign`, `get_ad_readback`, `run_gaql_query`).

@@ -2,9 +2,9 @@
 
 ## Product Identity & Core Architecture
 - **Package**: `@synterai/mcp-server` (`v1.4.6`, MIT license, published on npm)
-- **Canonical Lead**: Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
-- **Hosted Endpoint**: `https://mcp.synterai.com` (Streamable HTTP + OAuth 2.1 browser sign-in; optional `X-Synter-Key` header for headless/CI; exposes 140+ tools across all 43 advertising platforms).
-- **Local Stdio Package**: `npx -y @synterai/mcp-server@1.4.6` (exposes 56 tools by default across 16 core full-write + read advertising platforms, with optional `--read-only` / `SYNTER_READ_ONLY=true` and `--toolset ad-ops` / `SYNTER_TOOLSET=ad-ops` modes).
+- **Canonical Lead**: Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
+- **Hosted Endpoint**: `https://mcp.synterai.com` (Streamable HTTP + OAuth 2.1 browser sign-in; optional `X-Synter-Key` header for headless/CI; exposes 140+ tools across all 30+ advertising platforms).
+- **Local Stdio Package**: `npx -y @synterai/mcp-server@1.4.6` (exposes 56 tools by default across the core full-write + read advertising platforms, with optional `--read-only` / `SYNTER_READ_ONLY=true` and `--toolset ad-ops` / `SYNTER_TOOLSET=ad-ops` modes).
 
 ## When to use this
 Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by channel, a weekly paid media summary, or governed campaign and budget changes. Start with read tools; no writes needed.
@@ -16,8 +16,8 @@ Common trigger scenarios:
 - **Campaign Execution & Guardrails**: Creating campaigns, pausing campaigns, managing negative keywords (`BROAD`, `PHRASE`, `EXACT`), or updating budgets when explicitly directed by the user, adhering to Agent Shield safety gates and client confirmation prompts.
 
 ## Capabilities & Platform Scope
-- **Hosted MCP & REST Coverage (43 Platforms)**: Full cross-platform coverage across 43 advertising platforms via `https://mcp.synterai.com` and `POST https://synterai.com/api/v1/tools/run`.
-- **npm Package Direct Coverage (16 Platforms)**: Full read and write support across 16 core advertising platforms defined in `platform-routing.ts`:
+- **Hosted MCP & REST Coverage (30+ Platforms)**: Full cross-platform coverage across 30+ advertising platforms via `https://mcp.synterai.com` and `POST https://synterai.com/api/v1/tools/run`.
+- **npm Package Direct Coverage (Core Platforms)**: Full read and write support across the core advertising platforms defined in `platform-routing.ts`:
   Google Ads, Meta (Facebook/Instagram), LinkedIn Ads, Microsoft (Bing) Ads, Reddit Ads, TikTok Ads, X Ads, Pinterest Ads, Snapchat Ads, Spotify Ads, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, Google DV360, and StackAdapt.
 - **Execution Modes**:
   - Default (`full`): All 56 tools (32 paid-ad tools + 8 organic social tools + 16 outbound tools).
