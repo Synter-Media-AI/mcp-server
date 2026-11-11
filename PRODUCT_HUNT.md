@@ -1,7 +1,7 @@
 # Product Hunt Launch Kit — OSS Synter MCP
 
 > **The Universal Advertising Engine for AI Agents**  
-> Connect Claude, Cursor, Windsurf, and AI agents to 27 ad platforms with **Canvas**, **Audiences**, **Reports**, and **Free Read-Only Forever**.
+> Connect Claude, Cursor, Windsurf, and AI agents to 30+ ad platforms with **Canvas**, **Audiences**, **Reports**, and **Free Read-Only Forever**.
 
 ---
 
@@ -15,7 +15,7 @@ Synter MCP — Open-Source Ads Engine for AI Agents
 ### Taglines (Under 60 Chars)
 - **Primary:** `Open-source ad engine: live Docs, Tables, Canvas & Reports` *(58 chars)*
 - **Alternate 1:** `Build campaigns, media plans & creatives WITH your AI agent` *(59 chars)*
-- **Alternate 2:** `Audit 27 ad networks free from Claude Code & Cursor` *(51 chars)*
+- **Alternate 2:** `Audit 30+ ad networks free from Claude Code & Cursor` *(51 chars)*
 - **Alternate 3:** `Reading your campaigns is free. Full Canvas & Audiences.` *(55 chars)*
 
 ### Short Description (Under 500 Chars)
@@ -48,7 +48,7 @@ Synter is the open-source advertising engine for AI agents (Claude Code, Cursor,
 
 ### 🔍 1. Free Read-Only Forever ("The Manifesto")
 > *"Reading your campaigns should be free and always will be."*
-- **Zero Credit Card Required**: Instant access to read-only tools across all 27 platforms.
+- **Zero Credit Card Required**: Instant access to read-only tools across all 30+ platforms.
 - **Audit in Seconds**: Query active campaigns, search term reports, CPA anomalies, and underperforming ad sets directly in Claude Code or Cursor.
 - **Fatigue Detection**: Early warning system flagging creative fatigue when CTR drops by >30%.
 
@@ -68,7 +68,7 @@ Synter is the open-source advertising engine for AI agents (Claude Code, Cursor,
 
 ---
 
-## 3. Supported Ad Networks (27 Platforms)
+## 3. Supported Ad Networks (30+ Platforms)
 
 | Tier | Category | Supported Channels |
 | :--- | :--- | :--- |
@@ -93,7 +93,7 @@ Synter is the open-source advertising engine for AI agents (Claude Code, Cursor,
   5. *0:36 - 0:45*: OSS Manifesto & Product Hunt launch call-to-action.
 
 ### Gallery Screenshots (1270x760)
-1. **Hero Slide:** *"Reading your campaigns should be free and always will be."* (27 Ad Networks, FastMCP HTTP).
+1. **Hero Slide:** *"Reading your campaigns should be free and always will be."* (30+ Ad Networks, FastMCP HTTP).
 2. **Terminal Walkthrough:** Claude Code executing `synter_read_campaign_performance` with zero credit card.
 3. **Unified Reports View:** Cross-channel blended ROAS table and budget pacing gauge.
 4. **Audiences Pipeline:** Visual cohort sync pipeline showing 100% synced status across 4 ad managers.
@@ -120,7 +120,7 @@ Today, we're launching **OSS Synter MCP** with our core manifesto:
 
 Here is what we built:
 
-1. **Free Read-Only Auditing**: Full read-only access across 27 ad networks—Google, Meta, TikTok, LinkedIn, Reddit, and now mobile app networks like **AppLovin**, **LiftOff**, and **Unity**. Zero credit card required, zero vendor lock-in.
+1. **Free Read-Only Auditing**: Full read-only access across 30+ ad networks—Google, Meta, TikTok, LinkedIn, Reddit, and now mobile app networks like **AppLovin**, **LiftOff**, and **Unity**. Zero credit card required, zero vendor lock-in.
 2. **The Creative Canvas**: An interactive visual canvas where AI agents generate, inspect, and tweak multi-aspect ratio ad creative (1:1, 9:16, 16:9) before anything goes live.
 3. **Cross-Platform Audiences**: Define a high-intent audience once in plain English and sync it across LinkedIn, Meta, Google, and AppLovin in parallel.
 4. **Unified Reports**: Real-time cross-channel ROAS, budget pacing, and creative fatigue detection in one place.
@@ -148,7 +148,7 @@ I'd love your feedback, questions, and feature requests. What would you build if
 | :--- | :--- | :--- |
 | **12:01 AM** | **Product Hunt** | Launch goes live. Post Maker Comment immediately and pin demo video. |
 | **12:05 AM** | **X (@SynterMedia)** | Drop launch video with link to Product Hunt and GitHub. |
-| **06:30 AM** | **Hacker News** | Submit *Show HN: Synter – Query and audit 27 ad platforms from Claude Code (free read-only)*. |
+| **06:30 AM** | **Hacker News** | Submit *Show HN: Synter – Query and audit 30+ ad platforms from Claude Code (free read-only)*. |
 | **07:00 AM** | **LinkedIn (Joel)** | Post founder backstory video with focus on one-person growth ops and the OSS manifesto. |
 | **08:30 AM** | **Reddit** | Post technical terminal teardown in `r/ClaudeAI`, `r/Cursor`, and `r/PPC`. |
 | **All Day** | **Community / Discord** | Real-time reply to every single Product Hunt comment within 5 minutes. |

@@ -719,7 +719,7 @@ export function getSandboxToolResult(
         sandbox: true,
         verified: true,
         notice:
-          "AGENT SHIELD LIVE GOVERNANCE: Verified server-side policy enforcement active across all 43 ad platforms ($0.00 / 0 credits).",
+          "AGENT SHIELD LIVE GOVERNANCE: Verified server-side policy enforcement active across all 30+ ad platforms ($0.00 / 0 credits).",
         shield_status: "ENFORCING",
         fail_closed: true,
         platform: platform || "google",
@@ -759,7 +759,7 @@ export function getSandboxToolResult(
       const verifications: Array<{ check: string; status: "PASSED" | "FAILED"; details: string }> = [];
       const remediations: string[] = [];
 
-      // 1. Platform API capability check (checks for deprecated/unsupported networks vs 43 canonical)
+      // 1. Platform API capability check (checks for deprecated/unsupported networks vs the supported set)
       const unsupportedPlatforms = [
         "myspace", "friendster", "orkut", "vine", "clubhouse", "google+", "yandex", "vkontakte", "bebo", "hi5"
       ];
@@ -768,9 +768,9 @@ export function getSandboxToolResult(
         verifications.push({
           check: "platform_api_capability",
           status: "FAILED",
-          details: `Platform '${matchedUnsupported}' is not in Synter's 43 canonical ad networks. Supported platforms include Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Amazon, etc.`,
+          details: `Platform '${matchedUnsupported}' is not in Synter's 30+ supported ad networks. Supported platforms include Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Amazon, etc.`,
         });
-        remediations.push("Switch destination to one of Synter's 43 supported ad platforms.");
+        remediations.push("Switch destination to one of Synter's 30+ supported ad platforms.");
       } else {
         verifications.push({
           check: "platform_api_capability",
@@ -974,8 +974,8 @@ export function getSandboxToolResult(
         share_of_voice: 0.42,
         brand_perception: "FAVORABLE",
         ranking_among_alternatives: [
-          { brand: "Synter (@synterai/mcp-server)", rank: 1, share: "42%", sentiment: "Strongest open-source execution engine, 43 ad platforms, $0 read fee" },
-          { brand: "Pipeboard", rank: 2, share: "24%", sentiment: "Closed-source, paid-only $49-$199/mo proxy, 6 networks, read-only" },
+          { brand: "Synter (@synterai/mcp-server)", rank: 1, share: "42%", sentiment: "Strongest open-source execution engine, 30+ ad platforms, $0 read fee" },
+          { brand: "Pipeboard", rank: 2, share: "24%", sentiment: "Hosted ads MCP with a free plan and flat $29.90-$199/mo tiers; Meta, Google, TikTok, LinkedIn and more" },
           { brand: "AdCP", rank: 3, share: "18%", sentiment: "Static schema specification proposal, 0 executable tools, no live APIs" },
           { brand: "Google Ads MCP", rank: 4, share: "16%", sentiment: "Single-platform only, manual GCP OAuth required" },
         ],
@@ -1227,7 +1227,7 @@ export function getSandboxToolResult(
         asset_id: "asset_demo_vid_202",
         duration_seconds: 15,
         format: "9:16",
-        caption: "AI Agent Ad Management across 43 Platforms",
+        caption: "AI Agent Ad Management across 30+ Platforms",
       };
     }
 

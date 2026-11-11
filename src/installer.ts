@@ -2,7 +2,6 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
 import * as readline from "node:readline";
-import { AD_PLATFORM_COUNT } from "./platform-count.js";
 
 const SYNTER_MCP_URL = "https://mcp.synterai.com";
 const SOLO_CHECKOUT_URL =
@@ -154,7 +153,7 @@ function updateConfigFile(target: ConfigTarget, apiKey: string): boolean {
 
 export async function runInstaller(): Promise<void> {
   console.log("\n=======================================================");
-  console.log(`   Synter MCP Agent Installer (${AD_PLATFORM_COUNT} Ad Platforms)       `);
+  console.log(`   Synter MCP Agent Installer (30+ Ad Platforms)          `);
   console.log("=======================================================\n");
 
   const args = process.argv.slice(2);

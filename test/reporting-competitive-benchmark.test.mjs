@@ -1,10 +1,10 @@
 // Tests for Synter MCP Server Reporting Capabilities & Competitive Benchmark
-// Benchmarks Synter MCP against AdCP (Ad Context Protocol) and Pipeboard.
+// Checks Synter MCP reporting and execution coverage (context: AdCP and hosted ads MCPs such as Pipeboard).
 //
 // Key Assertions:
 // 1. Executable Implementation (vs AdCP: schema spec only, 0 executable tools)
-// 2. Open-Source Zero Connector Fee (vs Pipeboard: closed-source $49-$199/mo)
-// 3. Platform Coverage (16 Direct Execution ad networks vs Pipeboard 6)
+// 2. Open-Source Zero Connector Fee
+// 3. Platform Coverage (every core direct-execution ad network is routable)
 // 4. Unified Metrics Schema (normalized spend, impressions, clicks, conversions, roas, cpa, ctr, cpc)
 // 5. Time-Series Daily Spend Pacing (day-by-day reporting)
 // 6. Safe Read-Only Diagnostics Enforcement (--read-only flag)
@@ -91,14 +91,10 @@ test("BEATS AdCP: Executable multi-tool server with live JSON-RPC vs passive sch
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. Platform Breadth vs Pipeboard
+// 2. Platform Breadth
 // ─────────────────────────────────────────────────────────────────────────────
 
-test("BEATS Pipeboard: Outperforms Pipeboard 6-network limit with 16 direct execution platforms", async () => {
-  // Pipeboard covers only 6 networks: Google, Meta, LinkedIn, X, TikTok, Pinterest.
-  // Pipeboard lacks Reddit, Microsoft Ads, Amazon Ads, Amazon DSP, Snapchat, Spotify,
-  // The Trade Desk, OpenAI Ads, DV360, and StackAdapt.
-  const pipeboardSupportedCount = 6;
+test("Platform breadth: every core direct-execution platform is routable", async () => {
   const synterDirectNetworks = [
     "google",
     "meta",
@@ -120,7 +116,7 @@ test("BEATS Pipeboard: Outperforms Pipeboard 6-network limit with 16 direct exec
 
   assert.ok(
     synterDirectNetworks.length >= 16,
-    `Synter supports ${synterDirectNetworks.length} direct execution platforms, nearly 3x Pipeboard's ${pipeboardSupportedCount}`
+    `Synter supports ${synterDirectNetworks.length} direct execution platforms`
   );
 
   await withMcpClient({ args: ["--demo"] }, async (client) => {

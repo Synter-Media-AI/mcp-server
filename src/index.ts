@@ -74,7 +74,7 @@ export const IS_DEMO = isDemoMode(process.env, process.argv);
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(`Synter MCP Server (@synterai/mcp-server)
 
-Official MCP server connecting AI agents to 43 ad platforms on hosted MCP (https://mcp.synterai.com) and 16 core full-write + read platforms in local stdio:
+Official MCP server connecting AI agents to 30+ ad platforms on hosted MCP (https://mcp.synterai.com), with the core full-write + read platforms also available in local stdio:
 Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt.
 
 Usage:
@@ -114,7 +114,7 @@ const tools: Tool[] = [
   {
     name: "list_campaigns",
     description:
-      "List campaigns for ONE ad platform across all 16 ad platforms. `platform` is required -- this tool does not aggregate across platforms. Returns campaign name, status, budget, and performance metrics. Works out-of-the-box with zero configuration or API key; live writes are $0.25 per verified write, 0% of ad spend.",
+      "List campaigns for ONE ad platform across the supported ad platforms. `platform` is required -- this tool does not aggregate across platforms. Returns campaign name, status, budget, and performance metrics. Works out-of-the-box with zero configuration or API key; live writes are $0.25 per verified write, 0% of ad spend.",
     annotations: { title: "List Campaigns", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
@@ -322,7 +322,7 @@ const tools: Tool[] = [
   {
     name: "pause_campaign",
     description:
-      "Pause a campaign by ID across all 16 connected ad platforms. Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required). Live execution is audited in the workspace audit log ($0.25 per verified write, 0% of ad spend).",
+      "Pause a campaign by ID across your connected ad platforms. Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required). Live execution is audited in the workspace audit log ($0.25 per verified write, 0% of ad spend).",
     annotations: { title: "Pause Campaign", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
@@ -347,7 +347,7 @@ const tools: Tool[] = [
   {
     name: "update_campaign_budget",
     description:
-      "Update the daily budget for a campaign across all 16 connected ad platforms. Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required). Live execution passes the server-side Agent Shield safety gate (daily spend ceiling, max 2x budget-change multiplier, approval mode, and immutable audit log).",
+      "Update the daily budget for a campaign across your connected ad platforms. Supports `dry_run: true` ($0.00 / 0 credits, zero credentials required). Live execution passes the server-side Agent Shield safety gate (daily spend ceiling, max 2x budget-change multiplier, approval mode, and immutable audit log).",
     annotations: { title: "Update Campaign Budget", destructiveHint: true },
     inputSchema: {
       type: "object" as const,
@@ -380,7 +380,7 @@ const tools: Tool[] = [
   {
     name: "get_performance",
     description:
-      "Get performance metrics (impressions, clicks, spend, conversions, ROAS) for campaigns across any of the 16 ad platforms. Free read-only tool ($0.00 / 0 credits).",
+      "Get performance metrics (impressions, clicks, spend, conversions, ROAS) for campaigns across any supported ad platform. Free read-only tool ($0.00 / 0 credits).",
     annotations: { title: "Get Performance Metrics", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
@@ -405,7 +405,7 @@ const tools: Tool[] = [
   },
   {
     name: "get_daily_spend",
-    description: "Get daily spend breakdown for ONE ad platform across any of the 16 ad platforms. `platform` is required -- this tool does not aggregate across platforms. Free read-only tool ($0.00 / 0 credits).",
+    description: "Get daily spend breakdown for ONE ad platform across any supported ad platform. `platform` is required -- this tool does not aggregate across platforms. Free read-only tool ($0.00 / 0 credits).",
     annotations: { title: "Get Daily Spend Breakdown", readOnlyHint: true },
     inputSchema: {
       type: "object" as const,
@@ -2625,7 +2625,7 @@ async function main() {
       {
         uri: "synter://pricing/coverage",
         name: "Verified Pricing and Platform Coverage Reference",
-        description: "Canonical pricing ($0.25 per verified write, 0% of ad spend across all 16 ad platforms) and 16-platform matrix.",
+        description: "Canonical pricing ($0.25 per verified write, 0% of ad spend across the supported ad platforms) and platform matrix.",
         mimeType: "text/markdown",
       },
     ],
@@ -2716,8 +2716,8 @@ async function main() {
             text: `# Synter Verified Pricing & Platform Coverage Matrix
 
 ## Free Read Access ($0.00/month — No Credit Card Required)
-- Campaign listing across all 16 local stdio / 43 hosted ad platforms (\`list_campaigns\`)
-- Performance metrics across all 16 local stdio / 43 hosted ad platforms (\`get_performance\`)
+- Campaign listing across all supported ad platforms (\`list_campaigns\`)
+- Performance metrics across all supported ad platforms (\`get_performance\`)
 - Daily spend time-series breakdown (\`get_daily_spend\`)
 - Cross-channel budget pacing and trader ownership (\`pacing_report\`, \`user_budget_pacing_report\`, \`optimize_budget\`)
 - Conversion tracking diagnostics (\`diagnose_tracking\`, \`list_conversions\`)
@@ -2733,9 +2733,9 @@ async function main() {
 - **CUSTOM**: Sales-led enterprise contracts with custom seats, SLA, and volume rates.
 - **Media Spend Markup**: **0%** across every plan (ad platforms bill media spend directly).
 
-## Platform Matrix (43 Hosted MCP & REST Platforms / 16 Local Stdio Full-Write + Read Platforms)
-- **16 Core Local Stdio Full-Write + Read Platforms (\`@synterai/mcp-server@1.4.6\`)**: Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, StackAdapt
-- **27 Additional Hosted MCP (\`https://mcp.synterai.com\`) & REST (\`run_tool\`) Platforms (43 Total)**: FreeWheel, CM360, Walmart Connect, Instacart, Target Roundel, Criteo, SA360, Samsung Ads, Taboola, Outbrain, Apple Ads, Roku Ads, Yahoo DSP, Teads, Viant, Basis, MediaMath, Magnite, PubMatic, Index Exchange, TripleLift,GumGum, Dianomi, Quora Ads, Nextdoor Ads, Twitch Ads, Yelp Ads`,
+## Platform Matrix (Hosted MCP & REST / Local Stdio)
+- **Core Local Stdio Full-Write + Read Platforms (\`@synterai/mcp-server@1.4.6\`)**: Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, StackAdapt
+- **Additional Hosted MCP (\`https://mcp.synterai.com\`) & REST (\`run_tool\`) Platforms**: FreeWheel, CM360, Walmart Connect, Instacart, Target Roundel, Criteo, SA360, Samsung Ads, Taboola, Outbrain, Apple Ads, Roku Ads, Yahoo DSP, Teads, Viant, Basis, MediaMath, Magnite, PubMatic, Index Exchange, TripleLift,GumGum, Dianomi, Quora Ads, Nextdoor Ads, Twitch Ads, Yelp Ads`,
           },
         ],
       };

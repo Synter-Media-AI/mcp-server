@@ -1,12 +1,12 @@
 # Synter MCP Server (`@synterai/mcp-server@1.4.6`)
 
-> Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
+> Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
 
 [![npm version](https://img.shields.io/npm/v/@synterai/mcp-server.svg)](https://www.npmjs.com/package/@synterai/mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Add Synter to Amp](https://synterai.com/badges/add-to-amp.svg)](https://ampcode.com/settings)
 
-Connect AI coding agents (**Claude Code**, **OpenAI Codex**, **Cursor**, **Windsurf**, **Amp**, **Gemini CLI**) to **43 advertising platforms** via the hosted MCP (`https://mcp.synterai.com`) and REST API (`https://synterai.com/api/v1/tools/run`), or run locally over stdio (`npx -y @synterai/mcp-server@1.4.6`) across **16 core full-write + read ad platforms** (Google Ads, Meta, LinkedIn, Microsoft/Bing, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, Google DV360, and StackAdapt).
+Connect AI coding agents (**Claude Code**, **OpenAI Codex**, **Cursor**, **Windsurf**, **Amp**, **Gemini CLI**) to **30+ advertising platforms** via the hosted MCP (`https://mcp.synterai.com`) and REST API (`https://synterai.com/api/v1/tools/run`), or run locally over stdio (`npx -y @synterai/mcp-server@1.4.6`) across **16 core full-write + read ad platforms** (Google Ads, Meta, LinkedIn, Microsoft/Bing, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, Google DV360, and StackAdapt).
 
 ## When to use this
 
@@ -27,7 +27,7 @@ Try Synter immediately with zero API keys, zero credit card, and deterministic s
 npx -y @synterai/mcp-server@1.4.6 --help
 node examples/weekly-report/generate-report.mjs
 
-# 2. Or register in Claude Code (Hosted OAuth 2.1 — all 43 platforms)
+# 2. Or register in Claude Code (Hosted OAuth 2.1 — all 30+ platforms)
 claude mcp add --transport http synter-ads https://mcp.synterai.com
 
 # 3. Or register local stdio in Claude Code (Paid-Ads toolset only + Read-Only mode)
@@ -66,7 +66,7 @@ claude mcp add synter -- npx -y @synterai/mcp-server@1.4.6 --toolset ad-ops --re
 ## Add Synter to Amp
 
 1. **In Amp: Synter is a built-in integration. Turn it on in Amp under Settings > Integrations.**
-2. **Claude, ChatGPT and other MCP clients, hosted (43 ad platforms, the only Agentic DSP): https://mcp.synterai.com**
+2. **Claude, ChatGPT and other MCP clients, hosted (30+ ad platforms, the only Agentic DSP): https://mcp.synterai.com**
 3. **Local read-only (npm package)**:
    ```json
    {
@@ -88,16 +88,16 @@ claude mcp add synter -- npx -y @synterai/mcp-server@1.4.6 --toolset ad-ops --re
 
 | Flag / Environment Variable | Behavior |
 | :--- | :--- |
-| **Default (`full`)** | Exposes all **56 direct stdio tools** (32 paid-ad tools across 16 platforms + 8 organic social `*_organic_post` tools + 16 outbound `prospector_*` tools). |
+| **Default (`full`)** | Exposes all **56 direct stdio tools** (32 paid-ad tools across the core platforms + 8 organic social `*_organic_post` tools + 16 outbound `prospector_*` tools). |
 | **`--toolset ad-ops`** (`SYNTER_TOOLSET=ad-ops`) | Exposes **only the 32 core paid-advertising tools** and strips all organic social and outbound tools from `tools/list` (and fails closed if called). |
 | **`--read-only`** (`SYNTER_READ_ONLY=true`) | Exposes **only read-only tools** (`readOnlyHint: true`) in `tools/list` and blocks all mutating tools (`destructiveHint: true`) locally before any network call. |
 | **`--demo`** (`SYNTER_DEMO=true`) | Runs in zero-credential sandbox mode with realistic, normalized multi-platform campaign and performance data (`sandbox: true`). |
 
 ---
 
-## Platform Coverage & Read/Write Capability Matrix (43 Hosted / 16 Local Stdio)
+## Platform Coverage & Read/Write Capability Matrix (Hosted / Local Stdio)
 
-The hosted MCP (`https://mcp.synterai.com`) and REST endpoint (`POST https://synterai.com/api/v1/tools/run`) cover **43 advertising platforms**. The local stdio package (`@synterai/mcp-server@1.4.6`) provides direct typed `platform` enum support across **16 full-write + read platforms** and reaches all 140+ backend scripts via `run_tool`:
+The hosted MCP (`https://mcp.synterai.com`) and REST endpoint (`POST https://synterai.com/api/v1/tools/run`) cover **30+ advertising platforms**. The local stdio package (`@synterai/mcp-server@1.4.6`) provides direct typed `platform` enum support across **the core full-write + read platforms** and reaches all 140+ backend scripts via `run_tool`:
 
 | Platform (`platform` enum) | Direct Read Tools (`$0.00`) | Direct Write Tools + `run_tool` Scripts (`SOLO` / `SCALE` / `CUSTOM`) |
 | :--- | :--- | :--- |
@@ -117,7 +117,7 @@ The hosted MCP (`https://mcp.synterai.com`) and REST endpoint (`POST https://syn
 | **OpenAI Ads (`openai`)** | `list_campaigns`, `get_performance`, `get_daily_spend`, `pacing_report`, `optimize_budget` | `pause_campaign`, `update_campaign_budget`, `run_tool(script_name="openai_ads_create_campaign")` |
 | **Google DV360 (`dv360`)** | `list_campaigns`, `get_performance`, `get_daily_spend`, `pacing_report`, `optimize_budget` | `pause_campaign`, `update_campaign_budget`, `run_tool(script_name="dv360_create_campaign" \| "dv360_create_insertion_order" \| "dv360_create_line_item")` |
 | **StackAdapt (`stackadapt`)** | `list_campaigns`, `get_performance`, `get_daily_spend`, `pacing_report`, `optimize_budget` | `pause_campaign`, `update_campaign_budget`, `sync_audience`, `run_tool(script_name="create_stackadapt_campaign")` |
-| **27 Extended Platforms (43 Total on Hosted MCP & `run_tool`)** | `run_tool(script_name="<platform>_*")` in stdio; direct `pull_*_performance` / `execute` on `https://mcp.synterai.com` | CM360, Walmart Connect, Instacart, Target Roundel, Criteo, FreeWheel, SA360, Apple Ads, Demandbase ABM, Taboola, Outbrain, AppLovin, Yahoo DSP, Teads, Viant, Basis, MediaMath, Magnite, PubMatic, Index Exchange, TripleLift, GumGum, Dianomi, Quora Ads, Nextdoor Ads, Twitch Ads, Yelp Ads, Samsung Ads, Roku Ads, impact.com |
+| **Extended Platforms (Hosted MCP & `run_tool`)** | `run_tool(script_name="<platform>_*")` in stdio; direct `pull_*_performance` / `execute` on `https://mcp.synterai.com` | CM360, Walmart Connect, Instacart, Target Roundel, Criteo, FreeWheel, SA360, Apple Ads, Demandbase ABM, Taboola, Outbrain, AppLovin, Yahoo DSP, Teads, Viant, Basis, MediaMath, Magnite, PubMatic, Index Exchange, TripleLift, GumGum, Dianomi, Quora Ads, Nextdoor Ads, Twitch Ads, Yelp Ads, Samsung Ads, Roku Ads, impact.com |
 
 ---
 

@@ -6,7 +6,7 @@ import fs from "node:fs";
 const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
 const LEAD =
-  "Open-source MCP server for running ads with AI agents across 43 ad platforms (16 in local stdio): free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.";
+  "Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.";
 
 test("server.json advertises the hosted remote at https://mcp.synterai.com", () => {
   const server = JSON.parse(read("server.json"));
@@ -73,7 +73,7 @@ test("public metadata has no stale platform counts or mismatched versions", () =
   ]) {
     assert.doesNotMatch(
       read(p),
-      /\b(14|19|21|30\+)\s+(ad(vertising)?\s+)?platforms\b/i,
+      /\b(14|16|19|20\+|21|27|43)\s+(ad(vertising)?\s+)?platforms\b/i,
       `${p} has a stale platform count`,
     );
     assert.doesNotMatch(
