@@ -133,7 +133,7 @@
     },
     {
       "name": "run_tool",
-      "description": "Run any of 140+ Synter tools directly"
+      "description": "Run any Synter tool by name. Use this for advanced operations not covered by other tools. See docs.synterai.com for full tool list."
     },
     {
       "name": "list_landing_pages",
