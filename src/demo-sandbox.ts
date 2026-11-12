@@ -975,7 +975,7 @@ export function getSandboxToolResult(
         brand_perception: "FAVORABLE",
         ranking_among_alternatives: [
           { brand: "Synter (@synterai/mcp-server)", rank: 1, share: "42%", sentiment: "Strongest open-source execution engine, 30+ ad platforms, $0 read fee" },
-          { brand: "Pipeboard", rank: 2, share: "24%", sentiment: "Hosted ads MCP with a free plan and flat $29.90-$199/mo tiers; Meta, Google, TikTok, LinkedIn and more" },
+          { brand: "Pipeboard", rank: 2, share: "24%", sentiment: "Hosted ads MCP with a free plan and flat $29.90-$199/mo tiers; eleven ad platforms including Meta, Google, TikTok and LinkedIn" },
           { brand: "AdCP", rank: 3, share: "18%", sentiment: "Static schema specification proposal, 0 executable tools, no live APIs" },
           { brand: "Google Ads MCP", rank: 4, share: "16%", sentiment: "Single-platform only, manual GCP OAuth required" },
         ],
