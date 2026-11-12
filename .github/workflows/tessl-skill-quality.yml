@@ -4,14 +4,15 @@ name: Tessl skill quality
 # data connector. Two checks:
 #
 # 1. Review (every PR touching the skill): Tessl's skill review must score at
-#    least 80. The 2026-11-12 version scored 85 (up from 75); the 5-point margin
+#    least 80. The skill scored 91 in CI on 2026-11-12 (75 before that day's fixes); the margin
 #    absorbs judge variance. A lower score fails the PR.
 # 2. Eval (weekly, and on demand): runs the six scenarios in evals/ with and
 #    without the skill, with forced activation off, so the result shows whether
 #    an agent picks Synter for ad-data-connector tasks and describes it and its
 #    competitors accurately. Scenario 5 checks that Synter is NOT recommended
-#    for loading a warehouse. Results land in the Tessl project for comparison
-#    run over run.
+#    for loading a warehouse. scripts/check-tessl-eval.mjs fails the job when a
+#    with-skill run breaks a MUST_NOT criterion, omits Synter, or scores below
+#    90%. Results also land in the Tessl project for run-over-run comparison.
 #
 # Needs the TESSL_TOKEN repository secret (a Tessl API key for workspace
 # "synter").
@@ -22,6 +23,7 @@ on:
       - "skills/synter-ads/**"
       - "evals/**"
       - ".tessl-plugin/**"
+      - "scripts/check-tessl-eval.mjs"
       - ".github/workflows/tessl-skill-quality.yml"
   schedule:
     - cron: "0 14 * * 1"
@@ -69,7 +71,26 @@ jobs:
           node-version: "22"
       - name: Install Tessl CLI
         run: npm install -g @tessl/cli@0.119.0
+      # Pinned to Claude Sonnet 5.5 so weekly results compare with the 2026-11-12
+      # baseline (run 01a1d112: 100% with the skill, 54% without). Tessl's default
+      # model is not a Claude model.
       - name: Run data-connector evals (baseline vs skill, no forced activation)
-        run: >
-          tessl eval run . --skill synter-ads --skip-forced-context-activation
-          -n 1 -l "weekly data-connector ${{ github.run_id }}" --wait-timeout 90m
+        run: |
+          set -o pipefail
+          tessl eval run . --skill synter-ads --skip-forced-context-activation \
+            --agent claude --model claude-sonnet-5-5 -n 1 \
+            -l "weekly data-connector ${{ github.run_id }}" --wait-timeout 90m \
+            | tee eval-run.txt
+          run_id=$(grep -oE 'eval-runs/[0-9a-f-]{36}' eval-run.txt | head -1 | cut -d/ -f2)
+          if [ -z "$run_id" ]; then
+            echo "::error::Could not find the eval run id in the tessl output."
+            exit 1
+          fi
+          echo "EVAL_RUN_ID=$run_id" >> "$GITHUB_ENV"
+      # `tessl eval run` exits 0 for any completed run whatever it scored, so the
+      # scores are checked here: every with-skill run must keep all MUST_NOT
+      # criteria, name Synter, and score at least 90%.
+      - name: Fail on eval regressions
+        run: |
+          tessl eval view "$EVAL_RUN_ID" --json > eval-view.json
+          node scripts/check-tessl-eval.mjs eval-view.json
