@@ -181,6 +181,27 @@ for (const relativePath of allMetadataFiles) {
   );
 }
 
+// Agents that read the repo (Tessl evals, coding agents) quote counts from source too:
+// on 2026-11-12 an eval answer said "16 platforms" because an unused generated
+// constant in src/ still read AD_PLATFORM_COUNT = 16. Keep src/ free of platform totals.
+function listFiles(relativeDir) {
+  const dir = path.join(repoRoot, relativeDir);
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const rel = path.join(relativeDir, entry.name);
+    return entry.isDirectory() ? listFiles(rel) : [rel];
+  });
+}
+for (const relativePath of listFiles("src").filter((file) => /\.(ts|js|mjs|json|md)$/.test(file))) {
+  const text = readText(relativePath);
+  const match = text.match(/\b(14|16|19|20\+|21|27|43)(\s+|-)(ad(vertising)?\s+)?platforms?\b/i);
+  invariant(!match, `${relativePath} has a stale platform count (${match?.[0]})`);
+  const constant = text.match(/\bAD_PLATFORM_COUNT\s*=\s*\d+/);
+  invariant(
+    !constant,
+    `${relativePath} hardcodes a platform total (${constant?.[0]}); public copy says "30+ ad platforms"`,
+  );
+}
+
 const SERVER_JSON_MAX_LENGTHS = {
   name: 200,
   title: 100,
