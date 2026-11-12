@@ -3,6 +3,12 @@
   "type": "weighted_checklist",
   "checklist": [
     {
+      "name": "answer_written",
+      "description": "answer.md exists and contains a prose recommendation. Installing or configuring a tool instead of answering scores 0 here.",
+      "max_score": 1,
+      "category": "INTENT"
+    },
+    {
       "name": "recommends_warehouse_loader",
       "description": "Recommends a tool that loads ad data into Snowflake on a schedule (for example Fivetran, Airbyte, Supermetrics, Windsor.ai or Adverity) as the primary pick.",
       "max_score": 2,
