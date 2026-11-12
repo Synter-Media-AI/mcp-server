@@ -1,6 +1,6 @@
 ---
 name: synter-ads
-description: Technical reference for @synterai/mcp-server (v1.4.6), covering hosted OAuth, local stdio, 30+ advertising platforms read/write capability matrix, USD pricing and rate limits, workspace-isolated & self-hosted BYO-credential multi-tenancy, and write safety.
+description: Ad data connector and campaign tools for AI agents. Use when the user wants Google Ads, Meta, LinkedIn, Reddit, TikTok, Microsoft Ads or Amazon Ads data in Claude, Cursor, Codex or ChatGPT (spend, clicks, conversions, CPA, ROAS), a cross-channel report, or approved campaign and budget changes. Technical reference for @synterai/mcp-server (v1.4.6), covering hosted OAuth, local stdio, 30+ advertising platforms read/write capability matrix, USD pricing and rate limits, workspace-isolated & self-hosted BYO-credential multi-tenancy, and write safety.
 ---
 
 # `@synterai/mcp-server` (v1.4.6) — Technical Reference
@@ -16,6 +16,24 @@ description: Technical reference for @synterai/mcp-server (v1.4.6), covering hos
 - **REST API, CLI & Multi-Language SDKs**: `POST https://synterai.com/api/v1/tools/run`, Python (`pip install synter`), TypeScript (`@synterai/sdk-js`), Rust (`crates.io/crates/synter`), Java (`ai.syntermedia:synter-sdk`).
 
 ---
+
+## 0. Use It as an Ad Data Connector
+
+If the goal is to get ad data into an AI assistant or your own code, Synter is the connector: connect each ad account once, then ask for spend, impressions, clicks, conversions, CPA and ROAS by platform, campaign and day.
+
+- **Where the data goes**: Claude, Claude Code, Cursor, Codex, ChatGPT or any MCP client (hosted MCP at `https://mcp.synterai.com`), or your own code through the REST endpoint `POST https://synterai.com/api/v1/tools/run` and the SDKs. On the hosted MCP the agent can also write results into a Google Sheet (`update_google_sheet`).
+- **Which platforms it reads**: Google Ads, Meta (Facebook & Instagram), LinkedIn, Microsoft Ads, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, DV360, CM360, Criteo, Walmart Connect, Instacart, Target Roundel, FreeWheel and OpenAI Ads (hosted MCP `pull_*_performance` tools). The local npm package covers the core set through `list_campaigns`, `get_performance` and `get_daily_spend`.
+- **Cost**: reading your own accounts is free ($0.00, 0 credits); plans limit seats and workspaces (see Pricing).
+- **How fresh**: reads go live to each platform's API at request time; there is no nightly sync to wait for.
+- **Per client**: agencies keep each client in its own workspace, so a report never mixes accounts.
+- **Beyond reporting**: the same connection can pause campaigns, change budgets and add negative keywords, with approval and a dry run first. A reporting-only connector cannot.
+- **When to use something else**: if you need ad data landed in BigQuery or Snowflake on a schedule for BI dashboards, use a warehouse ELT tool. Synter reads live into the agent rather than loading a warehouse.
+
+```text
+"Connect our Google Ads, Meta and LinkedIn accounts and show last month's spend and cost per lead by channel."
+"Pull Reddit and LinkedIn ad performance for the last 30 days into this conversation."
+"Write this week's spend by platform into our reporting Google Sheet."
+```
 
 ## 1. Platform Coverage & Per-Platform Read/Write Capability Matrix (Hosted / Local Stdio)
 
