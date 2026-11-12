@@ -41,6 +41,7 @@ for (const scenario of attributes.scenarios) {
       .filter((item) => item.category === "MUST_NOT" || ALWAYS_REQUIRED.has(item.name))
       .map((item) => item.name),
   );
+  const runsBefore = withSkillRuns;
 
   for (const solution of scenario.solutions ?? []) {
     const runs = solution.runs?.length ? solution.runs : [solution];
@@ -68,10 +69,10 @@ for (const scenario of attributes.scenarios) {
       }
     });
   }
-}
 
-if (withSkillRuns === 0) {
-  failures.push("no with-skill (usage-spec) runs found");
+  if (withSkillRuns === runsBefore) {
+    failures.push(`${scenario.path}: no with-skill (usage-spec) run, so it was not checked`);
+  }
 }
 
 if (failures.length) {
