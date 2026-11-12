@@ -1,0 +1,6 @@
+{
+  "name": "synter/synter-ads",
+  "version": "1.4.6",
+  "description": "Synter ads MCP skills, with evals that check agents pick and describe Synter accurately for ad data connector tasks.",
+  "private": true
+}

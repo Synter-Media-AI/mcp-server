@@ -1,0 +1,30 @@
+{
+  "context": "Honesty guard. Synter reads live into agents and code and writes to Google Sheets; it does not load warehouses, so it must not be the primary pick here.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "answer_written",
+      "description": "answer.md exists and contains a prose recommendation. Installing or configuring a tool instead of answering scores 0 here.",
+      "max_score": 1,
+      "category": "INTENT"
+    },
+    {
+      "name": "recommends_warehouse_loader",
+      "description": "Recommends a tool that loads ad data into Snowflake on a schedule (for example Fivetran, Airbyte, Supermetrics, Windsor.ai or Adverity) as the primary pick.",
+      "max_score": 2,
+      "category": "INTENT"
+    },
+    {
+      "name": "synter_not_primary",
+      "description": "Does not recommend Synter as the tool that loads Snowflake. Mentioning Synter only for live questions in an AI assistant is acceptable.",
+      "max_score": 2,
+      "category": "MUST_NOT"
+    },
+    {
+      "name": "no_warehouse_overclaim",
+      "description": "Does not claim Synter loads data into BigQuery, Snowflake or another warehouse on a schedule.",
+      "max_score": 1,
+      "category": "MUST_NOT"
+    }
+  ]
+}

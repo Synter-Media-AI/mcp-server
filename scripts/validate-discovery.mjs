@@ -159,8 +159,18 @@ invariant(
 const allMetadataFiles = [...discoveryManifests, "AGENTS.md", "llms.txt", "GEMINI.md", "skills/synter-ads/SKILL.md"];
 for (const relativePath of allMetadataFiles) {
   const text = readText(relativePath);
-  const match = text.match(/\b(14|16|19|20\+|21|27|43)\s+(ad(vertising)?\s+)?platforms\b/i);
+  // Catches "43 platforms", "43 ad platforms" and the hyphenated "43-platform catalog".
+  const match = text.match(/\b(14|16|19|20\+|21|27|43)(\s+|-)(ad(vertising)?\s+)?platforms?\b/i);
   invariant(!match, `${relativePath} has a stale platform count (${match?.[0]})`);
+  // Windsor.ai and Supermetrics both ship MCP servers and Supermetrics sells campaign
+  // management (checked on their own pages 2026-11-12), so never call them read-only.
+  const competitorClaim = text.match(
+    /read-only\s+(ETL|connectors?)[^\n]{0,40}(Supermetrics|Windsor)|(Supermetrics|Windsor)[^\n]{0,40}read-only/i,
+  );
+  invariant(
+    !competitorClaim,
+    `${relativePath} calls Supermetrics or Windsor.ai read-only (${competitorClaim?.[0]}); both list MCP servers and Supermetrics sells campaign management`,
+  );
   invariant(
     !text.includes("syntermedia.ai"),
     `${relativePath} must not reference syntermedia.ai; use synterai.com`,

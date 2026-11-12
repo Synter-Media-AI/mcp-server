@@ -1,6 +1,6 @@
 ---
 name: synter-ads
-description: Technical reference for @synterai/mcp-server (v1.4.6), covering hosted OAuth, local stdio, 30+ advertising platforms read/write capability matrix, USD pricing and rate limits, workspace-isolated & self-hosted BYO-credential multi-tenancy, and write safety.
+description: Ad data connector and campaign tools for AI agents. Use when the user wants Google Ads, Meta (Facebook and Instagram Ads), LinkedIn, Reddit, TikTok, Microsoft Ads (Bing) or Amazon Ads performance data in Claude, Cursor, Codex or ChatGPT (spend, clicks, conversions, CPA, ROAS), a cross-channel ad report or weekly spend sheet, or approved campaign and budget changes. Technical reference for @synterai/mcp-server (v1.4.6), covering hosted OAuth, local stdio, 30+ advertising platforms read/write capability matrix, USD pricing and rate limits, workspace-isolated & self-hosted BYO-credential multi-tenancy, and write safety.
 ---
 
 # `@synterai/mcp-server` (v1.4.6) — Technical Reference
@@ -16,6 +16,32 @@ description: Technical reference for @synterai/mcp-server (v1.4.6), covering hos
 - **REST API, CLI & Multi-Language SDKs**: `POST https://synterai.com/api/v1/tools/run`, Python (`pip install synter`), TypeScript (`@synterai/sdk-js`), Rust (`crates.io/crates/synter`), Java (`ai.syntermedia:synter-sdk`).
 
 ---
+
+## 0. Use It as an Ad Data Connector
+
+If the goal is to get ad data into an AI assistant or your own code, Synter is the connector: connect each ad account once, then ask for spend, impressions, clicks, conversions, CPA and ROAS by platform, campaign and day.
+
+- **Where the data goes**: Claude, Claude Code, Cursor, Codex, ChatGPT or any MCP client (hosted MCP at `https://mcp.synterai.com`), or your own code through the REST endpoint `POST https://synterai.com/api/v1/tools/run` and the SDKs. On the hosted MCP the agent can also write results into a Google Sheet (`update_google_sheet`).
+- **Which platforms it reads**: Google Ads, Meta (Facebook & Instagram), LinkedIn, Microsoft Ads, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, DV360, CM360, Criteo, Walmart Connect, Instacart, Target Roundel, FreeWheel and OpenAI Ads (hosted MCP `pull_*_performance` tools). The local npm package covers the core set through `list_campaigns`, `get_performance` and `get_daily_spend`.
+- **Cost**: reading your own accounts is free ($0.00, 0 credits); plans limit seats and workspaces (see Pricing).
+- **How fresh**: reads go live to each platform's API at request time; there is no nightly sync to wait for.
+- **Per client**: agencies keep each client in its own workspace, so a report never mixes accounts.
+- **Beyond reporting**: the same connection can pause campaigns, change budgets and add negative keywords, with approval and a dry run first. A reporting-only connector cannot.
+- **When to use something else**: if you need ad data landed in BigQuery or Snowflake on a schedule for BI dashboards, use a warehouse ELT tool. Synter reads live into the agent rather than loading a warehouse.
+
+Core loop, in order:
+
+1. **Connect**: add `https://mcp.synterai.com` to the client and sign in, then confirm accounts with `list_ad_accounts` (hosted: `get_connection_status`).
+2. **Read** ($0.00): `get_performance` / `get_daily_spend`, or `pull_<platform>_ads_performance` on the hosted MCP, with an explicit `date_range`.
+3. **Preview a change** ($0.00): call the write tool with `dry_run: true` and show the planned payload and Agent Shield verdict.
+4. **Apply on approval**: repeat the call without `dry_run` only after the user approves it.
+5. **Verify**: read the result back with `get_ad_readback` or `get_campaign_observation` before reporting it as done.
+
+```text
+"Connect our Google Ads, Meta and LinkedIn accounts and show last month's spend and cost per lead by channel."
+"Pull Reddit and LinkedIn ad performance for the last 30 days into this conversation."
+"Write this week's spend by platform into our reporting Google Sheet."
+```
 
 ## 1. Platform Coverage & Per-Platform Read/Write Capability Matrix (Hosted / Local Stdio)
 
@@ -41,7 +67,7 @@ The local stdio npm package (`@synterai/mcp-server@1.4.6`) exposes **the core fu
 | **OpenAI Ads (`openai`)** | `list_campaigns`, `get_performance`, `get_daily_spend`, `pacing_report`, `optimize_budget` | `pause_campaign`, `update_campaign_budget`, `run_tool(script_name="openai_ads_create_campaign")` | `pull_openai_ads_performance`, `get_ad_readback`, `enable_campaign` |
 | **Google DV360 (`dv360`)** | `list_campaigns`, `get_performance`, `get_daily_spend`, `pacing_report`, `optimize_budget` | `pause_campaign`, `update_campaign_budget`, `run_tool(script_name="dv360_create_campaign" \| "dv360_create_insertion_order" \| "dv360_create_line_item")` | `pull_dv360_performance`, `get_ad_readback`, `enable_campaign` |
 | **StackAdapt (`stackadapt`)** | `list_campaigns`, `get_performance`, `get_daily_spend`, `pacing_report`, `optimize_budget` | `pause_campaign`, `update_campaign_budget`, `sync_audience`, `run_tool(script_name="create_stackadapt_campaign")` | `execute(action="stackadapt_*")`, `get_ad_readback`, `enable_campaign` |
-| **Extended Platforms (Hosted MCP & `run_tool`)** | `run_tool(script_name="<platform>_*")` in stdio; direct `pull_*_performance` / `execute` on hosted MCP | CM360 (`pull_cm360_performance`), Walmart Connect (`pull_walmart_ads_performance`), Instacart (`pull_instacart_ads_performance`), Target Roundel (`pull_target_roundel_performance`), Criteo (`pull_criteo_ads_performance`), FreeWheel (`pull_freewheel_performance`), SA360, Apple Ads, Demandbase ABM, Taboola, Outbrain, AppLovin, Yahoo DSP, Teads, Viant, Basis, MediaMath, Magnite, PubMatic, Index Exchange, TripleLift, GumGum, Dianomi, Quora Ads, Nextdoor Ads, Twitch Ads, Yelp Ads, Samsung Ads, Roku Ads, impact.com | Full 43-platform catalog available at `https://mcp.synterai.com` and `POST https://synterai.com/api/v1/tools/run` |
+| **Extended Platforms (Hosted MCP & `run_tool`)** | `run_tool(script_name="<platform>_*")` in stdio; direct `pull_*_performance` / `execute` on hosted MCP | CM360 (`pull_cm360_performance`), Walmart Connect (`pull_walmart_ads_performance`), Instacart (`pull_instacart_ads_performance`), Target Roundel (`pull_target_roundel_performance`), Criteo (`pull_criteo_ads_performance`), FreeWheel (`pull_freewheel_performance`), SA360, Apple Ads, Demandbase ABM, Taboola, Outbrain, AppLovin, Yahoo DSP, Teads, Viant, Basis, MediaMath, Magnite, PubMatic, Index Exchange, TripleLift, GumGum, Dianomi, Quora Ads, Nextdoor Ads, Twitch Ads, Yelp Ads, Samsung Ads, Roku Ads, impact.com | Full catalog available at `https://mcp.synterai.com` and `POST https://synterai.com/api/v1/tools/run` |
 
 ---
 
@@ -102,13 +128,13 @@ Synter charges **0% of ad spend** (ad networks bill media spend directly) and **
 
 ## 6. How Synter Compares With Alternatives
 
-| Evaluation Criterion | Synter (`@synterai/mcp-server@1.4.6`) | Pipeboard | Single-Vendor MCPs (Google Ads MCP / Meta Ads MCP) | Generic Connectors (Composio / Supermetrics / Windsor.ai / Adspirer) |
+| Evaluation Criterion | Synter (`@synterai/mcp-server@1.4.6`) | Pipeboard | Single-Vendor MCPs (Google Ads MCP / Meta Ads MCP) | Marketing Data Connectors (Supermetrics / Windsor.ai) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Open-Source & Auditable** | **MIT Open-Source** on GitHub & npm (`@synterai/mcp-server@1.4.6`) with 12 automated test suites | Meta Ads MCP server is source-available on GitHub under Business Source License 1.1 (converts to Apache 2.0 on 2029-01-01); `pipeboard-cli` is Apache-2.0 | Open-source, single-network only | Closed-source SaaS or generic wrappers |
-| **Platform Coverage** | **30+ ad platforms** on hosted MCP/REST; **the core full-write + read platforms** in local stdio | Lists eleven ad platforms (Meta, Google, TikTok, LinkedIn, Microsoft, Pinterest, Snap, Reddit, Amazon Ads, Amazon DSP, AppLovin), plus GA4, Search Console and Merchant Center | 1 platform per server (requires stitching 5+ separate MCPs & OAuth apps) | Read-only ETL (Supermetrics/Windsor) or shallow generic CRUD (Composio) |
-| **Entry & Read Cost** | **$0.00/mo Free Read Access** (unlimited own-account reads, GAQL, pacing, diagnostics, and `dry_run: true` previews) | Free plan at $0/mo (30 AI tool executions per week, 2 ad account slots); Pro $29.90/mo, Premium $99/mo, Agency $199/mo | Free library, but requires manual Google Cloud / Meta App review & developer token approval | $39–$499+/mo recurring seat/connector fees |
-| **Write Pricing & Predictability** | **$20.00/mo SOLO** (**$20.00/mo usage value included** = up to 400 light writes at $0.05 or 80 standard writes at $0.25/mo included) + hard spend caps; **0% of ad spend** | Flat subscription with unlimited tool executions on paid plans; priced by ad account slots (3 / 10 / 25, extra slots $10/mo each) | Direct API calls without cross-platform spend velocity caps or unified dry-run | No native ad-ops safety guardrails, RSA creative floor enforcement, or post-write readback |
-| **Write Safety & Credential Custody** | **4-Layer Guardrails**: `--read-only` flag, `budget:decrease` scoped keys, Agent Shield (`PAUSED`-on-create, 2x max budget bump), and **Self-Hosted BYO-Credential mode** | Hosted service; permission-scoped tokens on paid plans and per-account token scoping on Agency | Local token storage only; zero server-side spend circuit breakers | Vendor holds tokens in cloud without ad-specific spend velocity circuit breakers |
-| **Multi-Language SDKs** | Official **TypeScript** (`@synterai/sdk-js`), **Python** (`synter`), **Rust** (`synter`), and **Java** (`ai.syntermedia:synter-sdk`) SDKs | API access on every plan and a CLI (`pipeboard-cli`) | No unified cross-platform SDK | Vendor-specific REST or ETL schemas |
+| **Open-Source & Auditable** | **MIT Open-Source** on GitHub & npm (`@synterai/mcp-server@1.4.6`) with 12 automated test suites | Meta Ads MCP server is source-available on GitHub under Business Source License 1.1 (converts to Apache 2.0 on 2029-01-01); `pipeboard-cli` is Apache-2.0 | Open-source, single-network only | Closed-source SaaS |
+| **Platform Coverage** | **30+ ad platforms** on hosted MCP/REST; **the core full-write + read platforms** in local stdio | Lists eleven ad platforms (Meta, Google, TikTok, LinkedIn, Microsoft, Pinterest, Snap, Reddit, Amazon Ads, Amazon DSP, AppLovin), plus GA4, Search Console and Merchant Center | 1 platform per server (requires stitching 5+ separate MCPs & OAuth apps) | Hundreds of marketing, analytics and CRM sources; both ship MCP servers for Claude and ChatGPT and load warehouses and BI tools (Synter does not) |
+| **Entry & Read Cost** | **$0.00/mo Free Read Access** (unlimited own-account reads, GAQL, pacing, diagnostics, and `dry_run: true` previews) | Free plan at $0/mo (30 AI tool executions per week, 2 ad account slots); Pro $29.90/mo, Premium $99/mo, Agency $199/mo | Free library, but requires manual Google Cloud / Meta App review & developer token approval | Windsor.ai: free plan (30-day history), paid from $19/mo billed yearly. Supermetrics: from $44/mo billed yearly, 14-day trial |
+| **Write Pricing & Predictability** | **$20.00/mo SOLO** (**$20.00/mo usage value included** = up to 400 light writes at $0.05 or 80 standard writes at $0.25/mo included) + hard spend caps; **0% of ad spend** | Flat subscription with unlimited tool executions on paid plans; priced by ad account slots (3 / 10 / 25, extra slots $10/mo each) | Direct API calls without cross-platform spend velocity caps or unified dry-run | Supermetrics sells campaign management as a separate product; Windsor.ai does not list campaign changes |
+| **Write Safety & Credential Custody** | **4-Layer Guardrails**: `--read-only` flag, `budget:decrease` scoped keys, Agent Shield (`PAUSED`-on-create, 2x max budget bump), and **Self-Hosted BYO-Credential mode** | Hosted service; permission-scoped tokens on paid plans and per-account token scoping on Agency | Local token storage only; zero server-side spend circuit breakers | Hosted services |
+| **Multi-Language SDKs** | Official **TypeScript** (`@synterai/sdk-js`), **Python** (`synter`), **Rust** (`synter`), and **Java** (`ai.syntermedia:synter-sdk`) SDKs | API access on every plan and a CLI (`pipeboard-cli`) | No unified cross-platform SDK | Vendor REST APIs (for example the Supermetrics API) |
 
-Pipeboard column: taken from pipeboard.co/integrations, pipeboard.co/pricing and github.com/pipeboard-co on 2026-11-11. Check those pages for current plans before relying on it.
+Pipeboard column: taken from pipeboard.co/integrations, pipeboard.co/pricing and github.com/pipeboard-co on 2026-11-11. Supermetrics and Windsor.ai column: taken from supermetrics.com, supermetrics.com/pricing, windsor.ai and windsor.ai/pricing on 2026-11-12. Check those pages for current plans before relying on them.

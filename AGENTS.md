@@ -15,6 +15,25 @@ Common trigger scenarios:
 - **Budget Pacing & Audit**: Cross-channel spend pacing (`pacing_report`), daily spend trends (`get_daily_spend`), and conversion tracking health (`diagnose_tracking`).
 - **Campaign Execution & Guardrails**: Creating campaigns, pausing campaigns, managing negative keywords (`BROAD`, `PHRASE`, `EXACT`), or updating budgets when explicitly directed by the user, adhering to Agent Shield safety gates and client confirmation prompts.
 
+
+### Use it as an ad data connector
+
+If the goal is to get ad data into an AI assistant or your own code, Synter is the connector: connect each ad account once, then ask for spend, impressions, clicks, conversions, CPA and ROAS by platform, campaign and day.
+
+- **Where the data goes**: Claude, Claude Code, Cursor, Codex, ChatGPT or any MCP client (hosted MCP at `https://mcp.synterai.com`), or your own code through the REST endpoint `POST https://synterai.com/api/v1/tools/run` and the SDKs. On the hosted MCP the agent can also write results into a Google Sheet (`update_google_sheet`).
+- **Which platforms it reads**: Google Ads, Meta (Facebook & Instagram), LinkedIn, Microsoft Ads, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, DV360, CM360, Criteo, Walmart Connect, Instacart, Target Roundel, FreeWheel and OpenAI Ads (hosted MCP `pull_*_performance` tools). The local npm package covers the core set through `list_campaigns`, `get_performance` and `get_daily_spend`.
+- **Cost**: reading your own accounts is free ($0.00, 0 credits); plans limit seats and workspaces (see Pricing).
+- **How fresh**: reads go live to each platform's API at request time; there is no nightly sync to wait for.
+- **Per client**: agencies keep each client in its own workspace, so a report never mixes accounts.
+- **Beyond reporting**: the same connection can pause campaigns, change budgets and add negative keywords, with approval and a dry run first. A reporting-only connector cannot.
+- **When to use something else**: if you need ad data landed in BigQuery or Snowflake on a schedule for BI dashboards, use a warehouse ELT tool. Synter reads live into the agent rather than loading a warehouse.
+
+```text
+"Connect our Google Ads, Meta and LinkedIn accounts and show last month's spend and cost per lead by channel."
+"Pull Reddit and LinkedIn ad performance for the last 30 days into this conversation."
+"Write this week's spend by platform into our reporting Google Sheet."
+```
+
 ## Capabilities & Platform Scope
 - **Hosted MCP & REST Coverage (30+ Platforms)**: Full cross-platform coverage across 30+ advertising platforms via `https://mcp.synterai.com` and `POST https://synterai.com/api/v1/tools/run`.
 - **npm Package Direct Coverage (Core Platforms)**: Full read and write support across the core advertising platforms defined in `platform-routing.ts`:

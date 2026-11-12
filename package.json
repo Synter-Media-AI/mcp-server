@@ -41,7 +41,10 @@
     "claude",
     "cursor",
     "amp",
-    "chatgpt"
+    "chatgpt",
+    "ad-data-connector",
+    "marketing-data",
+    "ads-api"
   ],
   "type": "module",
   "main": "dist/index.js",
