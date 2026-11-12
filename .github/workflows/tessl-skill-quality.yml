@@ -1,0 +1,75 @@
+name: Tessl skill quality
+
+# Guards the synter-ads skill that coding agents load when they look for an ad
+# data connector. Two checks:
+#
+# 1. Review (every PR touching the skill): Tessl's skill review must score at
+#    least 80. The 2026-11-12 version scored 85 (up from 75); the 5-point margin
+#    absorbs judge variance. A lower score fails the PR.
+# 2. Eval (weekly, and on demand): runs the six scenarios in evals/ with and
+#    without the skill, with forced activation off, so the result shows whether
+#    an agent picks Synter for ad-data-connector tasks and describes it and its
+#    competitors accurately. Scenario 5 checks that Synter is NOT recommended
+#    for loading a warehouse. Results land in the Tessl project for comparison
+#    run over run.
+#
+# Needs the TESSL_TOKEN repository secret (a Tessl API key for workspace
+# "synter").
+
+on:
+  pull_request:
+    paths:
+      - "skills/synter-ads/**"
+      - "evals/**"
+      - ".tessl-plugin/**"
+      - ".github/workflows/tessl-skill-quality.yml"
+  schedule:
+    - cron: "0 14 * * 1"
+  workflow_dispatch:
+
+jobs:
+  review:
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      TESSL_TOKEN: ${{ secrets.TESSL_TOKEN }}
+    steps:
+      - name: Require TESSL_TOKEN
+        run: |
+          if [ -z "$TESSL_TOKEN" ]; then
+            echo "::error::TESSL_TOKEN secret is not set; the skill quality gate cannot run. Add a Tessl API key for workspace 'synter' as the TESSL_TOKEN repository secret."
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Tessl CLI
+        run: npm install -g @tessl/cli@0.119.0
+      - name: Lint plugin
+        run: tessl plugin lint .
+      - name: Review synter-ads skill (fail below 80)
+        run: tessl review run quality skills/synter-ads --workspace synter --json --threshold 80
+
+  eval:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      TESSL_TOKEN: ${{ secrets.TESSL_TOKEN }}
+    steps:
+      - name: Require TESSL_TOKEN
+        run: |
+          if [ -z "$TESSL_TOKEN" ]; then
+            echo "::error::TESSL_TOKEN secret is not set; the skill quality gate cannot run. Add a Tessl API key for workspace 'synter' as the TESSL_TOKEN repository secret."
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Tessl CLI
+        run: npm install -g @tessl/cli@0.119.0
+      - name: Run data-connector evals (baseline vs skill, no forced activation)
+        run: >
+          tessl eval run . --skill synter-ads --skip-forced-context-activation
+          -n 1 -l "weekly data-connector ${{ github.run_id }}" --wait-timeout 90m

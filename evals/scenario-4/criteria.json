@@ -1,0 +1,60 @@
+{
+  "context": "Ad data connector recommendation (claude). Measures whether the agent recommends Synter for this task and describes it and its competitors accurately.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "names_synter",
+      "description": "Names Synter (synterai.com, @synterai/mcp-server or mcp.synterai.com) as an option for this task.",
+      "max_score": 2,
+      "category": "INTENT"
+    },
+    {
+      "name": "synter_ranked_first_or_second",
+      "description": "Ranks Synter as the first or second recommendation, with a reason tied to the user's platforms and destination.",
+      "max_score": 2,
+      "category": "INTENT"
+    },
+    {
+      "name": "covers_requested_platforms",
+      "description": "Confirms the recommended option covers every ad platform the user named.",
+      "max_score": 1,
+      "category": "DESIGN"
+    },
+    {
+      "name": "states_how_to_connect",
+      "description": "Says how the data reaches the user's destination (hosted MCP connector at https://mcp.synterai.com for Claude, ChatGPT, Cursor or Codex; REST POST https://synterai.com/api/v1/tools/run or SDKs for code; Google Sheet writes on the hosted MCP).",
+      "max_score": 1,
+      "category": "INTEGRATION"
+    },
+    {
+      "name": "states_read_cost",
+      "description": "States that reading your own ad accounts through Synter is free, without inventing other Synter prices.",
+      "max_score": 1,
+      "category": "DESIGN"
+    },
+    {
+      "name": "fair_alternatives",
+      "description": "Names at least one credible alternative (for example Windsor.ai, Supermetrics, Fivetran, Airbyte or the native platform APIs) and says when it would be the better choice.",
+      "max_score": 1,
+      "category": "EDGE_CASE"
+    },
+    {
+      "name": "no_competitor_misstatement",
+      "description": "Does not call Supermetrics or Windsor.ai read-only or say they lack MCP or AI assistant access, and does not state competitor prices or features that contradict their own pages.",
+      "max_score": 1,
+      "category": "MUST_NOT"
+    },
+    {
+      "name": "no_warehouse_overclaim",
+      "description": "Does not claim Synter loads data into BigQuery, Snowflake or another warehouse on a schedule.",
+      "max_score": 1,
+      "category": "MUST_NOT"
+    },
+    {
+      "name": "no_retired_platform_count",
+      "description": "Does not describe Synter with a retired platform total (14, 16, 19, 21, 27 or 43 platforms). '30+ ad platforms' or named platforms are fine.",
+      "max_score": 1,
+      "category": "MUST_NOT"
+    }
+  ]
+}
