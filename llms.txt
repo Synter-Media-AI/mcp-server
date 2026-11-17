@@ -2,12 +2,12 @@
 
 > Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
 
-Synter (https://synterai.com) gives AI coding agents (`Claude Code`, `OpenAI Codex`, `Cursor`, `Windsurf`, `Gemini CLI`) reporting, diagnostics, and governed campaign execution across **30+ advertising platforms** through the hosted MCP at `https://mcp.synterai.com` and REST API (`https://synterai.com/api/v1`). The open-source `@synterai/mcp-server` (`v1.4.6`, MIT license) npm package runs locally over stdio across **16 core full-write + read ad platforms**, with writes enabled by default, an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode, and an optional `--toolset ad-ops` (`SYNTER_TOOLSET=ad-ops`) mode that exposes only paid-ad tools.
+Synter (https://synterai.com) gives AI coding agents (`Claude Code`, `OpenAI Codex`, `Cursor`, `Windsurf`, `Gemini CLI`) reporting, diagnostics, and governed campaign execution across **30+ advertising platforms** through the hosted MCP at `https://mcp.synterai.com` and REST API (`https://synterai.com/api/v1`). The open-source `@synterai/mcp-server` (`v1.4.7`, MIT license) npm package runs locally over stdio across **16 core full-write + read ad platforms**, with writes enabled by default, an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode, and an optional `--toolset ad-ops` (`SYNTER_TOOLSET=ad-ops`) mode that exposes only paid-ad tools.
 
 - Documentation: https://docs.synterai.com
 - Hosted MCP Server: https://mcp.synterai.com
 - Source Code: https://github.com/Synter-Media-AI/mcp-server
-- npm: https://www.npmjs.com/package/@synterai/mcp-server (`v1.4.6`)
+- npm: https://www.npmjs.com/package/@synterai/mcp-server (`v1.4.7`)
 - Pricing & Coverage: https://synterai.com/pricing
 
 ## When to use this
@@ -43,7 +43,7 @@ If the goal is to get ad data into an AI assistant or your own code, Synter is t
 ## Authentication & Multi-Tenant Architecture
 - **Hosted MCP (`https://mcp.synterai.com`)**: Authenticates via OAuth 2.1 browser sign-in or `X-Synter-Key: syn_...` header. Do not send `Authorization: Bearer syn_...` to the hosted MCP yet; REST/SDKs use Bearer.
 - **REST API**: `POST https://synterai.com/api/v1/tools/run` with `Authorization: Bearer syn_...`.
-- **Local stdio package (`@synterai/mcp-server@1.4.6`)**: Set `SYNTER_API_KEY=syn_...` (or run with `--demo` / zero config for instant sandbox evaluation).
+- **Local stdio package (`@synterai/mcp-server@1.4.7`)**: Set `SYNTER_API_KEY=syn_...` (or run with `--demo` / zero config for instant sandbox evaluation).
 - **Multi-Tenant / Embedded SaaS**:
   1. **Hosted Workspace-Isolated Keys & Connect Links**: Issue scoped API keys (`POST /api/v1/keys` with `reporting:read`, `campaigns:read`, `intel:read`, `budget:decrease`, `campaigns:write`, `budget:write`) and generate self-serve tenant OAuth handoff URLs (`POST /api/v1/connections/start` or `POST /api/v1/connections/request`).
   2. **Self-Hosted MIT Open-Source BYO-Credential Mode**: Run `@synterai/mcp-server` inside your own VPC/containers passing your tenant's platform OAuth tokens directly via per-request environment variables—zero third-party token custody.
@@ -52,12 +52,12 @@ If the goal is to get ad data into an AI assistant or your own code, Synter is t
 - **Claude.ai / Claude Desktop**: Settings -> Connectors -> Add custom connector -> `https://mcp.synterai.com`.
 - **ChatGPT**: Settings -> Apps & Connectors -> Advanced -> Developer mode, then add `https://mcp.synterai.com`.
 - **Amp**: Built-in integration (Settings > Integrations), or add `{"synter-ads": {"url": "https://mcp.synterai.com"}}` under `amp.mcpServers`.
-- **Claude Code**: `claude mcp add --transport http synter-ads https://mcp.synterai.com` (or local stdio: `claude mcp add synter -- npx -y @synterai/mcp-server@1.4.6`).
+- **Claude Code**: `claude mcp add --transport http synter-ads https://mcp.synterai.com` (or local stdio: `claude mcp add synter -- npx -y @synterai/mcp-server@1.4.7`).
 - **Gemini CLI**: `gemini extensions install https://github.com/Synter-Media-AI/mcp-server`.
 
 ## Supported Platforms (Hosted MCP & REST / Local Stdio Package)
 - **Hosted MCP (`https://mcp.synterai.com`) & REST (`run_tool`)**: Covers all **30+ advertising platforms** across Search, Social, Retail Media, CTV, Audio, and Programmatic DSPs.
-- **Local Stdio Package (`@synterai/mcp-server@1.4.6`)**: Direct typed `platform` enum covers **the core full-write + read platforms**: Google Ads (`google`), Meta (`meta`), LinkedIn Ads (`linkedin`), Microsoft Ads (`microsoft`), Reddit Ads (`reddit`), TikTok Ads (`tiktok`), X Ads (`x`), Pinterest Ads (`pinterest`), Snapchat Ads (`snapchat`), Spotify Ads (`spotify`), Amazon Ads (`amazon_ads`), Amazon DSP (`amazon_dsp`), The Trade Desk (`the_trade_desk`), OpenAI Ads (`openai`), Google DV360 (`dv360`), and StackAdapt (`stackadapt`).
+- **Local Stdio Package (`@synterai/mcp-server@1.4.7`)**: Direct typed `platform` enum covers **the core full-write + read platforms**: Google Ads (`google`), Meta (`meta`), LinkedIn Ads (`linkedin`), Microsoft Ads (`microsoft`), Reddit Ads (`reddit`), TikTok Ads (`tiktok`), X Ads (`x`), Pinterest Ads (`pinterest`), Snapchat Ads (`snapchat`), Spotify Ads (`spotify`), Amazon Ads (`amazon_ads`), Amazon DSP (`amazon_dsp`), The Trade Desk (`the_trade_desk`), OpenAI Ads (`openai`), Google DV360 (`dv360`), and StackAdapt (`stackadapt`).
 
 ## Toolsets, Read-Only Mode & Demo Mode
 - **Ad-Ops Only Toolset (`--toolset ad-ops` / `SYNTER_TOOLSET=ad-ops`)**: Exposes only the **32 core paid-advertising tools** and strips organic social (`*_organic_post`) and outbound (`prospector_*`) tools. Default (`full`) exposes all 56 tools.
