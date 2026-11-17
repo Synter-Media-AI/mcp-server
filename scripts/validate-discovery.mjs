@@ -48,7 +48,7 @@ invariant(
 );
 
 const LEAD =
-  "Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.";
+  "One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.";
 
 invariant(
   serverJson.description === LEAD,
