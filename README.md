@@ -1,6 +1,6 @@
 # Synter MCP Server (`@synterai/mcp-server@1.4.6`)
 
-> Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
+> One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.
 
 [![npm version](https://img.shields.io/npm/v/@synterai/mcp-server.svg)](https://www.npmjs.com/package/@synterai/mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
