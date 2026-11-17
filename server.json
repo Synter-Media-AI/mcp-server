@@ -1,26 +1,28 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.Synter-Media-AI/synter-ads",
-  "description": "Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.",
+  "title": "Synter Ads",
+  "description": "AI agents run ads across 30+ ad platforms. Hosted MCP with OAuth at mcp.synterai.com.",
   "status": "active",
   "repository": {
     "url": "https://github.com/Synter-Media-AI/mcp-server",
     "source": "github"
   },
-  "version": "1.4.6",
+  "version": "1.4.7",
+  "websiteUrl": "https://synterai.com/mcp",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@synterai/mcp-server",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "transport": {
         "type": "stdio"
       },
       "environmentVariables": [
         {
           "name": "SYNTER_API_KEY",
-          "description": "Your Synter API key. Create one at https://synterai.com/developer",
+          "description": "API key for the local stdio server only. The hosted server uses OAuth. Create a key at https://synterai.com/developer",
           "isRequired": true,
           "isSecret": true,
           "format": "string"
@@ -33,6 +35,5 @@
       "type": "streamable-http",
       "url": "https://mcp.synterai.com"
     }
-  ],
-  "websiteUrl": "https://synterai.com/mcp"
+  ]
 }

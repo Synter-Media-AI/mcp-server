@@ -8,21 +8,30 @@ const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8")
 const LEAD =
   "Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.";
 
+const REGISTRY_DESCRIPTION =
+  "AI agents run ads across 30+ ad platforms. Hosted MCP with OAuth at mcp.synterai.com.";
+
+const SERVER_JSON_MAX_DESCRIPTION = 100;
+
 test("server.json advertises the hosted remote at https://mcp.synterai.com", () => {
   const server = JSON.parse(read("server.json"));
   assert.equal(server.remotes[0].url, "https://mcp.synterai.com");
 });
 
-test("server.json version matches package.json and description matches canonical LEAD", () => {
+test("server.json version matches package.json and description matches REGISTRY_DESCRIPTION", () => {
   const server = JSON.parse(read("server.json"));
   const pkg = JSON.parse(read("package.json"));
   assert.equal(server.version, pkg.version);
-  assert.equal(server.description, LEAD);
+  assert.equal(server.description, REGISTRY_DESCRIPTION);
+  assert.ok(
+    server.description.length <= SERVER_JSON_MAX_DESCRIPTION,
+    `server.json description is ${server.description.length} characters; registry cap is ${SERVER_JSON_MAX_DESCRIPTION}`,
+  );
+  assert.ok(!server.remotes?.[0]?.headers, "hosted remote must be OAuth-only (no headers)");
 });
 
-test("all discovery metadata files and README contain LEAD", () => {
+test("all discovery metadata files and README contain LEAD (server.json uses the short registry description)", () => {
   for (const p of [
-    "server.json",
     "package.json",
     "manifest.json",
     "plugin.json",
@@ -78,14 +87,39 @@ test("public metadata has no stale platform counts or mismatched versions", () =
     );
     assert.doesNotMatch(
       read(p),
-      /\b1\.(4\.7|5\.0)\b/,
-      `${p} has an unreleased or mismatched version (expected 1.4.6)`,
+      /\b1\.(4\.8|5\.0)\b/,
+      `${p} has an unreleased or mismatched version (expected 1.4.7)`,
     );
   }
 });
 
 test("validate-discovery passes", () => {
   execFileSync(process.execPath, [new URL("../scripts/validate-discovery.mjs", import.meta.url).pathname]);
+});
+
+test("validate-discovery fails when server.json description exceeds the 100-character registry cap", () => {
+  const serverPath = new URL("../server.json", import.meta.url);
+  const original = fs.readFileSync(serverPath, "utf8");
+  try {
+    const server = JSON.parse(original);
+    server.description = "A".repeat(SERVER_JSON_MAX_DESCRIPTION + 1);
+    fs.writeFileSync(serverPath, `${JSON.stringify(server, null, 2)}\n`);
+    let failed = false;
+    let message = "";
+    try {
+      execFileSync(process.execPath, [new URL("../scripts/validate-discovery.mjs", import.meta.url).pathname], {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+    } catch (err) {
+      failed = true;
+      message = `${err.stderr ?? ""}${err.stdout ?? ""}${err.message ?? ""}`;
+    }
+    assert.equal(failed, true, "validate-discovery should reject a 101-character description");
+    assert.match(message, /description is 101 characters|caps it at 100|REGISTRY_DESCRIPTION/i);
+  } finally {
+    fs.writeFileSync(serverPath, original);
+  }
 });
 
 test("README documents Add Synter to Amp as built-in and local read-only config", () => {

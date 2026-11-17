@@ -50,9 +50,19 @@ invariant(
 const LEAD =
   "Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.";
 
+// MCP Registry schema 2025-12-11 caps ServerDetail.description at 100 characters.
+// Keep the longer LEAD for README/package.json; use this short string in server.json only.
+const REGISTRY_DESCRIPTION =
+  "AI agents run ads across 30+ ad platforms. Hosted MCP with OAuth at mcp.synterai.com.";
+
 invariant(
-  serverJson.description === LEAD,
-  `server.json description must match canonical registry description, got: ${JSON.stringify(serverJson.description)}`,
+  REGISTRY_DESCRIPTION.length <= 100,
+  `REGISTRY_DESCRIPTION is ${REGISTRY_DESCRIPTION.length} characters; the registry schema caps description at 100`,
+);
+
+invariant(
+  serverJson.description === REGISTRY_DESCRIPTION,
+  `server.json description must match REGISTRY_DESCRIPTION (<=100 chars), got: ${JSON.stringify(serverJson.description)}`,
 );
 
 invariant(
@@ -134,6 +144,13 @@ const discoveryManifests = [
 ];
 for (const relativePath of discoveryManifests) {
   const text = readText(relativePath);
+  if (relativePath === "server.json") {
+    invariant(
+      text.includes(REGISTRY_DESCRIPTION),
+      `${relativePath} must include REGISTRY_DESCRIPTION`,
+    );
+    continue;
+  }
   invariant(
     text.includes(LEAD),
     `${relativePath} must include canonical LEAD`,
@@ -176,8 +193,8 @@ for (const relativePath of allMetadataFiles) {
     `${relativePath} must not reference syntermedia.ai; use synterai.com`,
   );
   invariant(
-    !text.includes("1.4.7") && !text.includes("1.5.0"),
-    `${relativePath} must match published npm version ${packageJson.version} (found stale 1.4.7 or 1.5.0)`,
+    !text.includes("1.4.8") && !text.includes("1.5.0"),
+    `${relativePath} must match published npm version ${packageJson.version} (found stale 1.4.8 or 1.5.0)`,
   );
 }
 
@@ -206,6 +223,7 @@ const SERVER_JSON_MAX_LENGTHS = {
   name: 200,
   title: 100,
   version: 255,
+  description: 100,
 };
 
 for (const [field, max] of Object.entries(SERVER_JSON_MAX_LENGTHS)) {
