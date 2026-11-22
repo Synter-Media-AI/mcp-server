@@ -45,7 +45,7 @@ const SYNTER_API_KEY = process.env.SYNTER_API_KEY;
 const SYNTER_API_URL = process.env.SYNTER_API_URL || "https://synterai.com";
 const SYNTER_ARTIFACT_API_URL = process.env.SYNTER_ARTIFACT_API_URL || "https://api.synterai.com";
 
-export const VERSION = "1.4.6";
+export const VERSION = "1.4.7";
 
 export const IS_READ_ONLY =
   process.env.SYNTER_READ_ONLY === "true" ||
@@ -2734,7 +2734,7 @@ async function main() {
 - **Media Spend Markup**: **0%** across every plan (ad platforms bill media spend directly).
 
 ## Platform Matrix (Hosted MCP & REST / Local Stdio)
-- **Core Local Stdio Full-Write + Read Platforms (\`@synterai/mcp-server@1.4.6\`)**: Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, StackAdapt
+- **Core Local Stdio Full-Write + Read Platforms (\`@synterai/mcp-server@1.4.7\`)**: Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, StackAdapt
 - **Additional Hosted MCP (\`https://mcp.synterai.com\`) & REST (\`run_tool\`) Platforms**: FreeWheel, CM360, Walmart Connect, Instacart, Target Roundel, Criteo, SA360, Samsung Ads, Taboola, Outbrain, Apple Ads, Roku Ads, Yahoo DSP, Teads, Viant, Basis, MediaMath, Magnite, PubMatic, Index Exchange, TripleLift,GumGum, Dianomi, Quora Ads, Nextdoor Ads, Twitch Ads, Yelp Ads`,
           },
         ],

@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.2",
   "name": "synter",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "display_name": "Synter",
   "description": "One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.",
   "author": {
