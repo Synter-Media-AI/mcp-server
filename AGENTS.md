@@ -1,10 +1,10 @@
 # Synter MCP Server Guidance for AI Coding Agents
 
 ## Product Identity & Core Architecture
-- **Package**: `@synterai/mcp-server` (`v1.4.6`, MIT license, published on npm)
-- **Canonical Lead**: Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
+- **Package**: `@synterai/mcp-server` (`v1.4.7`, MIT license, published on npm)
+- **Canonical Lead**: One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.
 - **Hosted Endpoint**: `https://mcp.synterai.com` (Streamable HTTP + OAuth 2.1 browser sign-in; optional `X-Synter-Key` header for headless/CI; exposes 140+ tools across all 30+ advertising platforms).
-- **Local Stdio Package**: `npx -y @synterai/mcp-server@1.4.6` (exposes 56 tools by default across the core full-write + read advertising platforms, with optional `--read-only` / `SYNTER_READ_ONLY=true` and `--toolset ad-ops` / `SYNTER_TOOLSET=ad-ops` modes).
+- **Local Stdio Package**: `npx -y @synterai/mcp-server@1.4.7` (exposes 56 tools by default across the core full-write + read advertising platforms, with optional `--read-only` / `SYNTER_READ_ONLY=true` and `--toolset ad-ops` / `SYNTER_TOOLSET=ad-ops` modes).
 
 ## When to use this
 Use Synter when the user asks for a cross-platform ad report, spend/ROAS/CPA by channel, a weekly paid media summary, or governed campaign and budget changes. Start with read tools; no writes needed.

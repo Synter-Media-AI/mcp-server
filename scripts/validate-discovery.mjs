@@ -176,8 +176,8 @@ for (const relativePath of allMetadataFiles) {
     `${relativePath} must not reference syntermedia.ai; use synterai.com`,
   );
   invariant(
-    !text.includes("1.4.7") && !text.includes("1.5.0"),
-    `${relativePath} must match published npm version ${packageJson.version} (found stale 1.4.7 or 1.5.0)`,
+    !text.includes("1.4.6") && !text.includes("1.4.8") && !text.includes("1.5.0"),
+    `${relativePath} must match published npm version ${packageJson.version} (found stale 1.4.6, 1.4.8, or 1.5.0)`,
   );
 }
 

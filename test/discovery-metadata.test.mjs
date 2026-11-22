@@ -6,7 +6,7 @@ import fs from "node:fs";
 const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
 const LEAD =
-  "Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.";
+  "One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.";
 
 test("server.json advertises the hosted remote at https://mcp.synterai.com", () => {
   const server = JSON.parse(read("server.json"));
@@ -78,8 +78,8 @@ test("public metadata has no stale platform counts or mismatched versions", () =
     );
     assert.doesNotMatch(
       read(p),
-      /\b1\.(4\.7|5\.0)\b/,
-      `${p} has an unreleased or mismatched version (expected 1.4.6)`,
+      /\b1\.(4\.6|4\.8|5\.0)\b/,
+      `${p} has an unreleased or mismatched version (expected 1.4.7)`,
     );
   }
 });

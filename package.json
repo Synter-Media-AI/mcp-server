@@ -1,6 +1,6 @@
 {
   "name": "@synterai/mcp-server",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "mcpName": "io.github.Synter-Media-AI/synter-ads",
   "description": "One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.",
   "author": "Synter <hello@synterai.com>",
@@ -61,7 +61,9 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "platforms",
+    "llms.txt"
   ],
   "scripts": {
     "build": "tsc",

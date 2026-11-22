@@ -1,7 +1,7 @@
 {
   "name": "synter",
   "description": "One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "author": {
     "name": "Synter",
     "url": "https://synterai.com"
