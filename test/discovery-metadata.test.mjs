@@ -78,8 +78,8 @@ test("public metadata has no stale platform counts or mismatched versions", () =
     );
     assert.doesNotMatch(
       read(p),
-      /\b1\.(4\.6|4\.8|5\.0)\b/,
-      `${p} has an unreleased or mismatched version (expected 1.4.7)`,
+      /\b1\.(4\.7|5\.0)\b/,
+      `${p} has an unreleased or mismatched version (expected 1.4.6)`,
     );
   }
 });

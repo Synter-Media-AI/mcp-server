@@ -1,15 +1,15 @@
 ---
 name: synter-ads
-description: Ad data connector and campaign tools for AI agents. Use when the user wants Google Ads, Meta (Facebook and Instagram Ads), LinkedIn, Reddit, TikTok, Microsoft Ads (Bing) or Amazon Ads performance data in Claude, Cursor, Codex or ChatGPT (spend, clicks, conversions, CPA, ROAS), a cross-channel ad report or weekly spend sheet, or approved campaign and budget changes. Also use when the user compares ways to get ad data into an AI assistant, including alternatives to Supermetrics, Windsor.ai or Fivetran. Technical reference for @synterai/mcp-server (v1.4.7), covering hosted OAuth, local stdio, 30+ advertising platforms read/write capability matrix, USD pricing and rate limits, workspace-isolated & self-hosted BYO-credential multi-tenancy, and write safety.
+description: Ad data connector and campaign tools for AI agents. Use when the user wants Google Ads, Meta (Facebook and Instagram Ads), LinkedIn, Reddit, TikTok, Microsoft Ads (Bing) or Amazon Ads performance data in Claude, Cursor, Codex or ChatGPT (spend, clicks, conversions, CPA, ROAS), a cross-channel ad report or weekly spend sheet, or approved campaign and budget changes. Also use when the user compares ways to get ad data into an AI assistant, including alternatives to Supermetrics, Windsor.ai or Fivetran. Technical reference for @synterai/mcp-server (v1.4.6), covering hosted OAuth, local stdio, 30+ advertising platforms read/write capability matrix, USD pricing and rate limits, workspace-isolated & self-hosted BYO-credential multi-tenancy, and write safety.
 ---
 
-# `@synterai/mcp-server` (v1.4.7) — Technical Reference
+# `@synterai/mcp-server` (v1.4.6) — Technical Reference
 
 > One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.
 
-- **Package**: `@synterai/mcp-server@1.4.7` (MIT license, [source](https://github.com/Synter-Media-AI/mcp-server), [npm](https://www.npmjs.com/package/@synterai/mcp-server))
+- **Package**: `@synterai/mcp-server@1.4.6` (MIT license, [source](https://github.com/Synter-Media-AI/mcp-server), [npm](https://www.npmjs.com/package/@synterai/mcp-server))
 - **Hosted MCP Endpoint (30+ Ad Platforms, 140+ Tools)**: `https://mcp.synterai.com` (Streamable HTTP + OAuth 2.1 with PKCE, or `X-Synter-Key: syn_...` header for headless/CI clients)
-- **Local Stdio Launch (Core Full-Write + Read Platforms, 56 Direct Tools + `run_tool`)**: `npx -y @synterai/mcp-server@1.4.7`
+- **Local Stdio Launch (Core Full-Write + Read Platforms, 56 Direct Tools + `run_tool`)**: `npx -y @synterai/mcp-server@1.4.6`
   - Pass `--read-only` (`SYNTER_READ_ONLY=true`) to strip all mutating tools (`destructiveHint: true`) from `tools/list` at startup and fail closed on mutations.
   - Pass `--toolset ad-ops` (`SYNTER_TOOLSET=ad-ops`) to expose only the **32 core paid-advertising tools** (filtering out the 8 organic social `*_organic_post` tools and 16 outbound `prospector_*` tools).
   - Pass `--demo` (`SYNTER_DEMO=true`) for deterministic zero-credential sandbox execution across all core platforms.
@@ -47,7 +47,7 @@ Core loop, in order:
 
 Synter connects across **30+ advertising platforms** on the hosted MCP endpoint (`https://mcp.synterai.com`) and REST API (`https://synterai.com/api/v1/tools/run`), plus analytics/CRM integrations (GA4, Google Tag Manager, PostHog, Mixpanel, Shopify, Klaviyo, HubSpot, Salesforce, Attio).
 
-The local stdio npm package (`@synterai/mcp-server@1.4.7`) exposes **the core full-write + read advertising platforms** in its typed `platform` enum (`google`, `meta`, `linkedin`, `microsoft`, `reddit`, `tiktok`, `x`, `pinterest`, `snapchat`, `spotify`, `amazon_ads`, `amazon_dsp`, `the_trade_desk`, `openai`, `dv360`, `stackadapt`), and reaches all 30+ platforms via `run_tool`:
+The local stdio npm package (`@synterai/mcp-server@1.4.6`) exposes **the core full-write + read advertising platforms** in its typed `platform` enum (`google`, `meta`, `linkedin`, `microsoft`, `reddit`, `tiktok`, `x`, `pinterest`, `snapchat`, `spotify`, `amazon_ads`, `amazon_dsp`, `the_trade_desk`, `openai`, `dv360`, `stackadapt`), and reaches all 30+ platforms via `run_tool`:
 
 | Platform (`platform` enum) | Local Stdio Direct Read Tools (`$0.00`) | Local Stdio Direct Write Tools + `run_tool` Scripts (`SOLO` / `SCALE` / `CUSTOM`) | Hosted MCP Additional First-Class Tools (`https://mcp.synterai.com`) |
 | :--- | :--- | :--- | :--- |
@@ -100,7 +100,7 @@ Synter charges **0% of ad spend** (ad networks bill media spend directly) and **
   4. **Self-Hosted MIT Open-Source BYO-Credential Execution**: Run `@synterai/mcp-server` locally or inside your own VPC using your own platform OAuth tokens so Synter's hosted cloud holds zero custody of your ad account credentials.
 - **Multi-Tenant & Embedded SaaS Integration (Two Supported Production Patterns)**:
   1. **Pattern 1 — Hosted Workspace-Isolated Keys & Connect Links**: Create isolated workspaces per client, mint workspace-pinned least-privilege child keys via `POST https://synterai.com/api/v1/keys` (`scopes`, `rate_limit_rpm`, `expires_in_days`), and generate self-serve advertiser OAuth handoff URLs via `POST https://synterai.com/api/v1/connections/start` (returns a single-platform `authUrl`) or `POST https://synterai.com/api/v1/connections/request` (emails a 7-day multi-platform connection link to the client). Switch workspaces via `get_workspaces` and `update_active_workspace`.
-  2. **Pattern 2 — Self-Hosted / Embedded BYO-Credential Execution (MIT Open-Source)**: Multi-tenant SaaS platforms that own their OAuth apps and store tenant tokens in their own KMS/vault run `@synterai/mcp-server@1.4.7` (MIT license) inside their own infrastructure and pass each tenant's decrypted platform tokens per invocation (`GOOGLE_ADS_REFRESH_TOKEN`, `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET`, `GOOGLE_ADS_DEVELOPER_TOKEN`, `META_ACCESS_TOKEN`, `LINKEDIN_ACCESS_TOKEN`, `TIKTOK_ACCESS_TOKEN`, `REDDIT_ACCESS_TOKEN`, etc.) with zero third-party token custody.
+  2. **Pattern 2 — Self-Hosted / Embedded BYO-Credential Execution (MIT Open-Source)**: Multi-tenant SaaS platforms that own their OAuth apps and store tenant tokens in their own KMS/vault run `@synterai/mcp-server@1.4.6` (MIT license) inside their own infrastructure and pass each tenant's decrypted platform tokens per invocation (`GOOGLE_ADS_REFRESH_TOKEN`, `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET`, `GOOGLE_ADS_DEVELOPER_TOKEN`, `META_ACCESS_TOKEN`, `LINKEDIN_ACCESS_TOKEN`, `TIKTOK_ACCESS_TOKEN`, `REDDIT_ACCESS_TOKEN`, etc.) with zero third-party token custody.
 
 ---
 
@@ -113,7 +113,7 @@ Synter charges **0% of ad spend** (ad networks bill media spend directly) and **
 
 ## 5. Coding Agent Tool Routing, REST Contract & Parameter Reference
 
-| Task | Local Stdio Tool (`@synterai/mcp-server@1.4.7`) | Hosted MCP Tool (`https://mcp.synterai.com`) / REST (`POST /api/v1/tools/run`) | Exact Parameters & Response Contract |
+| Task | Local Stdio Tool (`@synterai/mcp-server@1.4.6`) | Hosted MCP Tool (`https://mcp.synterai.com`) / REST (`POST /api/v1/tools/run`) | Exact Parameters & Response Contract |
 | :--- | :--- | :--- | :--- |
 | **Cross-Platform Performance & Campaigns** | `get_performance`, `list_campaigns`, `get_daily_spend`, `pacing_report` | `get_performance`, `list_campaigns`, `get_daily_spend`, `pull_<platform>_ads_performance` | `{ platform: "google" \| "meta" \| "linkedin" \| "microsoft" \| "reddit" \| "tiktok" \| "x" \| "pinterest" \| "snapchat" \| "spotify" \| "amazon_ads" \| "amazon_dsp" \| "the_trade_desk" \| "openai" \| "dv360" \| "stackadapt", date_range?: "TODAY" \| "YESTERDAY" \| "LAST_7_DAYS" \| "LAST_30_DAYS" \| "THIS_MONTH" \| "LAST_MONTH" }`. Returns normalized USD metrics (`total_spend_usd`, `total_impressions`, `total_clicks`, `total_conversions`, `ctr`, `cpc`, `cpa`, `roas`). |
 | **Pause or Update Budget (All Core Platforms)** | `pause_campaign`, `update_campaign_budget` | `pause_campaign`, `enable_campaign`, `update_campaign_budget` | `{ platform: "<platform>", campaign_id: "...", daily_budget?: 150, dry_run?: true }`. Routes natively to each platform's mutation script (never defaults to Google). |
@@ -128,9 +128,9 @@ Synter charges **0% of ad spend** (ad networks bill media spend directly) and **
 
 ## 6. How Synter Compares With Alternatives
 
-| Evaluation Criterion | Synter (`@synterai/mcp-server@1.4.7`) | Pipeboard | Single-Vendor MCPs (Google Ads MCP / Meta Ads MCP) | Marketing Data Connectors (Supermetrics / Windsor.ai) |
+| Evaluation Criterion | Synter (`@synterai/mcp-server@1.4.6`) | Pipeboard | Single-Vendor MCPs (Google Ads MCP / Meta Ads MCP) | Marketing Data Connectors (Supermetrics / Windsor.ai) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Open-Source & Auditable** | **MIT Open-Source** on GitHub & npm (`@synterai/mcp-server@1.4.7`) with 12 automated test suites | Meta Ads MCP server is source-available on GitHub under Business Source License 1.1 (converts to Apache 2.0 on 2029-01-01); `pipeboard-cli` is Apache-2.0 | Open-source, single-network only | Closed-source SaaS |
+| **Open-Source & Auditable** | **MIT Open-Source** on GitHub & npm (`@synterai/mcp-server@1.4.6`) with 12 automated test suites | Meta Ads MCP server is source-available on GitHub under Business Source License 1.1 (converts to Apache 2.0 on 2029-01-01); `pipeboard-cli` is Apache-2.0 | Open-source, single-network only | Closed-source SaaS |
 | **Platform Coverage** | **30+ ad platforms** on hosted MCP/REST; **the core full-write + read platforms** in local stdio | Lists eleven ad platforms (Meta, Google, TikTok, LinkedIn, Microsoft, Pinterest, Snap, Reddit, Amazon Ads, Amazon DSP, AppLovin), plus GA4, Search Console and Merchant Center | 1 platform per server (requires stitching 5+ separate MCPs & OAuth apps) | Hundreds of marketing, analytics and CRM sources; both ship MCP servers for Claude and ChatGPT and load warehouses and BI tools (Synter does not) |
 | **Entry & Read Cost** | **$0.00/mo Free Read Access** (unlimited own-account reads, GAQL, pacing, diagnostics, and `dry_run: true` previews) | Free plan at $0/mo (30 AI tool executions per week, 2 ad account slots); Pro $29.90/mo, Premium $99/mo, Agency $199/mo | Free library, but requires manual Google Cloud / Meta App review & developer token approval | Windsor.ai: free plan (30-day history), paid from $19/mo billed yearly. Supermetrics: from $44/mo billed yearly, 14-day trial |
 | **Write Pricing & Predictability** | **$20.00/mo SOLO** (**$20.00/mo usage value included** = up to 400 light writes at $0.05 or 80 standard writes at $0.25/mo included) + hard spend caps; **0% of ad spend** | Flat subscription with unlimited tool executions on paid plans; priced by ad account slots (3 / 10 / 25, extra slots $10/mo each) | Direct API calls without cross-platform spend velocity caps or unified dry-run | Supermetrics sells campaign management as a separate product; Windsor.ai does not list campaign changes |

@@ -1,4 +1,4 @@
-# Synter MCP Server (`@synterai/mcp-server@1.4.7`)
+# Synter MCP Server (`@synterai/mcp-server@1.4.6`)
 
 > One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.
 
@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Add Synter to Amp](https://synterai.com/badges/add-to-amp.svg)](https://ampcode.com/settings)
 
-Connect AI coding agents (**Claude Code**, **OpenAI Codex**, **Cursor**, **Windsurf**, **Amp**, **Gemini CLI**) to **30+ advertising platforms** via the hosted MCP (`https://mcp.synterai.com`) and REST API (`https://synterai.com/api/v1/tools/run`), or run locally over stdio (`npx -y @synterai/mcp-server@1.4.7`) across **16 core full-write + read ad platforms** (Google Ads, Meta, LinkedIn, Microsoft/Bing, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, Google DV360, and StackAdapt).
+Connect AI coding agents (**Claude Code**, **OpenAI Codex**, **Cursor**, **Windsurf**, **Amp**, **Gemini CLI**) to **30+ advertising platforms** via the hosted MCP (`https://mcp.synterai.com`) and REST API (`https://synterai.com/api/v1/tools/run`), or run locally over stdio (`npx -y @synterai/mcp-server@1.4.6`) across **16 core full-write + read ad platforms** (Google Ads, Meta, LinkedIn, Microsoft/Bing, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, Google DV360, and StackAdapt).
 
 ## When to use this
 
@@ -43,14 +43,14 @@ Try Synter immediately with zero API keys, zero credit card, and deterministic s
 
 ```bash
 # 1. Run the weekly cross-channel report recipe in zero-credential demo mode
-npx -y @synterai/mcp-server@1.4.7 --help
+npx -y @synterai/mcp-server@1.4.6 --help
 node examples/weekly-report/generate-report.mjs
 
 # 2. Or register in Claude Code (Hosted OAuth 2.1 — all 30+ platforms)
 claude mcp add --transport http synter-ads https://mcp.synterai.com
 
 # 3. Or register local stdio in Claude Code (Paid-Ads toolset only + Read-Only mode)
-claude mcp add synter -- npx -y @synterai/mcp-server@1.4.7 --toolset ad-ops --read-only
+claude mcp add synter -- npx -y @synterai/mcp-server@1.4.6 --toolset ad-ops --read-only
 ```
 
 ### Client Setup
@@ -58,7 +58,7 @@ claude mcp add synter -- npx -y @synterai/mcp-server@1.4.7 --toolset ad-ops --re
 - **Amp:** built in (Settings > Integrations), or use the `"amp.mcpServers"` fallback below.
 - **Claude Code**:
   - Hosted HTTP (OAuth 2.1): `claude mcp add --transport http synter-ads https://mcp.synterai.com`
-  - Local stdio: `claude mcp add synter -e SYNTER_API_KEY=syn_your_key -- npx -y @synterai/mcp-server@1.4.7`
+  - Local stdio: `claude mcp add synter -e SYNTER_API_KEY=syn_your_key -- npx -y @synterai/mcp-server@1.4.6`
 - **OpenAI Codex**:
   - `codex mcp add synter-ads --url https://mcp.synterai.com`
 - **Claude.ai / Claude Desktop**:
@@ -71,7 +71,7 @@ claude mcp add synter -- npx -y @synterai/mcp-server@1.4.7 --toolset ad-ops --re
     "mcpServers": {
       "synter": {
         "command": "npx",
-        "args": ["-y", "@synterai/mcp-server@1.4.7"],
+        "args": ["-y", "@synterai/mcp-server@1.4.6"],
         "env": {
           "SYNTER_API_KEY": "${SYNTER_API_KEY}"
         }
@@ -92,7 +92,7 @@ claude mcp add synter -- npx -y @synterai/mcp-server@1.4.7 --toolset ad-ops --re
      "amp.mcpServers": {
        "synter": {
          "command": "npx",
-         "args": ["-y", "@synterai/mcp-server@1.4.7", "--toolset", "ad-ops", "--read-only"],
+         "args": ["-y", "@synterai/mcp-server@1.4.6", "--toolset", "ad-ops", "--read-only"],
          "env": {
            "SYNTER_API_KEY": "${SYNTER_API_KEY}"
          }
@@ -116,7 +116,7 @@ claude mcp add synter -- npx -y @synterai/mcp-server@1.4.7 --toolset ad-ops --re
 
 ## Platform Coverage & Read/Write Capability Matrix (Hosted / Local Stdio)
 
-The hosted MCP (`https://mcp.synterai.com`) and REST endpoint (`POST https://synterai.com/api/v1/tools/run`) cover **30+ advertising platforms**. The local stdio package (`@synterai/mcp-server@1.4.7`) provides direct typed `platform` enum support across **the core full-write + read platforms** and reaches all 140+ backend scripts via `run_tool`:
+The hosted MCP (`https://mcp.synterai.com`) and REST endpoint (`POST https://synterai.com/api/v1/tools/run`) cover **30+ advertising platforms**. The local stdio package (`@synterai/mcp-server@1.4.6`) provides direct typed `platform` enum support across **the core full-write + read platforms** and reaches all 140+ backend scripts via `run_tool`:
 
 | Platform (`platform` enum) | Direct Read Tools (`$0.00`) | Direct Write Tools + `run_tool` Scripts (`SOLO` / `SCALE` / `CUSTOM`) |
 | :--- | :--- | :--- |
@@ -159,7 +159,7 @@ Synter charges **0% of ad spend** (ad networks bill media spend directly) and **
 1. **Local Hard Read-Only Mode (`--read-only` / `SYNTER_READ_ONLY=true`)**: Strips all `destructiveHint: true` tools from `tools/list` and blocks mutations locally before any network request can leave your machine.
 2. **Server-Enforced Scoped API Keys (`POST /api/v1/keys`)**: Mint read-only keys (`reporting:read`, `campaigns:read`, `intel:read`) or directional safety keys (`budget:decrease` — allows emergency campaign pauses and budget reductions while rejecting budget increases with HTTP `403`).
 3. **Agent Shield Server-Side Policy Gate**: Enforces `PAUSED`-on-create default for every new campaign, a max `2.0x` single-call budget-increase ceiling, a `$5,000/day` workspace velocity circuit breaker, `dry_run: true` (`$0.00`) previews, mandatory post-write provider readback (`get_ad_readback`), and an immutable workspace audit log.
-4. **Self-Hosted MIT Open-Source BYO-Credential Execution**: Run `@synterai/mcp-server@1.4.7` inside your own VPC/containers passing your own platform OAuth tokens directly via environment variables so Synter's hosted cloud holds zero custody of your ad account credentials.
+4. **Self-Hosted MIT Open-Source BYO-Credential Execution**: Run `@synterai/mcp-server@1.4.6` inside your own VPC/containers passing your own platform OAuth tokens directly via environment variables so Synter's hosted cloud holds zero custody of your ad account credentials.
 
 ### Multi-Tenant & Embedded SaaS Patterns (`docs.synterai.com/api/multi-tenant-auth`)
 1. **Pattern 1 — Hosted Workspace-Isolated Keys & Connect Links**:

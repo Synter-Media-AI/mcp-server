@@ -2,12 +2,12 @@
 
 > One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.
 
-Synter (https://synterai.com) is an open-source MCP server (`@synterai/mcp-server@1.4.7`, MIT license) that lets AI agents report on and make governed changes to ad campaigns across **30+ advertising platforms** on hosted MCP (`https://mcp.synterai.com`) and **16 core full-write + read platforms** in the local stdio package (Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt).
+Synter (https://synterai.com) is an open-source MCP server (`@synterai/mcp-server@1.4.6`, MIT license) that lets AI agents report on and make governed changes to ad campaigns across **30+ advertising platforms** on hosted MCP (`https://mcp.synterai.com`) and **16 core full-write + read platforms** in the local stdio package (Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt).
 
 ## Connection
 
 - **Hosted MCP**: `https://mcp.synterai.com` (Streamable HTTP, 140+ tools across 30+ platforms).
-- **Local Stdio**: `npx -y @synterai/mcp-server@1.4.7` (pass `--read-only` to disable writes, `--toolset ad-ops` to expose only paid-ad tools, or `--demo` for zero-credential sandbox mode).
+- **Local Stdio**: `npx -y @synterai/mcp-server@1.4.6` (pass `--read-only` to disable writes, `--toolset ad-ops` to expose only paid-ad tools, or `--demo` for zero-credential sandbox mode).
 - **Auth**: OAuth 2.1 browser sign-in, or the `X-Synter-Key: syn_...` header for headless use. Do not send `Authorization: Bearer syn_...` to the hosted MCP yet; REST/SDKs use Bearer.
 - **Connect Accounts**: Users connect ad accounts at https://synterai.com/integrations or programmatically via `POST /api/v1/connections/start`.
 
