@@ -1,6 +1,6 @@
 {
   "name": "synter-ads",
-  "version": "1.4.7",
+  "version": "1.4.6",
   "description": "One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.",
   "contextFileName": "GEMINI.md",
   "mcpServers": {

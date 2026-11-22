@@ -1,11 +1,23 @@
 # Changelog
 
-## 1.4.7
+## 1.5.0
 
 ### Changed
 
-- **Discovery & Coverage Copy**: aligned `@synterai/mcp-server` version `1.4.7`, npm/MCP Registry descriptions (`"One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read."`), and package metadata.
-- **Per-Platform MCP Guides & Starter-Kit Directory**: bundled all 65 `platforms/*.md` guides and `llms.txt` in the npm package, added the Platform Directory with 1-click connect, `.zip` starter-kit download, and install/tools links in `README.md`, and updated `llms.txt` discovery endpoints (`https://synterai.com/mcp/llms.txt`, `https://synterai.com/.well-known/mcp`).
+- **Registry description**: updated `server.json` top-level description to "Open-source MCP server for ad performance reports and approved changes across 16 ad platforms. $0.25 per verified write, 0% of ad spend.".
+- Aligned version 1.5.0 across package metadata, server runtime, and registry specifications.
+- **Tool annotations**: annotated all 56 tools with human-readable `title` metadata; every read tool is annotated with `readOnlyHint: true` and every write/mutating tool is annotated with `destructiveHint: true`.
+- **Pricing & Discoverability copy**: pricing updated to "$0.25 per verified write, 0% of ad spend" (reads stay $0.00 / free) across all package and registry discovery metadata, removing stale $20/mo Solo copy.
+- **Package keywords**: added `ad-reporting`, `roas`, and `marketing-analytics`; removed `linkedin-ads` and `stackadapt`.
+- **Agent guidance & documentation**: added `AGENTS.md` and `llms.txt` with canonical "When to use this" triggers, and added a weekly reporting recipe (`docs/recipes/weekly-report.md` + runnable `examples/weekly-report/generate-report.mjs`).
+
+### Fixed
+
+- **Billing refusals are relayable upgrade prompts**: every billing refusal from the Synter API (402, `INSUFFICIENT_CREDITS`, `ON_DEMAND_CAP_REACHED`, `USAGE_BILLING_SETUP_REQUIRED`, `PAYMENT_METHOD_REQUIRED`, `ACCOUNT_READ_ONLY`, plan gates, …) now returns a tool result starting `BILLING ACTION REQUIRED (<CODE>)` with what was blocked, why, the synterai.com fix link (`source=mcp`), SOLO ($20/mo) / SCALE ($500/mo) / CUSTOM options, and an instruction for the assistant to show the link. Replaces the legacy `/sign-up?plan=developer` links and bare `Error: INSUFFICIENT_CREDITS`.
+
+## 1.4.7
+
+Docs/metadata only: platform coverage copy (reads across 16 ad platforms with verified write and create), synterai.com links, registry websiteUrl. No tool changes.
 
 ## 1.4.6
 
