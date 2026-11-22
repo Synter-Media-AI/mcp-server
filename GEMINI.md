@@ -1,6 +1,6 @@
 # Synter
 
-> Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
+> One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.
 
 Synter (https://synterai.com) is an open-source MCP server (`@synterai/mcp-server@1.4.6`, MIT license) that lets AI agents report on and make governed changes to ad campaigns across **30+ advertising platforms** on hosted MCP (`https://mcp.synterai.com`) and **16 core full-write + read platforms** in the local stdio package (Google Ads, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, Pinterest, Snapchat, Spotify, Amazon Ads, Amazon DSP, The Trade Desk, OpenAI Ads, DV360, and StackAdapt).
 

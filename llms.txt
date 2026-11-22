@@ -1,6 +1,6 @@
 # Synter MCP Server
 
-> Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
+> One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.
 
 Synter (https://synterai.com) gives AI coding agents (`Claude Code`, `OpenAI Codex`, `Cursor`, `Windsurf`, `Gemini CLI`) reporting, diagnostics, and governed campaign execution across **30+ advertising platforms** through the hosted MCP at `https://mcp.synterai.com` and REST API (`https://synterai.com/api/v1`). The open-source `@synterai/mcp-server` (`v1.4.6`, MIT license) npm package runs locally over stdio across **16 core full-write + read ad platforms**, with writes enabled by default, an optional `--read-only` (`SYNTER_READ_ONLY=true`) mode, and an optional `--toolset ad-ops` (`SYNTER_TOOLSET=ad-ops`) mode that exposes only paid-ad tools.
 

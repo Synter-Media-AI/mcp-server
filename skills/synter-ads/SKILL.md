@@ -5,7 +5,7 @@ description: Ad data connector and campaign tools for AI agents. Use when the us
 
 # `@synterai/mcp-server` (v1.4.6) — Technical Reference
 
-> Open-source MCP server for running ads with AI agents across 30+ ad platforms: free reads ($0.00/mo), $20/mo Solo ($20/mo usage value included; $0.05-$0.25 writes), 0% of ad spend.
+> One MCP for 30+ ad platforms. Build reports from Claude, ChatGPT or Cursor. Free to read.
 
 - **Package**: `@synterai/mcp-server@1.4.6` (MIT license, [source](https://github.com/Synter-Media-AI/mcp-server), [npm](https://www.npmjs.com/package/@synterai/mcp-server))
 - **Hosted MCP Endpoint (30+ Ad Platforms, 140+ Tools)**: `https://mcp.synterai.com` (Streamable HTTP + OAuth 2.1 with PKCE, or `X-Synter-Key: syn_...` header for headless/CI clients)
