@@ -105,3 +105,15 @@ If the goal is to get ad data into an AI assistant or your own code, Synter is t
 - `add_keywords` / `add_negative_keywords`: Add positive or negative keywords (`BROAD`, `PHRASE`, `EXACT`) at campaign, ad-group, shared-list, or account level with post-write readback.
 - `stage_audience_artifact` / `sync_audience` / `manage_audience`: Stage hashed PII ($0.00) and sync Customer Match / Matched Audiences across Google, Meta, LinkedIn, Microsoft, Reddit, TikTok, X, and StackAdapt.
 - `run_tool`: Invoke any of 140+ backend platform scripts across all 30+ platforms (including `amazon_dsp_create_order`, `ttd_create_campaign`, `dv360_create_campaign`, `spotify_ads_create_campaign`, `openai_ads_create_campaign`, `get_ad_readback`, `run_gaql_query`).
+
+## Per-Platform MCP Discovery, 1-Click Connect & Starter Kits
+- Full Per-Platform LLM Index: https://synterai.com/mcp/llms.txt
+- MCP Server Card: https://synterai.com/.well-known/mcp
+- Per-Platform Landing & Markdown Spec: `https://synterai.com/mcp/<platform>` and `https://synterai.com/mcp/<platform>.md` (plus `platforms/<platform>.md` in this repository)
+- 1-Click Connect + Signup Deep Link: `https://synterai.com/mcp/<platform>/connect`
+- Scoped Tool Explorer & Install Configs: `https://synterai.com/mcp/<platform>/install`
+- Downloadable Owned Starter Kit (.zip): `https://synterai.com/api/mcp/kit/<platform>`
+- Post-Connect Ready Hub: `https://synterai.com/mcp/ready?platform=<platform>`
+
+### Canonical Platform Slugs & Guides (`platforms/<slug>.md`)
+`6sense`, `adroll`, `amazon`, `amazon-ads`, `amazon-dsp`, `apple-search-ads`, `applovin`, `basis-dsp`, `brave-ads`, `carbon-ads`, `cj-affiliate`, `cm360`, `criteo`, `demandbase`, `discord-quests`, `disney`, `dv360`, `ebay`, `ethicalads`, `etsy`, `freewheel`, `google`, `google-ads`, `impact`, `instacart-ads`, `kroger-precision-marketing`, `linkedin`, `linkedin-ads`, `meta`, `meta-ads`, `microsoft`, `mntn`, `moloco`, `nextdoor-ads`, `openai`, `outbrain`, `pinterest`, `quantcast`, `quora-ads`, `reddit`, `roblox-ads`, `rokt`, `roku`, `sa360`, `samsung`, `snapchat`, `spotify`, `stackadapt`, `taboola`, `target-roundel`, `tatari`, `teads`, `terminus`, `the-trade-desk`, `thrad`, `tiktok`, `tiktok-ads`, `twitch-ads`, `vibe-co`, `walmart-connect`, `x`, `xandr`, `yahoo-dsp`, `yelp`, `youtube-ads`

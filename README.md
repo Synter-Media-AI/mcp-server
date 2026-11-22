@@ -180,6 +180,94 @@ Synter charges **0% of ad spend** (ad networks bill media spend directly) and **
 - **Rust SDK**: `cargo add synter` ([crates.io/crates/synter](https://crates.io/crates/synter))
 - **Java SDK**: Maven `ai.syntermedia:synter-sdk`
 
+## Platform Directory
+
+Explore platform-specific MCP guides, 1-click OAuth connect deep links, downloadable starter kits (.zip), and scoped tool explorers across 30+ ad platforms in 8 categories (full machine-readable index at https://synterai.com/mcp/llms.txt and https://synterai.com/.well-known/mcp):
+
+### Social
+
+- **Meta Ads (Facebook & Instagram)**: [Guide](platforms/meta.md) | [1-Click Connect](https://synterai.com/mcp/meta/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/meta) | [Install & Tools](https://synterai.com/mcp/meta/install)
+- **LinkedIn Ads**: [Guide](platforms/linkedin.md) | [1-Click Connect](https://synterai.com/mcp/linkedin/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/linkedin) | [Install & Tools](https://synterai.com/mcp/linkedin/install)
+- **TikTok Ads**: [Guide](platforms/tiktok.md) | [1-Click Connect](https://synterai.com/mcp/tiktok/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/tiktok) | [Install & Tools](https://synterai.com/mcp/tiktok/install)
+- **Reddit Ads**: [Guide](platforms/reddit.md) | [1-Click Connect](https://synterai.com/mcp/reddit/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/reddit) | [Install & Tools](https://synterai.com/mcp/reddit/install)
+- **X Ads**: [Guide](platforms/x.md) | [1-Click Connect](https://synterai.com/mcp/x/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/x) | [Install & Tools](https://synterai.com/mcp/x/install)
+- **Snapchat Ads**: [Guide](platforms/snapchat.md) | [1-Click Connect](https://synterai.com/mcp/snapchat/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/snapchat) | [Install & Tools](https://synterai.com/mcp/snapchat/install)
+- **Pinterest Ads**: [Guide](platforms/pinterest.md) | [1-Click Connect](https://synterai.com/mcp/pinterest/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/pinterest) | [Install & Tools](https://synterai.com/mcp/pinterest/install)
+- **Quora Ads**: [Guide](platforms/quora-ads.md) | [1-Click Connect](https://synterai.com/mcp/quora-ads/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/quora-ads) | [Install & Tools](https://synterai.com/mcp/quora-ads/install)
+- **Nextdoor Ads**: [Guide](platforms/nextdoor-ads.md) | [1-Click Connect](https://synterai.com/mcp/nextdoor-ads/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/nextdoor-ads) | [Install & Tools](https://synterai.com/mcp/nextdoor-ads/install)
+- **Discord Quests**: [Guide](platforms/discord-quests.md) | [1-Click Connect](https://synterai.com/mcp/discord-quests/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/discord-quests) | [Install & Tools](https://synterai.com/mcp/discord-quests/install)
+- **Roblox Ads**: [Guide](platforms/roblox-ads.md) | [1-Click Connect](https://synterai.com/mcp/roblox-ads/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/roblox-ads) | [Install & Tools](https://synterai.com/mcp/roblox-ads/install)
+
+### Search
+
+- **Google Ads**: [Guide](platforms/google.md) | [1-Click Connect](https://synterai.com/mcp/google/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/google) | [Install & Tools](https://synterai.com/mcp/google/install)
+- **Microsoft Ads (Bing)**: [Guide](platforms/microsoft.md) | [1-Click Connect](https://synterai.com/mcp/microsoft/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/microsoft) | [Install & Tools](https://synterai.com/mcp/microsoft/install)
+- **OpenAI Ads**: [Guide](platforms/openai.md) | [1-Click Connect](https://synterai.com/mcp/openai/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/openai) | [Install & Tools](https://synterai.com/mcp/openai/install)
+- **Apple Search Ads**: [Guide](platforms/apple-search-ads.md) | [1-Click Connect](https://synterai.com/mcp/apple-search-ads/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/apple-search-ads) | [Install & Tools](https://synterai.com/mcp/apple-search-ads/install)
+- **Brave Ads**: [Guide](platforms/brave-ads.md) | [1-Click Connect](https://synterai.com/mcp/brave-ads/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/brave-ads) | [Install & Tools](https://synterai.com/mcp/brave-ads/install)
+- **Search Ads 360 (SA360)**: [Guide](platforms/sa360.md) | [1-Click Connect](https://synterai.com/mcp/sa360/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/sa360) | [Install & Tools](https://synterai.com/mcp/sa360/install)
+
+### Retail Media & Commerce
+
+- **Amazon Ads**: [Guide](platforms/amazon.md) | [1-Click Connect](https://synterai.com/mcp/amazon/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/amazon) | [Install & Tools](https://synterai.com/mcp/amazon/install)
+- **Walmart Connect**: [Guide](platforms/walmart-connect.md) | [1-Click Connect](https://synterai.com/mcp/walmart-connect/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/walmart-connect) | [Install & Tools](https://synterai.com/mcp/walmart-connect/install)
+- **Instacart Ads**: [Guide](platforms/instacart-ads.md) | [1-Click Connect](https://synterai.com/mcp/instacart-ads/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/instacart-ads) | [Install & Tools](https://synterai.com/mcp/instacart-ads/install)
+- **Target Roundel**: [Guide](platforms/target-roundel.md) | [1-Click Connect](https://synterai.com/mcp/target-roundel/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/target-roundel) | [Install & Tools](https://synterai.com/mcp/target-roundel/install)
+- **Kroger Precision Marketing**: [Guide](platforms/kroger-precision-marketing.md) | [1-Click Connect](https://synterai.com/mcp/kroger-precision-marketing/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/kroger-precision-marketing) | [Install & Tools](https://synterai.com/mcp/kroger-precision-marketing/install)
+- **Criteo Commerce Media**: [Guide](platforms/criteo.md) | [1-Click Connect](https://synterai.com/mcp/criteo/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/criteo) | [Install & Tools](https://synterai.com/mcp/criteo/install)
+- **eBay Promoted Listings**: [Guide](platforms/ebay.md) | [1-Click Connect](https://synterai.com/mcp/ebay/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/ebay) | [Install & Tools](https://synterai.com/mcp/ebay/install)
+- **Etsy Ads**: [Guide](platforms/etsy.md) | [1-Click Connect](https://synterai.com/mcp/etsy/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/etsy) | [Install & Tools](https://synterai.com/mcp/etsy/install)
+- **Rokt Ecommerce Ads**: [Guide](platforms/rokt.md) | [1-Click Connect](https://synterai.com/mcp/rokt/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/rokt) | [Install & Tools](https://synterai.com/mcp/rokt/install)
+
+### Programmatic & DSP
+
+- **Display & Video 360 (DV360)**: [Guide](platforms/dv360.md) | [1-Click Connect](https://synterai.com/mcp/dv360/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/dv360) | [Install & Tools](https://synterai.com/mcp/dv360/install)
+- **StackAdapt Programmatic**: [Guide](platforms/stackadapt.md) | [1-Click Connect](https://synterai.com/mcp/stackadapt/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/stackadapt) | [Install & Tools](https://synterai.com/mcp/stackadapt/install)
+- **The Trade Desk**: [Guide](platforms/the-trade-desk.md) | [1-Click Connect](https://synterai.com/mcp/the-trade-desk/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/the-trade-desk) | [Install & Tools](https://synterai.com/mcp/the-trade-desk/install)
+- **Amazon DSP**: [Guide](platforms/amazon-dsp.md) | [1-Click Connect](https://synterai.com/mcp/amazon-dsp/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/amazon-dsp) | [Install & Tools](https://synterai.com/mcp/amazon-dsp/install)
+- **Yahoo DSP**: [Guide](platforms/yahoo-dsp.md) | [1-Click Connect](https://synterai.com/mcp/yahoo-dsp/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/yahoo-dsp) | [Install & Tools](https://synterai.com/mcp/yahoo-dsp/install)
+- **Basis DSP**: [Guide](platforms/basis-dsp.md) | [1-Click Connect](https://synterai.com/mcp/basis-dsp/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/basis-dsp) | [Install & Tools](https://synterai.com/mcp/basis-dsp/install)
+- **Quantcast**: [Guide](platforms/quantcast.md) | [1-Click Connect](https://synterai.com/mcp/quantcast/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/quantcast) | [Install & Tools](https://synterai.com/mcp/quantcast/install)
+- **Teads**: [Guide](platforms/teads.md) | [1-Click Connect](https://synterai.com/mcp/teads/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/teads) | [Install & Tools](https://synterai.com/mcp/teads/install)
+- **AdRoll Retargeting**: [Guide](platforms/adroll.md) | [1-Click Connect](https://synterai.com/mcp/adroll/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/adroll) | [Install & Tools](https://synterai.com/mcp/adroll/install)
+- **Moloco**: [Guide](platforms/moloco.md) | [1-Click Connect](https://synterai.com/mcp/moloco/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/moloco) | [Install & Tools](https://synterai.com/mcp/moloco/install)
+- **Campaign Manager 360 (CM360)**: [Guide](platforms/cm360.md) | [1-Click Connect](https://synterai.com/mcp/cm360/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/cm360) | [Install & Tools](https://synterai.com/mcp/cm360/install)
+- **Xandr (Microsoft Monetize)**: [Guide](platforms/xandr.md) | [1-Click Connect](https://synterai.com/mcp/xandr/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/xandr) | [Install & Tools](https://synterai.com/mcp/xandr/install)
+
+### CTV, Video & Audio
+
+- **Spotify Ads**: [Guide](platforms/spotify.md) | [1-Click Connect](https://synterai.com/mcp/spotify/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/spotify) | [Install & Tools](https://synterai.com/mcp/spotify/install)
+- **YouTube Ads**: [Guide](platforms/youtube-ads.md) | [1-Click Connect](https://synterai.com/mcp/youtube-ads/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/youtube-ads) | [Install & Tools](https://synterai.com/mcp/youtube-ads/install)
+- **MNTN**: [Guide](platforms/mntn.md) | [1-Click Connect](https://synterai.com/mcp/mntn/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/mntn) | [Install & Tools](https://synterai.com/mcp/mntn/install)
+- **Tatari**: [Guide](platforms/tatari.md) | [1-Click Connect](https://synterai.com/mcp/tatari/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/tatari) | [Install & Tools](https://synterai.com/mcp/tatari/install)
+- **Vibe.co**: [Guide](platforms/vibe-co.md) | [1-Click Connect](https://synterai.com/mcp/vibe-co/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/vibe-co) | [Install & Tools](https://synterai.com/mcp/vibe-co/install)
+- **Twitch Ads**: [Guide](platforms/twitch-ads.md) | [1-Click Connect](https://synterai.com/mcp/twitch-ads/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/twitch-ads) | [Install & Tools](https://synterai.com/mcp/twitch-ads/install)
+- **FreeWheel Buyer Cloud (Beeswax)**: [Guide](platforms/freewheel.md) | [1-Click Connect](https://synterai.com/mcp/freewheel/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/freewheel) | [Install & Tools](https://synterai.com/mcp/freewheel/install)
+- **AppLovin (Axon) Ads**: [Guide](platforms/applovin.md) | [1-Click Connect](https://synterai.com/mcp/applovin/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/applovin) | [Install & Tools](https://synterai.com/mcp/applovin/install)
+- **Samsung Ads (CTV)**: [Guide](platforms/samsung.md) | [1-Click Connect](https://synterai.com/mcp/samsung/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/samsung) | [Install & Tools](https://synterai.com/mcp/samsung/install)
+- **Roku Ads (CTV)**: [Guide](platforms/roku.md) | [1-Click Connect](https://synterai.com/mcp/roku/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/roku) | [Install & Tools](https://synterai.com/mcp/roku/install)
+- **Disney & Hulu Ads (CTV)**: [Guide](platforms/disney.md) | [1-Click Connect](https://synterai.com/mcp/disney/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/disney) | [Install & Tools](https://synterai.com/mcp/disney/install)
+
+### Native & Discovery
+
+- **Taboola Native Ads**: [Guide](platforms/taboola.md) | [1-Click Connect](https://synterai.com/mcp/taboola/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/taboola) | [Install & Tools](https://synterai.com/mcp/taboola/install)
+- **Outbrain (Teads) Native Ads**: [Guide](platforms/outbrain.md) | [1-Click Connect](https://synterai.com/mcp/outbrain/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/outbrain) | [Install & Tools](https://synterai.com/mcp/outbrain/install)
+- **Carbon Ads**: [Guide](platforms/carbon-ads.md) | [1-Click Connect](https://synterai.com/mcp/carbon-ads/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/carbon-ads) | [Install & Tools](https://synterai.com/mcp/carbon-ads/install)
+- **EthicalAds**: [Guide](platforms/ethicalads.md) | [1-Click Connect](https://synterai.com/mcp/ethicalads/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/ethicalads) | [Install & Tools](https://synterai.com/mcp/ethicalads/install)
+- **Thrad AI Ads**: [Guide](platforms/thrad.md) | [1-Click Connect](https://synterai.com/mcp/thrad/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/thrad) | [Install & Tools](https://synterai.com/mcp/thrad/install)
+
+### Affiliate & Local
+
+- **Yelp Ads**: [Guide](platforms/yelp.md) | [1-Click Connect](https://synterai.com/mcp/yelp/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/yelp) | [Install & Tools](https://synterai.com/mcp/yelp/install)
+- **impact.com Affiliate**: [Guide](platforms/impact.md) | [1-Click Connect](https://synterai.com/mcp/impact/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/impact) | [Install & Tools](https://synterai.com/mcp/impact/install)
+- **CJ Affiliate**: [Guide](platforms/cj-affiliate.md) | [1-Click Connect](https://synterai.com/mcp/cj-affiliate/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/cj-affiliate) | [Install & Tools](https://synterai.com/mcp/cj-affiliate/install)
+
+### B2B & ABM
+
+- **Demandbase ABM**: [Guide](platforms/demandbase.md) | [1-Click Connect](https://synterai.com/mcp/demandbase/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/demandbase) | [Install & Tools](https://synterai.com/mcp/demandbase/install)
+- **DemandScience (Terminus) ABM**: [Guide](platforms/terminus.md) | [1-Click Connect](https://synterai.com/mcp/terminus/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/terminus) | [Install & Tools](https://synterai.com/mcp/terminus/install)
+- **6sense ABM**: [Guide](platforms/6sense.md) | [1-Click Connect](https://synterai.com/mcp/6sense/connect?utm_source=github) | [Starter Kit (.zip)](https://synterai.com/api/mcp/kit/6sense) | [Install & Tools](https://synterai.com/mcp/6sense/install)
+
 ## License
 
 MIT License — see [LICENSE](./LICENSE).
